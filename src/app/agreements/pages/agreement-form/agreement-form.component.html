@@ -1,0 +1,118 @@
+<div class="container p-5">
+  <h1>Create Agreement</h1>
+  <hr />
+
+  <div class="row">
+    <div class="col">
+      <form class="form" action="POST" (ngSubmit)="create()">
+        <div class="input-group mb-3">
+          <label class="input-group-text" for="name">Agreement:</label>
+          <input
+            class="form-control"
+            type="number"
+            name="name"
+            id="name"
+            required
+            [(ngModel)]="newAgreement.number"
+          />
+        </div>
+
+        <div class="input-group mb-3">
+          <label class="input-group-text" for="description">Area:</label>
+          <input
+            class="form-control"
+            type="text"
+            name="description"
+            id="description"
+            placeholder="area"
+            required
+            [value]="newAgreement.description"
+            [(ngModel)]="newAgreement.description"
+          />
+        </div>
+
+        <div class="input-group mb-3">
+          <label class="input-group-text" for="description">Created by:</label>
+          <input
+            class="form-control"
+            type="text"
+            name="description"
+            id="description"
+            placeholder="john doe"
+            required
+            [value]="newAgreement.description"
+            [(ngModel)]="newAgreement.description"
+          />
+        </div>
+
+        <div class="input-group mb-3">
+          <label class="input-group-text" for="description">Date:</label>
+          <input
+            class="form-control"
+            type="text"
+            name="description"
+            id="description"
+            placeholder="2024-05-17"
+            required
+            [value]="newAgreement.description"
+            [(ngModel)]="newAgreement.description"
+          />
+        </div>
+
+        <div class="input-group mb-3">
+          <label class="input-group-text" for="description">Description:</label>
+          <textarea
+            class="form-control"
+            type="text"
+            name="description"
+            id="description"
+            required
+            [value]="newAgreement.description"
+            [(ngModel)]="newAgreement.description"
+          ></textarea>
+        </div>
+
+        <div class="input-group mb-3">
+          <div class="input-group-text">
+            <input
+              class="form-check-input mt-0"
+              type="checkbox"
+              value=""
+              aria-label="Checkbox for following text input"
+            />
+          </div>
+          <input
+            type="text"
+            class="form-control"
+            aria-label="Text input with checkbox"
+            value="Completed"
+            disabled
+          />
+        </div>
+
+        <!-- <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [value]="newAgreement.completed"
+            id="completed"
+          />
+          <label class="form-check-label" for="completed"> Completed </label>
+        </div> -->
+
+        <div class="row justify-content-center">
+          <button class="btn btn-success col-2 mx-2" type="submit">
+            Create
+          </button>
+          <button
+            class="btn btn-primary col-2 mx-2"
+            type="button"
+            routerLink=""
+          >
+            Back
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

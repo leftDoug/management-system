@@ -1,0 +1,30 @@
+<div class="container p-3">
+  <div class="row justify-content-center">
+    <div class="col-8">
+      <h1>Agreement {{ number }}</h1>
+      <ul class="list-group">
+        <li class="list-group-item"><strong>Number: </strong>{{ number }}</li>
+        <li class="list-group-item"><strong>Area: </strong>{{ area }}</li>
+        <li class="list-group-item">
+          <strong>Created by: </strong>{{ createdBy }}
+        </li>
+        <li class="list-group-item"><strong>Date: </strong>{{ date }}</li>
+        <li class="list-group-item">
+          <strong>Solution: </strong>{{ solution }}
+        </li>
+        <li class="list-group-item">
+          <strong>Completed: </strong>
+          <span *ngIf="completed">✔</span>
+          <span *ngIf="!completed">❌</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="row justify-content-center mt-3">
+      <button class="btn btn-success col-2 mx-2" type="button">Edit</button>
+      <button class="btn btn-primary col-2 mx-2" type="button" routerLink="">
+        Back
+      </button>
+    </div>
+  </div>
+</div>

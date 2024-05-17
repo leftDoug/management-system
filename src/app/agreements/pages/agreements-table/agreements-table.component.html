@@ -1,0 +1,86 @@
+<div class="container p-3">
+  <h1>Agreements</h1>
+  <hr />
+  <div class="row my-2 justify-content-between">
+    <div class="col-3">
+      <button type="button" class="btn btn-success" routerLink="create">
+        Create Agreement
+      </button>
+    </div>
+    <div class="col-3">
+      <button type="button" class="btn btn-primary">Export</button>
+    </div>
+    <div class="col-5">
+      <app-search></app-search>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div *ngIf="agreements.length; else noAgreements">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Agreement</th>
+              <th>Area</th>
+              <th>Careated by</th>
+              <th>Date</th>
+              <th>Completed</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let agreement of agreements">
+              <td>Agreement {{ agreement.number }}</td>
+              <td>{{ agreement.area }}</td>
+              <td>{{ agreement.createdBy }}</td>
+              <td>{{ agreement.date }}</td>
+              <td>
+                <span *ngIf="agreement.completed">✔</span>
+                <span *ngIf="!agreement.completed">❌</span>
+              </td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  routerLink="details/asd"
+                >
+                  Info
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger mx-2"
+                  (click)="deleteAgreement(agreement)"
+                  *ngIf="agreements.length"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #noAgreements>
+        <h3 class="red">NO AGREEMENTS</h3>
+      </ng-template>
+
+      <!-- <div *ngIf="removedAgreement; else notRemoved">
+        <h3>Removed agreement:</h3>
+        <span>{{ removedAgreement | json }}</span>
+      </div> -->
+
+      <!-- <ng-template #notRemoved>
+        <h3>No elements removed</h3>
+      </ng-template> -->
+
+      <!-- <button
+        type="button"
+        class="btn btn-danger mt-3"
+        (click)="remove()"
+        *ngIf="agreements.length"
+      >
+        Remove
+      </button> -->
+    </div>
+  </div>
+</div>
