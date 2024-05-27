@@ -1,29 +1,78 @@
 <div class="container p-3">
   <div class="row justify-content-center">
     <div class="col-8">
-      <h1>Agreement {{ number }}</h1>
+      <h1>Acuerdo {{ agreement!.number }}</h1>
       <ul class="list-group">
-        <li class="list-group-item"><strong>Number: </strong>{{ number }}</li>
-        <li class="list-group-item"><strong>Area: </strong>{{ area }}</li>
+        <!-- <li class="list-group-item">
+          <strong>Number: </strong>{{ agreement!.number }}
+        </li> -->
         <li class="list-group-item">
-          <strong>Created by: </strong>{{ createdBy }}
-        </li>
-        <li class="list-group-item"><strong>Date: </strong>{{ date }}</li>
-        <li class="list-group-item">
-          <strong>Solution: </strong>{{ solution }}
+          <strong>Área: </strong>{{ agreement!.area }}
         </li>
         <li class="list-group-item">
-          <strong>Completed: </strong>
-          <span *ngIf="completed">✔</span>
-          <span *ngIf="!completed">❌</span>
+          <strong>Creado por: </strong>{{ agreement!.createdBy }}
+        </li>
+        <li class="list-group-item">
+          <strong>Reunión: </strong>{{ agreement!.meeting }}
+        </li>
+        <li class="list-group-item">
+          <strong>Sesión: </strong>{{ agreement!.session }}
+        </li>
+        <li class="list-group-item">
+          <strong>Fecha: </strong
+          >{{ agreement!.meetingDate.toLocaleDateString("en-GB") }}
+        </li>
+        <li class="list-group-item">
+          <strong>Fecha: </strong
+          >{{ agreement!.agreementCompilanceDate.toLocaleDateString("en-GB") }}
+        </li>
+        <li class="list-group-item">
+          <strong>Hora de inicio: </strong
+          >{{ agreement!.meetingStartTime.toLocaleTimeString("en-GB") }}
+        </li>
+        <li class="list-group-item">
+          <strong>Hora de fin: </strong
+          >{{ agreement!.meetingEndTime.toLocaleTimeString("en-GB") }}
+        </li>
+        <li class="list-group-item">
+          <strong>Solución: </strong>{{ agreement!.solution }}
+        </li>
+        <li class="list-group-item">
+          <strong>Cumplido: </strong>
+          <!-- <span *ngIf="agreement!.fulfilled">✔</span> -->
+          <!-- <span *ngIf="!agreement!.fulfilled">❌</span> -->
+          <span>
+            <p-tag
+              [value]="
+                getStatus(
+                  agreement!.fulfilled,
+                  agreement!.agreementCompilanceDate
+                )
+              "
+              [severity]="
+                getSeverity(
+                  getStatus(
+                    agreement!.fulfilled,
+                    agreement!.agreementCompilanceDate
+                  )
+                )
+              "
+            ></p-tag>
+          </span>
         </li>
       </ul>
     </div>
 
     <div class="row justify-content-center mt-3">
-      <button class="btn btn-success col-2 mx-2" type="button">Edit</button>
+      <button
+        class="btn btn-success col-2 mx-2"
+        type="button"
+        *ngIf="!agreement!.fulfilled"
+      >
+        Editar
+      </button>
       <button class="btn btn-primary col-2 mx-2" type="button" routerLink="">
-        Back
+        Atrás
       </button>
     </div>
   </div>

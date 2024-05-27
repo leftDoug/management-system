@@ -1,8 +1,14 @@
 export interface Agreement {
+  id: string;
   number: number;
   area: string;
+  meeting: string;
+  session: string;
   createdBy: string;
-  date: string;
-  description: string;
-  completed: boolean;
+  meetingDate: Date;
+  meetingStartTime: Date;
+  meetingEndTime: Date;
+  agreementCompilanceDate: Date;
+  solution: string;
+  fulfilled: boolean;
 }

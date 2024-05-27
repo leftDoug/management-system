@@ -12,6 +12,7 @@ const routes: Routes = [
   },
   { path: 'details/:id', component: AgreementComponent },
   { path: 'create', component: AgreementFormComponent },
+  { path: 'update/:id', component: AgreementFormComponent },
   { path: '**', redirectTo: 'agreements' },
 ];
 

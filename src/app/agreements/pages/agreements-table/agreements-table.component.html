@@ -1,7 +1,7 @@
 <div class="container p-3">
-  <h1>Agreements</h1>
+  <h1>ACUERDOS</h1>
   <hr />
-  <div class="row my-2 justify-content-between">
+  <!-- <div class="row my-2 justify-content-between">
     <div class="col-3">
       <button type="button" class="btn btn-success" routerLink="create">
         Create Agreement
@@ -13,11 +13,209 @@
     <div class="col-5">
       <app-search></app-search>
     </div>
-  </div>
+  </div> -->
   <div class="row">
     <div class="col">
       <div *ngIf="agreements.length; else noAgreements">
-        <table class="table">
+        <div class="card">
+          <p-table
+            [value]="agreements"
+            [tableStyle]="{ 'min-width': '60rem' }"
+            #tAgreements
+          >
+            <!-- (input)="dt1.filterGlobal($event.target.value, 'contains')" -->
+            <ng-template pTemplate="caption">
+              <p-button
+                label="Crear Acuerdo"
+                severity="success"
+                routerLink="create"
+              ></p-button>
+              <!-- <input
+                pInputText
+                type="text"
+                placeholder="Search keyword"
+                [(ngModel)]="searchText"
+                (input)="search($event.target.value)"
+              /> -->
+            </ng-template>
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="number">
+                  Acuerdo <p-sortIcon field="number"></p-sortIcon>
+                </th>
+                <th pSortableColumn="area">
+                  Area <p-sortIcon field="area"></p-sortIcon>
+                </th>
+                <th pSortableColumn="meeting">
+                  Reunion <p-sortIcon field="meeting"></p-sortIcon>
+                </th>
+                <th pSortableColumn="session">
+                  Sesion <p-sortIcon field="session"></p-sortIcon>
+                </th>
+                <th pSortableColumn="date">
+                  Fecha <p-sortIcon field="date"></p-sortIcon>
+                </th>
+                <th pSortableColumn="completed">
+                  Estado <p-sortIcon field="completed"></p-sortIcon>
+                </th>
+                <th></th>
+              </tr>
+              <tr>
+                <th></th>
+                <th>
+                  <p-columnFilter
+                    field="area"
+                    matchMode="equals"
+                    [showMenu]="false"
+                  >
+                    <ng-template
+                      pTemplate="filter"
+                      let-value
+                      let-filter="filterCallback"
+                    >
+                      <p-dropdown
+                        [ngModel]="value"
+                        [options]="areas"
+                        (onChange)="filter($event.value)"
+                        placeholder="Todas"
+                      >
+                      </p-dropdown>
+                    </ng-template>
+                  </p-columnFilter>
+                </th>
+                <th>
+                  <p-columnFilter
+                    field="meeting"
+                    matchMode="equals"
+                    [showMenu]="false"
+                  >
+                    <ng-template
+                      pTemplate="filter"
+                      let-value
+                      let-filter="filterCallback"
+                    >
+                      <p-dropdown
+                        [ngModel]="value"
+                        [options]="meetings"
+                        (onChange)="filter($event.value)"
+                        placeholder="Todas"
+                      >
+                      </p-dropdown>
+                    </ng-template>
+                  </p-columnFilter>
+                </th>
+                <th>
+                  <p-columnFilter
+                    field="session"
+                    matchMode="equals"
+                    [showMenu]="false"
+                  >
+                    <ng-template
+                      pTemplate="filter"
+                      let-value
+                      let-filter="filterCallback"
+                    >
+                      <p-dropdown
+                        [ngModel]="value"
+                        [options]="sessions"
+                        (onChange)="filter($event.value)"
+                        placeholder="Todas"
+                      >
+                      </p-dropdown>
+                    </ng-template>
+                  </p-columnFilter>
+                </th>
+                <!-- revisar xk se cuelga -->
+                <th>
+                  <p-columnFilter
+                    type="date"
+                    field="date"
+                    display="menu"
+                  ></p-columnFilter>
+                </th>
+                <th>
+                  <p-columnFilter
+                    field="completed"
+                    matchMode="equals"
+                    [showMenu]="false"
+                  >
+                    <ng-template
+                      pTemplate="filter"
+                      let-value
+                      let-filter="filterCallback"
+                    >
+                      <p-dropdown
+                        [ngModel]="value"
+                        [options]="statuses"
+                        (onChange)="filter($event.value)"
+                        placeholder="Todos"
+                      >
+                        <ng-template let-option pTemplate="item">
+                          <p-tag
+                            [value]="option.label"
+                            [severity]="getSeverity(option.value)"
+                          ></p-tag>
+                        </ng-template>
+                      </p-dropdown>
+                    </ng-template>
+                  </p-columnFilter>
+                </th>
+                <th></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-agreement>
+              <tr
+                [ngClass]="
+                  agreement.fulfilled
+                    ? 'completed'
+                    : getStatus(
+                        agreement.fulfilled,
+                        agreement.agreementCompilanceDate
+                      ) === 'EN PROCESO'
+                    ? ''
+                    : 'incomplete'
+                "
+              >
+                <td>{{ agreement.number }}</td>
+                <td>{{ agreement.area }}</td>
+                <td>{{ agreement.meeting }}</td>
+                <td>{{ agreement.session }}</td>
+                <td>{{ agreement.meetingDate.toLocaleDateString("en-GB") }}</td>
+                <td>
+                  <p-tag
+                    [value]="
+                      getStatus(
+                        agreement.fulfilled,
+                        agreement.agreementCompilanceDate
+                      )
+                    "
+                    [severity]="
+                      getSeverity(
+                        getStatus(
+                          agreement.fulfilled,
+                          agreement.agreementCompilanceDate
+                        )
+                      )
+                    "
+                  ></p-tag>
+                </td>
+                <td>
+                  <p-button
+                    label="Info"
+                    [routerLink]="'details/' + agreement.number"
+                  ></p-button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+              <div class="flex align-items-center justify-content-between">
+                Hay
+                {{ agreements ? agreements.length : 0 }} acuerdos en total.
+              </div>
+            </ng-template>
+          </p-table>
+        </div>
+        <!-- <table class="table table-hover">
           <thead>
             <tr>
               <th>Agreement</th>
@@ -29,7 +227,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let agreement of agreements">
+            <tr
+              *ngFor="let agreement of agreements"
+              [ngClass]="agreement.completed ? 'table-success' : 'table-danger'"
+            >
               <td>Agreement {{ agreement.number }}</td>
               <td>{{ agreement.area }}</td>
               <td>{{ agreement.createdBy }}</td>
@@ -57,7 +258,7 @@
               </td>
             </tr>
           </tbody>
-        </table>
+        </table> -->
       </div>
 
       <ng-template #noAgreements>
