@@ -141,28 +141,30 @@
   </div>
 </div> -->
 
-<div class="card m-3 p-5">
-  <h1>Crear Acuerdo (primeng)</h1>
-  <hr />
+<div class="container">
+  <div class="card m-3 p-5">
+    <h1>Crear Acuerdo</h1>
+    <hr />
 
-  <div>
-    <p-messages
-      [(value)]="messages"
-      [enableService]="false"
-      [closable]="true"
-      *ngIf="success"
-    ></p-messages>
-  </div>
+    <div>
+      <!-- TODO: poner un tiempo para el mensaje -->
+      <p-messages
+        [(value)]="messages"
+        [enableService]="false"
+        [closable]="true"
+        *ngIf="success"
+      ></p-messages>
+    </div>
 
-  <form class="form" action="POST" (ngSubmit)="create()">
-    <div class="row">
-      <div class="col flex flex-wrap gap-3 p-fluid">
-        <!-- <div class="flex-auto mb-3">
+    <form class="form" action="POST" (ngSubmit)="create()" #agreementsTable>
+      <div class="row justify-content-center">
+        <div class="col">
+          <!-- <div class="flex-auto mb-3">
           <label for="number" class="mb-2 block font-bold">Número: </label>
           <p-inputNumber
-            inputId="number"
-            [showButtons]="true"
-            [min]="0"
+          inputId="number"
+          [showButtons]="true"
+          [min]="0"
             [max]="100"
             [(ngModel)]="newAgreement.number"
             name="number"
@@ -170,141 +172,199 @@
           ></p-inputNumber>
         </div> -->
 
-        <div class="flex-auto mb-3">
-          <label for="area" class="mb-2 block font-bold">Área: </label>
-          <p-dropdown
-            [options]="areas"
-            [(ngModel)]="newAgreement.area"
-            placeholder="Seleccione ..."
-            name="area"
-            class="mx-2"
-          ></p-dropdown>
+          <div class="row mb-3 justify-content-center">
+            <!-- FIXME: asociar al atributo -->
+            <!-- FIXME: arreglar el layout xk aparece mas a la izquierda -->
+            <!-- BUG: validar todos los campos -->
+            <label for="content" class="col align-self-center text-end mx-2"
+              >Contenido del acuerdo:
+            </label>
+            <input
+              type="text"
+              pInputText
+              name="content"
+              id="content"
+              class="col"
+              [(ngModel)]="value"
+              (input)="keyPressed($event)"
+            />
+          </div>
+
+          <div class="row mb-3 justify-content-center">
+            <!-- FIXME: este campo debe ser un dropdown -->
+            <!-- FIXME: arreglar el layout xk aparece mas a la izquierda -->
+            <label for="responsible" class="col align-self-center text-end mx-2"
+              >Responsable:
+            </label>
+            <input
+              type="text"
+              pInputText
+              name="responsible"
+              id="responsible"
+              class="col"
+            />
+          </div>
+
+          <div class="row mb-3 justify-content-center">
+            <label for="area" class="col align-self-center text-end"
+              >Área:
+            </label>
+            <p-dropdown
+              [options]="areas"
+              [(ngModel)]="newAgreement.area"
+              placeholder="Seleccione ..."
+              name="area"
+              class="col"
+            ></p-dropdown>
+          </div>
+
+          <div class="row mb-3 justify-content-center">
+            <label for="createdBy" class="col align-self-center text-end"
+              >Creado por:
+            </label>
+            <p-dropdown
+              [options]="creators"
+              [(ngModel)]="newAgreement.createdBy"
+              placeholder="Seleccione ..."
+              name="createdBy"
+              class="col"
+            ></p-dropdown>
+          </div>
+
+          <div class="row mb-3 justify-content-center">
+            <label for="date" class="col align-self-center text-end"
+              >Fecha de cumplimiento del acuerdo:
+            </label>
+            <p-calendar
+              [(ngModel)]="newAgreement.agreementCompilanceDate"
+              dateFormat="dd/mm/yy"
+              name="date"
+              class="col"
+            ></p-calendar>
+          </div>
+
+          <div class="row mb-3 justify-content-center">
+            <p-checkbox
+              [(ngModel)]="newAgreement.fulfilled"
+              [binary]="true"
+              inputId="completed"
+              name="completed"
+              class="col justify-content-end"
+            ></p-checkbox>
+            <label for="completed" class="col align-self-center"
+              >Cumplido</label
+            >
+          </div>
         </div>
 
-        <div class="flex-auto mb-3">
-          <label for="createdBy" class="mb-2 block font-bold"
-            >Creado por:
+        <div class="col">
+          <div class="row mb-3 justify-content-center">
+            <label for="meeting" class="col-5 align-self-center text-end"
+              >Reunión:
+            </label>
+            <p-dropdown
+              [options]="meetings"
+              [(ngModel)]="newAgreement.meeting"
+              placeholder="Seleccione ..."
+              name="meeting"
+              class="col"
+            ></p-dropdown>
+          </div>
+
+          <div class="row mb-3 justify-content-center">
+            <label for="session" class="col-5 align-self-center text-end"
+              >Sesión:
+            </label>
+            <p-dropdown
+              [options]="sessions"
+              [(ngModel)]="newAgreement.session"
+              placeholder="Seleccione ..."
+              name="session"
+              class="col"
+            ></p-dropdown>
+          </div>
+
+          <div class="row mb-3 justify-content-center">
+            <label for="date" class="col-5 align-self-center text-end"
+              >Fecha de la reunión:
+            </label>
+            <p-calendar
+              [(ngModel)]="newAgreement.meetingDate"
+              dateFormat="dd/mm/yy"
+              [maxDate]="today"
+              name="date"
+              class="col"
+            ></p-calendar>
+          </div>
+
+          <div class="row mb-3 justify-content-center">
+            <label for="start" class="col-5 align-self-center text-end"
+              >Hora de inicio de la reunión:
+            </label>
+            <p-calendar
+              [(ngModel)]="newAgreement.meetingStartTime"
+              [timeOnly]="true"
+              [minDate]="getDayBeginning()"
+              [maxDate]="today"
+              name="start"
+              class="col"
+            ></p-calendar>
+          </div>
+
+          <div class="row mb-3 justify-content-center">
+            <label for="end" class="col-5 align-self-center text-end"
+              >Hora de fin de la reunión:
+            </label>
+            <p-calendar
+              [(ngModel)]="newAgreement.meetingEndTime"
+              [timeOnly]="true"
+              [minDate]="getDayBeginning()"
+              [maxDate]="getDayEnd()"
+              name="end"
+              class="col"
+            ></p-calendar>
+          </div>
+        </div>
+
+        <div class="row mb-5 justify-content-center">
+          <label for="solution" class="col-3 align-self-center text-end"
+            >Solución:
           </label>
-          <p-dropdown
-            [options]="creators"
-            [(ngModel)]="newAgreement.createdBy"
-            placeholder="Seleccione ..."
-            name="createdBy"
-            class="mx-2"
-          ></p-dropdown>
+          <textarea
+            id="solution"
+            rows="5"
+            cols="100"
+            [autoResize]="true"
+            pInputTextarea
+            [(ngModel)]="newAgreement.solution"
+            name="solution"
+            class="col mx-2"
+          ></textarea>
         </div>
 
-        <div class="flex-auto mb-3">
-          <p-checkbox
-            [(ngModel)]="newAgreement.fulfilled"
-            [binary]="true"
-            inputId="completed"
-            name="completed"
-            class="mx-2"
-          ></p-checkbox>
-          <label for="completed" class="mb-2 block font-bold">Cumplido</label>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="mb-3">
-          <label for="meeting">Reunión: </label>
-          <p-dropdown
-            [options]="meetings"
-            [(ngModel)]="newAgreement.meeting"
-            placeholder="Seleccione ..."
-            name="meeting"
-            class="mx-2"
-          ></p-dropdown>
-        </div>
-
-        <div class="mb-3">
-          <label for="session">Sesión: </label>
-          <p-dropdown
-            [options]="sessions"
-            [(ngModel)]="newAgreement.session"
-            placeholder="Seleccione ..."
-            name="session"
-            class="mx-2"
-          ></p-dropdown>
-        </div>
-
-        <div class="mb-3">
-          <label for="date">Fecha de la reunión: </label>
-          <p-calendar
-            [(ngModel)]="newAgreement.meetingDate"
-            dateFormat="dd/mm/yy"
-            [maxDate]="today"
-            name="date"
-            class="mx-2"
-          ></p-calendar>
-        </div>
-
-        <div class="mb-3">
-          <label for="date">Fecha de cumplimiento del acuerdo: </label>
-          <p-calendar
-            [(ngModel)]="newAgreement.agreementCompilanceDate"
-            dateFormat="dd/mm/yy"
-            name="date"
-            class="mx-2"
-          ></p-calendar>
-        </div>
-
-        <div class="mb-3">
-          <label for="start">Hora de inicio de la reunión: </label>
-          <p-calendar
-            [(ngModel)]="newAgreement.meetingStartTime"
-            [timeOnly]="true"
-            [minDate]="getDayBeginning()"
-            [maxDate]="today"
-            name="start"
-            class="mx-2"
-          ></p-calendar>
-        </div>
-
-        <div class="mb-3">
-          <label for="end">Hora de fin de la reunión: </label>
-          <p-calendar
-            [(ngModel)]="newAgreement.meetingEndTime"
-            [timeOnly]="true"
-            [minDate]="getDayBeginning()"
-            [maxDate]="getDayEnd()"
-            name="end"
-            class="mx-2"
-          ></p-calendar>
-        </div>
-      </div>
-
-      <div class="flex-auto mb-3">
-        <label for="solution" class="mb-2 block font-bold">Solución: </label>
-        <textarea
-          id="solution"
-          rows="5"
-          cols="30"
-          [autoResize]="true"
-          pInputTextarea
-          [(ngModel)]="newAgreement.solution"
-          name="solution"
-          class="mx-2"
-        ></textarea>
-      </div>
-
-      <!-- <div class="form-check">
+        <!-- <div class="form-check">
           <input
-            class="form-check-input"
-            type="checkbox"
-            [value]="newAgreement.completed"
-            id="completed"
+          class="form-check-input"
+          type="checkbox"
+          [value]="newAgreement.completed"
+          id="completed"
           />
           <label class="form-check-label" for="completed"> Completed </label>
         </div> -->
 
-      <div class="row justify-content-center">
-        <button class="btn btn-success col-2 mx-2" type="submit">Crear</button>
-        <button class="btn btn-primary col-2 mx-2" type="button" routerLink="">
-          Atrás
-        </button>
+        <div class="row justify-content-center">
+          <button class="btn btn-success col-2 mx-2" type="submit">
+            Crear
+          </button>
+          <button
+            class="btn btn-primary col-2 mx-2"
+            type="button"
+            routerLink=""
+          >
+            Atrás
+          </button>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>

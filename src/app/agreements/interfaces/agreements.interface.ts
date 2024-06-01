@@ -11,4 +11,6 @@ export interface Agreement {
   agreementCompilanceDate: Date;
   solution: string;
   fulfilled: boolean;
+  status: boolean;
+  // TODO: agregar contenido y encargado
 }

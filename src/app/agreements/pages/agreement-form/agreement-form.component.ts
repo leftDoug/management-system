@@ -3,6 +3,7 @@ import { Agreement } from '../../interfaces/agreements.interface';
 import { AgreementsService } from '../../services/agreements.service';
 import { Message, PrimeNGConfig } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
+import { switchMap } from 'rxjs';
 
 interface Area {
   label: string;
@@ -29,6 +30,8 @@ export class AgreementFormComponent implements OnInit {
     solution: '',
     fulfilled: false,
     agreementCompilanceDate: new Date(),
+    status: true,
+    // TODO: agregar contenido y responsable
   };
   success: boolean = false;
   messages: Message[] = [];
@@ -42,6 +45,7 @@ export class AgreementFormComponent implements OnInit {
   sessions: string[] = ['Ordinaria', 'Extraordinaria'];
   creators: string[] = ['Doug Left', 'Douglas Izquierdo', 'Otros'];
   today: Date = new Date();
+  value: string = '';
 
   constructor(
     private agreementsService: AgreementsService,
@@ -54,9 +58,20 @@ export class AgreementFormComponent implements OnInit {
     this.messages = [
       { severity: 'success', detail: 'Agreement created successfully' },
     ];
+    this.activatedRoute.params
+      .pipe(switchMap(async ({ id }) => this.agreementsService.getById(id)))
+      .subscribe((agreement) => {
+        if (agreement) this.newAgreement = agreement;
+      });
+  }
+
+  keyPressed(event: any) {
+    this.value = event.target.value;
+    console.log(this.value);
   }
 
   create(): void {
+    console.log('Hello');
     this.success = false;
     this.generateNumber();
     this.generateId();
@@ -135,6 +150,8 @@ export class AgreementFormComponent implements OnInit {
       solution: '',
       fulfilled: false,
       agreementCompilanceDate: new Date(),
+      status: true,
+      // TODO: agregar contenido y responsable
     };
   }
 }

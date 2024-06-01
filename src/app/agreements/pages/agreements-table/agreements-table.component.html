@@ -25,21 +25,26 @@
           >
             <!-- (input)="dt1.filterGlobal($event.target.value, 'contains')" -->
             <ng-template pTemplate="caption">
-              <p-button
-                label="Crear Acuerdo"
-                severity="success"
-                routerLink="create"
-              ></p-button>
-              <!-- <input
-                pInputText
-                type="text"
-                placeholder="Search keyword"
-                [(ngModel)]="searchText"
-                (input)="search($event.target.value)"
-              /> -->
+              <div class="row justify-content-between">
+                <p-button
+                  label="Crear Acuerdo"
+                  severity="success"
+                  routerLink="create"
+                  class="col-8"
+                ></p-button>
+                <input
+                  pInputText
+                  type="text"
+                  placeholder="Buscar..."
+                  [(ngModel)]="searchText"
+                  (input)="search($event)"
+                  class="col mx-3"
+                />
+              </div>
             </ng-template>
             <ng-template pTemplate="header">
               <tr>
+                <!-- TODO: agregar contenido y encargado -->
                 <th pSortableColumn="number">
                   Acuerdo <p-sortIcon field="number"></p-sortIcon>
                 </th>
@@ -61,6 +66,7 @@
                 <th></th>
               </tr>
               <tr>
+                <!-- TODO: agregar filtro de contenido y encargado -->
                 <th></th>
                 <th>
                   <p-columnFilter
@@ -125,8 +131,8 @@
                     </ng-template>
                   </p-columnFilter>
                 </th>
-                <!-- revisar xk se cuelga -->
                 <th>
+                  <!-- FIXME: mostrar el texto en español y arreglar el formato de la fecha a DD/MM/AAAA -->
                   <p-columnFilter
                     type="date"
                     field="date"
@@ -170,12 +176,20 @@
                     ? 'completed'
                     : getStatus(
                         agreement.fulfilled,
-                        agreement.agreementCompilanceDate
-                      ) === 'EN PROCESO'
-                    ? ''
-                    : 'incomplete'
+                        agreement.agreementCompilanceDate,
+                        agreement.status
+                      ) === 'ANULADO'
+                    ? 'removed'
+                    : getStatus(
+                        agreement.fulfilled,
+                        agreement.agreementCompilanceDate,
+                        agreement.status
+                      ) === 'INCUMPLIDO'
+                    ? 'incomplete'
+                    : ''
                 "
               >
+                <!-- TODO: agregar contenido y encargado -->
                 <td>{{ agreement.number }}</td>
                 <td>{{ agreement.area }}</td>
                 <td>{{ agreement.meeting }}</td>
@@ -186,14 +200,16 @@
                     [value]="
                       getStatus(
                         agreement.fulfilled,
-                        agreement.agreementCompilanceDate
+                        agreement.agreementCompilanceDate,
+                        agreement.status
                       )
                     "
                     [severity]="
                       getSeverity(
                         getStatus(
                           agreement.fulfilled,
-                          agreement.agreementCompilanceDate
+                          agreement.agreementCompilanceDate,
+                          agreement.status
                         )
                       )
                     "
@@ -202,7 +218,7 @@
                 <td>
                   <p-button
                     label="Info"
-                    [routerLink]="'details/' + agreement.number"
+                    [routerLink]="'details/' + agreement.id"
                   ></p-button>
                 </td>
               </tr>

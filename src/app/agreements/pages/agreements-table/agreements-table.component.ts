@@ -23,28 +23,29 @@ export class AgreementsTableComponent {
   areas: string[] = ['RRHH', 'Transporte', 'Contabilidad'];
   searchText: string = '';
 
-  deleteAgreement(agreement: Agreement): void {
-    this.agreementsSrevice.remove(agreement.number);
-  }
-
   get agreements(): Agreement[] {
     return this.agreementsSrevice.agreements;
   }
 
   constructor(private agreementsSrevice: AgreementsService) {}
 
-  getSeverity(status: string): string {
-    switch (status) {
+  // BUG: getSeverity esta implementado 2 veces
+  getSeverity(compilanceStatus: string): string {
+    switch (compilanceStatus) {
       case 'CUMPLIDO':
         return 'success';
       case 'EN PROCESO':
         return 'warning';
+      case 'ANULADO':
+        return 'info';
       default:
         return 'danger';
     }
   }
 
-  getStatus(completed: boolean, date: Date): string {
+  // BUG: getStatus esta implementado 2 veces
+  getStatus(completed: boolean, date: Date, status: boolean): string {
+    if (!status) return 'ANULADO';
     if (completed) {
       return 'CUMPLIDO';
     } else if (date.getTime() - new Date().getTime() >= 0) {
@@ -54,6 +55,7 @@ export class AgreementsTableComponent {
     }
   }
 
+  // FIXME: implementar este metodo
   search(event: any) {
     const value = event.target.value;
     console.log(value);

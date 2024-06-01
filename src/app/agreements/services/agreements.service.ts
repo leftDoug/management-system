@@ -19,6 +19,8 @@ export class AgreementsService {
       solution: '',
       fulfilled: false,
       agreementCompilanceDate: new Date(),
+      status: true,
+      // TODO: agregar contenido y encargado
     },
     {
       id: 'co1',
@@ -33,6 +35,8 @@ export class AgreementsService {
       solution: 'se cumplió',
       fulfilled: true,
       agreementCompilanceDate: new Date(),
+      status: true,
+      // TODO: agregar contenido y encargado
     },
     {
       id: 'tr1',
@@ -47,6 +51,8 @@ export class AgreementsService {
       solution: '',
       fulfilled: false,
       agreementCompilanceDate: new Date(),
+      status: false,
+      // TODO: agregar contenido y encargado
     },
   ];
 
@@ -54,13 +60,15 @@ export class AgreementsService {
     return [...this._agreements];
   }
 
+  getById(id: string): Agreement {
+    return this._agreements.find((x) => x.id === id)!;
+  }
+
   insert(agreement: Agreement): void {
     this._agreements.push(agreement);
   }
 
-  remove(id: number): void {
-    this._agreements = this._agreements.filter(
-      (agreement) => agreement.number !== id
-    );
+  remove(id: string): void {
+    this.getById(id).status = false;
   }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Agreement } from '../../interfaces/agreements.interface';
 import { ActivatedRoute } from '@angular/router';
 import { AgreementsService } from '../../services/agreements.service';
+import { Message } from 'primeng/api';
 
 @Component({
   selector: 'app-agreement',
@@ -10,6 +11,8 @@ import { AgreementsService } from '../../services/agreements.service';
 })
 export class AgreementComponent implements OnInit {
   agreement: Agreement | undefined;
+  messages: Message[] = [];
+  canceled: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -18,24 +21,33 @@ export class AgreementComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe(({ id }) => {
-      this.agreement = this.agreementsService.agreements.find(
-        (x) => x.number === parseInt(id)
-      );
+      this.agreement = this.agreementsService.getById(id);
     });
+    this.messages = [
+      {
+        severity: 'info',
+        detail: `El acuerdo ${this.agreement?.number} fue anulado`,
+      },
+    ];
   }
 
-  getSeverity(status: string): string {
-    switch (status) {
+  // BUG: getSeverity esta implementado 2 veces
+  getSeverity(compilanceStatus: string): string {
+    switch (compilanceStatus) {
       case 'CUMPLIDO':
         return 'success';
       case 'EN PROCESO':
         return 'warning';
+      case 'ANULADO':
+        return 'info';
       default:
         return 'danger';
     }
   }
 
-  getStatus(completed: boolean, date: Date): string {
+  // BUG: getStatus esta implementado 2 veces
+  getStatus(completed: boolean, date: Date, status: boolean): string {
+    if (!status) return 'ANULADO';
     if (completed) {
       return 'CUMPLIDO';
     } else if (date.getTime() - new Date().getTime() >= 0) {
@@ -43,5 +55,10 @@ export class AgreementComponent implements OnInit {
     } else {
       return 'INCUMPLIDO';
     }
+  }
+
+  remove(): void {
+    this.agreementsService.remove(this.agreement!.id);
+    this.canceled = true;
   }
 }

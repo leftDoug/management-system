@@ -2,15 +2,26 @@
   <div class="row justify-content-center">
     <div class="col-8">
       <h1>Acuerdo {{ agreement!.number }}</h1>
+      <p-messages
+        [(value)]="messages"
+        [enableService]="false"
+        [closable]="true"
+        *ngIf="canceled"
+      ></p-messages>
       <ul class="list-group">
         <!-- <li class="list-group-item">
           <strong>Number: </strong>{{ agreement!.number }}
         </li> -->
+        <!-- TODO: agregar contenido y encargado -->
         <li class="list-group-item">
           <strong>Área: </strong>{{ agreement!.area }}
         </li>
         <li class="list-group-item">
           <strong>Creado por: </strong>{{ agreement!.createdBy }}
+        </li>
+        <li class="list-group-item">
+          <strong>Fecha de cumplimiento del acuerdo: </strong
+          >{{ agreement!.agreementCompilanceDate.toLocaleDateString("en-GB") }}
         </li>
         <li class="list-group-item">
           <strong>Reunión: </strong>{{ agreement!.meeting }}
@@ -19,26 +30,22 @@
           <strong>Sesión: </strong>{{ agreement!.session }}
         </li>
         <li class="list-group-item">
-          <strong>Fecha: </strong
+          <strong>Fecha de la reunión: </strong
           >{{ agreement!.meetingDate.toLocaleDateString("en-GB") }}
         </li>
         <li class="list-group-item">
-          <strong>Fecha: </strong
-          >{{ agreement!.agreementCompilanceDate.toLocaleDateString("en-GB") }}
-        </li>
-        <li class="list-group-item">
-          <strong>Hora de inicio: </strong
+          <strong>Hora de inicio de la reunión: </strong
           >{{ agreement!.meetingStartTime.toLocaleTimeString("en-GB") }}
         </li>
         <li class="list-group-item">
-          <strong>Hora de fin: </strong
+          <strong>Hora de fin de la reunión: </strong
           >{{ agreement!.meetingEndTime.toLocaleTimeString("en-GB") }}
         </li>
         <li class="list-group-item">
           <strong>Solución: </strong>{{ agreement!.solution }}
         </li>
         <li class="list-group-item">
-          <strong>Cumplido: </strong>
+          <strong>Estado de cumplimiento: </strong>
           <!-- <span *ngIf="agreement!.fulfilled">✔</span> -->
           <!-- <span *ngIf="!agreement!.fulfilled">❌</span> -->
           <span>
@@ -46,14 +53,16 @@
               [value]="
                 getStatus(
                   agreement!.fulfilled,
-                  agreement!.agreementCompilanceDate
+                  agreement!.agreementCompilanceDate,
+                  agreement!.status
                 )
               "
               [severity]="
                 getSeverity(
                   getStatus(
                     agreement!.fulfilled,
-                    agreement!.agreementCompilanceDate
+                    agreement!.agreementCompilanceDate,
+                    agreement!.status
                   )
                 )
               "
@@ -64,15 +73,25 @@
     </div>
 
     <div class="row justify-content-center mt-3">
+      <!-- TODO: agregar la ruta para editar el acuerdo -->
       <button
         class="btn btn-success col-2 mx-2"
         type="button"
-        *ngIf="!agreement!.fulfilled"
+        *ngIf="!agreement!.fulfilled && agreement!.status"
       >
         Editar
       </button>
       <button class="btn btn-primary col-2 mx-2" type="button" routerLink="">
         Atrás
+      </button>
+      <!-- TODO: poner un tiempo para la notificacion -->
+      <button
+        class="btn btn-danger col-2 mx-2"
+        type="button"
+        (click)="remove()"
+        *ngIf="!agreement!.fulfilled && agreement!.status"
+      >
+        Anular
       </button>
     </div>
   </div>
