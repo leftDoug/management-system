@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Agreement } from '../../interfaces/agreements.interface';
 import { AgreementsService } from '../../services/agreements.service';
-import { Message, PrimeNGConfig } from 'primeng/api';
+import { Message, MessageService, PrimeNGConfig } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs';
 
@@ -15,6 +15,7 @@ interface Area {
   selector: 'app-agreement-form',
   templateUrl: './agreement-form.component.html',
   styleUrls: ['./agreement-form.component.css'],
+  providers: [MessageService],
 })
 export class AgreementFormComponent implements OnInit {
   newAgreement: Agreement = {
@@ -33,8 +34,8 @@ export class AgreementFormComponent implements OnInit {
     status: true,
     // TODO: agregar contenido y responsable
   };
-  success: boolean = false;
-  messages: Message[] = [];
+  // success: boolean = false;
+  // messages: Message[] = [];
   areas: Area[] = [
     { label: 'RRHH', value: 'RRHH', id: 'rh' },
     { label: 'Transporte', value: 'Transporte', id: 'tr' },
@@ -50,14 +51,15 @@ export class AgreementFormComponent implements OnInit {
   constructor(
     private agreementsService: AgreementsService,
     private primengConfig: PrimeNGConfig,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
-    this.messages = [
-      { severity: 'success', detail: 'Agreement created successfully' },
-    ];
+    // this.messages = [
+    //   { severity: 'success', detail: 'Agreement created successfully' },
+    // ];
     this.activatedRoute.params
       .pipe(switchMap(async ({ id }) => this.agreementsService.getById(id)))
       .subscribe((agreement) => {
@@ -72,13 +74,18 @@ export class AgreementFormComponent implements OnInit {
 
   create(): void {
     console.log('Hello');
-    this.success = false;
+    // this.success = false;
     this.generateNumber();
     this.generateId();
     this.setTime();
     this.agreementsService.insert(this.newAgreement);
     console.log(this.newAgreement);
-    this.success = true;
+    // this.success = true;
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Acuerdo Creado',
+      detail: 'El acuerdo ha sido creado.',
+    });
     this.clear();
   }
 
