@@ -17,6 +17,8 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { CalendarModule } from 'primeng/calendar';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,8 @@ import { TagModule } from 'primeng/tag';
     TableModule,
     TagModule,
     InputTextModule,
+    ToastModule,
+    ConfirmDialogModule,
   ],
 })
 export class AgreementsModule {}
