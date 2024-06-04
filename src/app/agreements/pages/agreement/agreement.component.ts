@@ -2,12 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { Agreement } from '../../interfaces/agreements.interface';
 import { ActivatedRoute } from '@angular/router';
 import { AgreementsService } from '../../services/agreements.service';
-import { Message } from 'primeng/api';
+import {
+  ConfirmEventType,
+  ConfirmationService,
+  Message,
+  MessageService,
+} from 'primeng/api';
 
 @Component({
   selector: 'app-agreement',
   templateUrl: './agreement.component.html',
   styleUrls: ['./agreement.component.css'],
+  providers: [ConfirmationService, MessageService],
 })
 export class AgreementComponent implements OnInit {
   agreement: Agreement | undefined;
@@ -16,7 +22,9 @@ export class AgreementComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private agreementsService: AgreementsService
+    private agreementsService: AgreementsService,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -35,30 +43,42 @@ export class AgreementComponent implements OnInit {
   getSeverity(compilanceStatus: string): string {
     switch (compilanceStatus) {
       case 'CUMPLIDO':
-        return 'success';
+        return 'text-bg-success';
       case 'EN PROCESO':
-        return 'warning';
+        return 'text-bg-primary';
       case 'ANULADO':
-        return 'info';
+        return 'text-bg-secondary';
       default:
-        return 'danger';
+        return 'text-bg-danger';
     }
   }
 
-  // BUG: getStatus esta implementado 2 veces
-  getStatus(completed: boolean, date: Date, status: boolean): string {
-    if (!status) return 'ANULADO';
-    if (completed) {
-      return 'CUMPLIDO';
-    } else if (date.getTime() - new Date().getTime() >= 0) {
+  // BUG: getStatus esta implementado 2 veces (se pueden meter en el servicio)
+  getStatus(agreement: Agreement): string {
+    if (!agreement.status) return 'ANULADO';
+    if (agreement.fulfilled) return 'CUMPLIDO';
+    if (agreement.agreementCompilanceDate.getTime() - new Date().getTime() >= 0)
       return 'EN PROCESO';
-    } else {
-      return 'INCUMPLIDO';
-    }
+    return 'INCUMPLIDO';
   }
 
   remove(): void {
-    this.agreementsService.remove(this.agreement!.id);
-    this.canceled = true;
+    this.confirmationService.confirm({
+      message: 'Está seguro de que desea anular este acuerdo?',
+      header: 'Anular Acuerdo',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí',
+      accept: () => {
+        this.messageService.add({
+          severity: 'info',
+          detail: 'El acuerdo ha sido anulado',
+          summary: 'Acuerdo Anulado',
+        });
+        this.agreementsService.remove(this.agreement!.id);
+        this.canceled = true;
+      },
+      reject: () => {},
+      rejectButtonStyleClass: 'mx-3',
+    });
   }
 }

@@ -2,12 +2,12 @@
   <div class="row justify-content-center">
     <div class="col-8">
       <h1>Acuerdo {{ agreement!.number }}</h1>
-      <p-messages
+      <!-- <p-messages
         [(value)]="messages"
         [enableService]="false"
         [closable]="true"
         *ngIf="canceled"
-      ></p-messages>
+      ></p-messages> -->
       <ul class="list-group">
         <!-- <li class="list-group-item">
           <strong>Number: </strong>{{ agreement!.number }}
@@ -48,51 +48,43 @@
           <strong>Estado de cumplimiento: </strong>
           <!-- <span *ngIf="agreement!.fulfilled">✔</span> -->
           <!-- <span *ngIf="!agreement!.fulfilled">❌</span> -->
-          <span>
-            <p-tag
-              [value]="
-                getStatus(
-                  agreement!.fulfilled,
-                  agreement!.agreementCompilanceDate,
-                  agreement!.status
-                )
-              "
-              [severity]="
-                getSeverity(
-                  getStatus(
-                    agreement!.fulfilled,
-                    agreement!.agreementCompilanceDate,
-                    agreement!.status
-                  )
-                )
-              "
-            ></p-tag>
-          </span>
+          <span class="badge" [class]="getSeverity(getStatus(agreement!))">{{
+            getStatus(agreement!)
+          }}</span>
         </li>
       </ul>
     </div>
 
     <div class="row justify-content-center mt-3">
+      <p-toast></p-toast>
+      <!-- FIXME: arreglar la separacion entre los botones del dialog -->
+      <p-confirmDialog></p-confirmDialog>
       <!-- TODO: agregar la ruta para editar el acuerdo -->
-      <button
-        class="btn btn-success col-2 mx-2"
+      <p-button
+        icon="pi pi-pencil"
+        label="Editar"
+        severity="success"
+        class="col-2 mx-2"
         type="button"
         *ngIf="!agreement!.fulfilled && agreement!.status"
-      >
-        Editar
-      </button>
-      <button class="btn btn-primary col-2 mx-2" type="button" routerLink="">
-        Atrás
-      </button>
+      ></p-button>
+      <p-button
+        icon="pi pi-times"
+        label="Cancelar"
+        class="col-2 mx-2"
+        type="button"
+        routerLink=""
+      ></p-button>
       <!-- TODO: poner un tiempo para la notificacion -->
-      <button
-        class="btn btn-danger col-2 mx-2"
+      <p-button
+        icon="pi pi-ban"
+        label="Anular"
+        severity="danger"
+        class="col-2 mx-2"
         type="button"
         (click)="remove()"
         *ngIf="!agreement!.fulfilled && agreement!.status"
-      >
-        Anular
-      </button>
+      ></p-button>
     </div>
   </div>
 </div>
