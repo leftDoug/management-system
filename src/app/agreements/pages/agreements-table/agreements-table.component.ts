@@ -18,17 +18,13 @@ export class AgreementsTableComponent implements OnInit {
   //   { label: 'CUMPLIDO', value: true },
   //   { label: 'INCUMPLIDO', value: false },
   // ];
-  statuses2: Status[] = [
-    { label: 'CUMPLIDO', value: 'CUMPLIDO' },
-    { label: 'INCUMPLIDO', value: 'INCUMPLIDO' },
-    { label: 'ANULADO', value: 'ANULADO' },
-    { label: 'EN PROCESO', value: 'EN PROCESO' },
-  ];
+  statuses2: string[] = ['cumplido', 'incumplido', 'anulado', 'en proceso'];
   sessions: string[] = ['Ordinaria', 'Extraordinaria'];
   meetings: string[] = ['Reunion 1', 'Reunion 2', 'Reunion 3'];
   areas: string[] = ['RRHH', 'Transporte', 'Contabilidad'];
   searchText: string = '';
   agreements: Agreement[] = [];
+  loading: boolean = true;
 
   // get agreements(): Agreement[] {
   //   this._agreements = this.agreementsService.agreements;
@@ -38,7 +34,7 @@ export class AgreementsTableComponent implements OnInit {
   get fulfilledAgreements(): number {
     let amount = 0;
     this.agreements.forEach((agreement) => {
-      if (agreement.fulfilled) amount++;
+      if (agreement.status === 'cumplido') amount++;
     });
     return amount;
   }
@@ -46,7 +42,7 @@ export class AgreementsTableComponent implements OnInit {
   get unfulfilledAgreements(): number {
     let amount = 0;
     this.agreements.forEach((agreement) => {
-      if (this.getStatus(agreement) === 'INCUMPLIDO') amount++;
+      if (agreement.status === 'incumplido') amount++;
     });
     return amount;
   }
@@ -54,7 +50,7 @@ export class AgreementsTableComponent implements OnInit {
   get inProcessAgreements(): number {
     let amount = 0;
     this.agreements.forEach((agreement) => {
-      if (this.getStatus(agreement) === 'EN PROCESO') amount++;
+      if (agreement.status === 'en proceso') amount++;
     });
     return amount;
   }
@@ -62,7 +58,7 @@ export class AgreementsTableComponent implements OnInit {
   get canceledAgreements(): number {
     let amount = 0;
     this.agreements.forEach((agreement) => {
-      if (!agreement.status) amount++;
+      if (agreement.status === 'anulado') amount++;
     });
     return amount;
   }
@@ -75,11 +71,11 @@ export class AgreementsTableComponent implements OnInit {
   // BUG: getSeverity esta implementado 2 veces
   getSeverity(compilanceStatus: string): string {
     switch (compilanceStatus) {
-      case 'CUMPLIDO':
+      case 'cumplido':
         return 'text-bg-success';
-      case 'EN PROCESO':
+      case 'en proceso':
         return 'text-bg-primary';
-      case 'ANULADO':
+      case 'anulado':
         return 'text-bg-secondary';
       default:
         return 'text-bg-danger';
@@ -87,12 +83,11 @@ export class AgreementsTableComponent implements OnInit {
   }
 
   // BUG: getStatus esta implementado 2 veces (se pueden meter en el servicio)
+  // FIXME: actualizar el estado de cada acuerdo cada vez k se muestre la tabla
   getStatus(agreement: Agreement): string {
-    if (!agreement.status) return 'ANULADO';
-    if (agreement.fulfilled) return 'CUMPLIDO';
     if (agreement.agreementCompilanceDate.getTime() - new Date().getTime() >= 0)
-      return 'EN PROCESO';
-    return 'INCUMPLIDO';
+      return 'en proceso';
+    return 'incumplido';
   }
 
   // FIXME: implementar este metodo (solo filtra x area)
@@ -107,9 +102,9 @@ export class AgreementsTableComponent implements OnInit {
   }
 
   setRowColor(agreement: Agreement): string {
-    if (agreement.fulfilled) return 'completed';
-    if (this.getStatus(agreement) === 'ANULADO') return 'removed';
-    if (this.getStatus(agreement) === 'INCUMPLIDO') return 'incomplete';
+    if (agreement.status === 'cumplido') return 'completed';
+    if (agreement.status === 'anulado') return 'removed';
+    if (agreement.status === 'incumplido') return 'incomplete';
     return '';
   }
 

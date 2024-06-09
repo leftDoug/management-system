@@ -17,9 +17,8 @@ export class AgreementsService {
       createdBy: 'Doug Left',
       meetingDate: new Date(),
       solution: '',
-      fulfilled: false,
       agreementCompilanceDate: new Date(),
-      status: true,
+      status: 'cumplido',
       // TODO: agregar contenido y encargado
     },
     {
@@ -33,9 +32,8 @@ export class AgreementsService {
       createdBy: 'Douglas Izquierdo',
       meetingDate: new Date(),
       solution: 'se cumplió',
-      fulfilled: true,
       agreementCompilanceDate: new Date(),
-      status: true,
+      status: 'incumplido',
       // TODO: agregar contenido y encargado
     },
     {
@@ -49,9 +47,8 @@ export class AgreementsService {
       createdBy: 'Otro',
       meetingDate: new Date(),
       solution: '',
-      fulfilled: false,
       agreementCompilanceDate: new Date(),
-      status: false,
+      status: 'anulado',
       // TODO: agregar contenido y encargado
     },
   ];
@@ -69,6 +66,6 @@ export class AgreementsService {
   }
 
   remove(id: string): void {
-    this.getById(id).status = false;
+    this.getById(id).status = 'anulado';
   }
 }

@@ -21,7 +21,7 @@
         </li>
         <li class="list-group-item">
           <strong>Fecha de cumplimiento del acuerdo: </strong
-          >{{ agreement!.agreementCompilanceDate.toLocaleDateString("en-GB") }}
+          >{{ agreement!.agreementCompilanceDate | date : "MM/dd/yyyy" }}
         </li>
         <li class="list-group-item">
           <strong>Reunión: </strong>{{ agreement!.meeting }}
@@ -31,25 +31,25 @@
         </li>
         <li class="list-group-item">
           <strong>Fecha de la reunión: </strong
-          >{{ agreement!.meetingDate.toLocaleDateString("en-GB") }}
+          >{{ agreement!.meetingDate | date : "MM/dd/yyyy" }}
         </li>
         <li class="list-group-item">
           <strong>Hora de inicio de la reunión: </strong
-          >{{ agreement!.meetingStartTime.toLocaleTimeString("en-GB") }}
+          >{{ agreement!.meetingStartTime | date : "H:mm" }}
         </li>
         <li class="list-group-item">
           <strong>Hora de fin de la reunión: </strong
-          >{{ agreement!.meetingEndTime.toLocaleTimeString("en-GB") }}
+          >{{ agreement!.meetingEndTime | date : "H:mm" }}
         </li>
         <li class="list-group-item">
           <strong>Solución: </strong>{{ agreement!.solution }}
         </li>
         <li class="list-group-item">
-          <strong>Estado de cumplimiento: </strong>
+          <strong>Estado: </strong>
           <!-- <span *ngIf="agreement!.fulfilled">✔</span> -->
           <!-- <span *ngIf="!agreement!.fulfilled">❌</span> -->
-          <span class="badge" [class]="getSeverity(getStatus(agreement!))">{{
-            getStatus(agreement!)
+          <span class="badge" [class]="getSeverity(agreement!.status)">{{
+            agreement!.status
           }}</span>
         </li>
       </ul>
@@ -66,7 +66,10 @@
         severity="success"
         class="col-2 mx-2"
         type="button"
-        *ngIf="!agreement!.fulfilled && agreement!.status"
+        *ngIf="
+          agreement!.status === 'en proceso' ||
+          agreement!.status === 'incumplido'
+        "
       ></p-button>
       <p-button
         icon="pi pi-times"
@@ -83,7 +86,9 @@
         class="col-2 mx-2"
         type="button"
         (click)="remove()"
-        *ngIf="!agreement!.fulfilled && agreement!.status"
+        *ngIf="
+          agreement!.status !== 'cumplido' && agreement!.status !== 'anulado'
+        "
       ></p-button>
     </div>
   </div>

@@ -10,7 +10,7 @@ export interface Agreement {
   meetingEndTime: Date;
   agreementCompilanceDate: Date;
   solution: string;
-  fulfilled: boolean;
-  status: boolean;
+  // fulfilled: boolean;
+  status: string;
   // TODO: agregar contenido y encargado
 }

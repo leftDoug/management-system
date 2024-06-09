@@ -42,24 +42,15 @@ export class AgreementComponent implements OnInit {
   // BUG: getSeverity esta implementado 2 veces
   getSeverity(compilanceStatus: string): string {
     switch (compilanceStatus) {
-      case 'CUMPLIDO':
+      case 'cumplido':
         return 'text-bg-success';
-      case 'EN PROCESO':
+      case 'en proceso':
         return 'text-bg-primary';
-      case 'ANULADO':
+      case 'anulado':
         return 'text-bg-secondary';
       default:
         return 'text-bg-danger';
     }
-  }
-
-  // BUG: getStatus esta implementado 2 veces (se pueden meter en el servicio)
-  getStatus(agreement: Agreement): string {
-    if (!agreement.status) return 'ANULADO';
-    if (agreement.fulfilled) return 'CUMPLIDO';
-    if (agreement.agreementCompilanceDate.getTime() - new Date().getTime() >= 0)
-      return 'EN PROCESO';
-    return 'INCUMPLIDO';
   }
 
   remove(): void {

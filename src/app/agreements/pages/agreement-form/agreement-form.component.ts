@@ -29,9 +29,8 @@ export class AgreementFormComponent implements OnInit {
     createdBy: '',
     meetingDate: new Date(),
     solution: '',
-    fulfilled: false,
     agreementCompilanceDate: new Date(),
-    status: true,
+    status: 'en proceso',
     // TODO: agregar contenido y responsable
   };
   // success: boolean = false;
@@ -47,6 +46,7 @@ export class AgreementFormComponent implements OnInit {
   creators: string[] = ['Doug Left', 'Douglas Izquierdo', 'Otros'];
   today: Date = new Date();
   value: string = '';
+  checked: boolean = false;
 
   constructor(
     private agreementsService: AgreementsService,
@@ -73,14 +73,12 @@ export class AgreementFormComponent implements OnInit {
   }
 
   create(): void {
-    console.log('Hello');
-    // this.success = false;
     this.generateNumber();
     this.generateId();
     this.setTime();
+    this.setStatus();
     this.agreementsService.insert(this.newAgreement);
     console.log(this.newAgreement);
-    // this.success = true;
     this.messageService.add({
       severity: 'success',
       summary: 'Acuerdo Creado',
@@ -143,6 +141,18 @@ export class AgreementFormComponent implements OnInit {
     this.newAgreement.id = id;
   }
 
+  // FIXME: actualizar el estado de cada acuerdo cada vez k se muestre la tabla
+  setStatus(): void {
+    if (this.checked) this.newAgreement.status = 'cumplido';
+    else if (
+      this.newAgreement.agreementCompilanceDate.getTime() -
+        new Date().getTime() >=
+      0
+    )
+      this.newAgreement.status = 'en proceso';
+    else this.newAgreement.status = 'incumplido';
+  }
+
   clear(): void {
     this.newAgreement = {
       id: '',
@@ -155,9 +165,8 @@ export class AgreementFormComponent implements OnInit {
       createdBy: '',
       meetingDate: new Date(),
       solution: '',
-      fulfilled: false,
       agreementCompilanceDate: new Date(),
-      status: true,
+      status: 'en proceso',
       // TODO: agregar contenido y responsable
     };
   }

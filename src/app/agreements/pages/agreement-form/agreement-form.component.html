@@ -142,9 +142,10 @@
 </div> -->
 
 <div class="container">
-  <div class="card m-3 p-5">
-    <h1>Crear Acuerdo</h1>
-    <hr />
+  <!-- <div class="card m-3 p-5"> -->
+  <p-card class="m-3 p-5" header="Crear Acuerdo">
+    <!-- <h1>Crear Acuerdo</h1>
+    <hr /> -->
 
     <!-- <div>
       TODO: poner un tiempo para el mensaje
@@ -237,7 +238,7 @@
             </label>
             <p-calendar
               [(ngModel)]="newAgreement.agreementCompilanceDate"
-              dateFormat="dd/mm/yy"
+              dateFormat="mm/dd/yy"
               name="date"
               class="col"
             ></p-calendar>
@@ -245,7 +246,7 @@
 
           <div class="row mb-3 justify-content-center">
             <p-checkbox
-              [(ngModel)]="newAgreement.fulfilled"
+              [(ngModel)]="checked"
               [binary]="true"
               inputId="completed"
               name="completed"
@@ -290,7 +291,7 @@
             </label>
             <p-calendar
               [(ngModel)]="newAgreement.meetingDate"
-              dateFormat="dd/mm/yy"
+              dateFormat="mm/dd/yy"
               [maxDate]="today"
               name="date"
               class="col"
@@ -330,6 +331,7 @@
           <label for="solution" class="col-3 align-self-center text-end"
             >Solución:
           </label>
+          <!-- FIXME: arreglar k el textarea se puede cambiar de tamano -->
           <textarea
             id="solution"
             rows="5"
@@ -371,5 +373,7 @@
         </div>
       </div>
     </form>
-  </div>
+    <!-- <p-card /> -->
+    <!-- </div> -->
+  </p-card>
 </div>

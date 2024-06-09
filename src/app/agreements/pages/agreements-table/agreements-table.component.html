@@ -16,7 +16,6 @@
   </div> -->
   <div class="row">
     <div class="col">
-      <!-- FIXME: arreglar k aunque la tabla no tenga datos, salga el boton para crearlos -->
       <div class="card">
         <p-table
           [value]="agreements"
@@ -26,7 +25,6 @@
           <!-- (input)="dt1.filterGlobal($event.target.value, 'contains')" -->
           <ng-template pTemplate="caption">
             <div class="row justify-content-between">
-              <!-- FIXME: arreglar el boton para k sea verde con primeng -->
               <p-button
                 label="Crear Acuerdo"
                 icon="pi pi-plus"
@@ -63,8 +61,8 @@
               <th pSortableColumn="session">
                 Sesion <p-sortIcon field="session"></p-sortIcon>
               </th>
-              <th pSortableColumn="date">
-                Fecha <p-sortIcon field="date"></p-sortIcon>
+              <th pSortableColumn="meetingDate">
+                Fecha <p-sortIcon field="meetingDateate"></p-sortIcon>
               </th>
               <th pSortableColumn="status">
                 Estado <p-sortIcon field="status"></p-sortIcon>
@@ -138,15 +136,14 @@
                 </p-columnFilter>
               </th>
               <th>
-                <!-- FIXME: mostrar el texto en español y arreglar el formato de la fecha a DD/MM/AAAA -->
+                <!-- FIXME: mostrar el texto en español -->
                 <p-columnFilter
                   type="date"
-                  field="date"
+                  field="meetingDate"
                   display="menu"
                 ></p-columnFilter>
               </th>
               <th>
-                <!-- BUG: arreglar este filtro xk no pincha -->
                 <p-columnFilter
                   field="status"
                   matchMode="equals"
@@ -161,18 +158,12 @@
                       [ngModel]="value"
                       [options]="statuses2"
                       (onChange)="filter($event.value)"
-                      placeholder="Todos"
+                      placeholder="Todas"
                     >
                       <ng-template let-option pTemplate="item">
-                        <!-- <p-tag
-                          [value]="option.label"
-                          [severity]="getSeverity(option.value)"
-                        ></p-tag> -->
-                        <span
-                          class="badge"
-                          [class]="getSeverity(option.value)"
-                          >{{ option.label }}</span
-                        >
+                        <span class="badge" [class]="getSeverity(option)">{{
+                          option
+                        }}</span>
                       </ng-template>
                     </p-dropdown>
                   </ng-template>
@@ -188,31 +179,11 @@
               <td>{{ agreement.area }}</td>
               <td>{{ agreement.meeting }}</td>
               <td>{{ agreement.session }}</td>
-              <td>{{ agreement.meetingDate.toLocaleDateString("en-GB") }}</td>
+              <td>{{ agreement.meetingDate | date : "MM/dd/yyyy" }}</td>
               <td>
-                <!-- <p-tag
-                    [value]="
-                      getStatus(
-                        agreement.fulfilled,
-                        agreement.agreementCompilanceDate,
-                        agreement.status
-                      )
-                    "
-                    [severity]="
-                      getSeverity(
-                        getStatus(
-                          agreement.fulfilled,
-                          agreement.agreementCompilanceDate,
-                          agreement.status
-                        )
-                      )
-                    "
-                  ></p-tag> -->
-                <span
-                  class="badge"
-                  [class]="getSeverity(getStatus(agreement))"
-                  >{{ getStatus(agreement) }}</span
-                >
+                <span class="badge" [class]="getSeverity(agreement.status)">{{
+                  agreement.status
+                }}</span>
               </td>
               <td>
                 <p-button
@@ -229,7 +200,6 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="summary">
-            <!-- TODO: contar los acuerdos cumplidos, incumplidos, en proceso y anulados -->
             <div class="row">
               <span class="col text-center"
                 >Acuerdos: {{ agreements ? agreements.length : 0 }}</span
