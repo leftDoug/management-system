@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Agreement } from '../../interfaces/agreements.interface';
+import { Agreement } from '../../interfaces/agreement.interface';
 import { AgreementsService } from '../../services/agreements.service';
+import { Router } from '@angular/router';
 
 interface Status {
   label: string;
@@ -22,6 +23,7 @@ export class AgreementsTableComponent implements OnInit {
   sessions: string[] = ['Ordinaria', 'Extraordinaria'];
   meetings: string[] = ['Reunion 1', 'Reunion 2', 'Reunion 3'];
   areas: string[] = ['RRHH', 'Transporte', 'Contabilidad'];
+  responsibles: string[] = ['Doug Left', 'Douglas Izquierdo', 'Otros'];
   searchText: string = '';
   agreements: Agreement[] = [];
   loading: boolean = true;
@@ -63,9 +65,15 @@ export class AgreementsTableComponent implements OnInit {
     return amount;
   }
 
-  constructor(private agreementsService: AgreementsService) {}
+  constructor(
+    private agreementsService: AgreementsService,
+    private router: Router
+  ) {}
   ngOnInit(): void {
-    this.agreements = this.agreementsService.agreements;
+    // this.agreements = this.agreementsService.agreements;
+    this.agreementsService
+      .getAll()
+      .subscribe((resp) => (this.agreements = resp));
   }
 
   // BUG: getSeverity esta implementado 2 veces
@@ -90,15 +98,25 @@ export class AgreementsTableComponent implements OnInit {
     return 'incumplido';
   }
 
-  // FIXME: implementar este metodo (solo filtra x area)
+  // BUG: la tabla se recarga cadavez k escribe
   search(event: any): void {
     const value = event.target.value;
     this.agreements = [];
-    this.agreementsService.agreements.forEach((agreement) => {
-      if (agreement.area.toLowerCase().includes(value)) {
-        this.agreements.push(agreement);
-      }
-    });
+    this.agreementsService.getAll().subscribe((resp) =>
+      resp.forEach((agreement) => {
+        if (agreement.workArea.toLowerCase().includes(value)) {
+          this.agreements.push(agreement);
+        }
+      })
+    );
+    // this.agreementsService.agreements.forEach((agreement) => {
+    //   if (agreement.workArea.toLocaleLowerCase().includes(value))
+    //     this.agreements.push(agreement);
+    // });
+  }
+
+  navigate(): void {
+    this.router.navigate(['./agregar']);
   }
 
   setRowColor(agreement: Agreement): string {

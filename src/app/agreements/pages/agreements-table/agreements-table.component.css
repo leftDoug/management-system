@@ -17,3 +17,7 @@
 .removed {
   background-color: rgba(0, 0, 0, 0.295) !important;
 }
+
+.search {
+  width: 100%;
+}

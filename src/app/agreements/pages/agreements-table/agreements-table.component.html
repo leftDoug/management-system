@@ -1,7 +1,7 @@
-<div class="container p-3">
+<!-- <div class="container p-3">
   <h1>ACUERDOS</h1>
-  <hr />
-  <!-- <div class="row my-2 justify-content-between">
+  <hr /> -->
+<!-- <div class="row my-2 justify-content-between">
     <div class="col-3">
       <button type="button" class="btn btn-success" routerLink="create">
         Create Agreement
@@ -14,6 +14,7 @@
       <app-search></app-search>
     </div>
   </div> -->
+<p-card class="m-3 p-5" header="Listado de Acuerdos">
   <div class="row">
     <div class="col">
       <div class="card">
@@ -21,56 +22,71 @@
           [value]="agreements"
           [tableStyle]="{ 'min-width': '60rem' }"
           #tAgreements
+          [globalFilterFields]="[
+            'content',
+            'workArea',
+            'responsible',
+            'meeting',
+            'session',
+            'meetingDate',
+            'status'
+          ]"
         >
-          <!-- (input)="dt1.filterGlobal($event.target.value, 'contains')" -->
           <ng-template pTemplate="caption">
-            <div class="row justify-content-between">
+            <div class="d-flex justify-content-between">
               <p-button
                 label="Crear Acuerdo"
                 icon="pi pi-plus"
                 severity="success"
-                routerLink="create"
-                class="col-9"
+                routerLink="/agregar"
               ></p-button>
-              <span class="col p-input-icon-left">
-                <i class="mx-3 pi pi-search"></i>
-                <!-- FIXME: hacer k el componente ocupe todo el espacio de la columna -->
+              <span class="p-input-icon-left ml-5">
+                <i class="pi pi-search"></i>
                 <input
                   pInputText
                   type="text"
                   placeholder="Buscar..."
-                  [(ngModel)]="searchText"
-                  (input)="search($event)"
-                  style="width: 100%"
+                  ngClass="search"
+                  (input)="
+                    tAgreements.filterGlobal(
+                      $any($event.target).value,
+                      'contains'
+                    )
+                  "
                 />
               </span>
             </div>
           </ng-template>
           <ng-template pTemplate="header">
             <tr>
-              <!-- TODO: agregar contenido y encargado -->
-              <th pSortableColumn="number">
-                Acuerdo <p-sortIcon field="number"></p-sortIcon>
+              <th pSortableColumn="number" style="width: 5%">
+                No. <p-sortIcon field="number"></p-sortIcon>
               </th>
-              <th pSortableColumn="area">
-                Area <p-sortIcon field="area"></p-sortIcon>
+              <th pSortableColumn="content">
+                Contenido <p-sortIcon field="content"></p-sortIcon>
               </th>
-              <th pSortableColumn="meeting">
-                Reunion <p-sortIcon field="meeting"></p-sortIcon>
+              <th pSortableColumn="area" style="width: 5%">
+                Área <p-sortIcon field="area"></p-sortIcon>
               </th>
-              <th pSortableColumn="session">
-                Sesion <p-sortIcon field="session"></p-sortIcon>
+              <th pSortableColumn="responsible" style="width: 10%">
+                Responsable <p-sortIcon field="responsible"></p-sortIcon>
               </th>
-              <th pSortableColumn="meetingDate">
+              <th pSortableColumn="meeting" style="width: 5%">
+                Reunión <p-sortIcon field="meeting"></p-sortIcon>
+              </th>
+              <th pSortableColumn="session" style="width: 5%">
+                Sesión <p-sortIcon field="session"></p-sortIcon>
+              </th>
+              <th pSortableColumn="meetingDate" style="width: 5%">
                 Fecha <p-sortIcon field="meetingDateate"></p-sortIcon>
               </th>
-              <th pSortableColumn="status">
+              <th pSortableColumn="status" style="width: 5%">
                 Estado <p-sortIcon field="status"></p-sortIcon>
               </th>
-              <th></th>
+              <th style="width: 5%"></th>
             </tr>
             <tr>
-              <!-- TODO: agregar filtro de contenido y encargado -->
+              <th></th>
               <th></th>
               <th>
                 <p-columnFilter
@@ -88,6 +104,27 @@
                       [options]="areas"
                       (onChange)="filter($event.value)"
                       placeholder="Todas"
+                    >
+                    </p-dropdown>
+                  </ng-template>
+                </p-columnFilter>
+              </th>
+              <th>
+                <p-columnFilter
+                  field="responsible"
+                  matchMode="equals"
+                  [showMenu]="false"
+                >
+                  <ng-template
+                    pTemplate="filter"
+                    let-value
+                    let-filter="filterCallback"
+                  >
+                    <p-dropdown
+                      [ngModel]="value"
+                      [options]="responsibles"
+                      (onChange)="filter($event.value)"
+                      placeholder="Todos"
                     >
                     </p-dropdown>
                   </ng-template>
@@ -174,29 +211,33 @@
           </ng-template>
           <ng-template pTemplate="body" let-agreement>
             <tr [class]="setRowColor(agreement)">
-              <!-- TODO: agregar contenido y encargado -->
               <td>{{ agreement.number }}</td>
-              <td>{{ agreement.area }}</td>
+              <td>{{ agreement.content }}</td>
+              <td>{{ agreement.workArea }}</td>
+              <td>{{ agreement.responsible }}</td>
               <td>{{ agreement.meeting }}</td>
               <td>{{ agreement.session }}</td>
               <td>{{ agreement.meetingDate | date : "MM/dd/yyyy" }}</td>
               <td>
                 <span class="badge" [class]="getSeverity(agreement.status)">{{
-                  agreement.status
+                  agreement.status | uppercase
                 }}</span>
               </td>
               <td>
                 <p-button
                   icon="pi pi-info-circle"
                   label="Info"
-                  [routerLink]="'details/' + agreement.id"
+                  [text]="true"
+                  [routerLink]="['/detalles/', agreement.id]"
                 ></p-button>
               </td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="5" class="red">No se encontró ningún acuerdo.</td>
+              <td colspan="5" class="text-danger">
+                No se encontró ningún acuerdo.
+              </td>
             </tr>
           </ng-template>
           <ng-template pTemplate="summary">
@@ -220,68 +261,7 @@
           </ng-template>
         </p-table>
       </div>
-      <!-- <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Agreement</th>
-              <th>Area</th>
-              <th>Careated by</th>
-              <th>Date</th>
-              <th>Completed</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let agreement of agreements"
-              [ngClass]="agreement.completed ? 'table-success' : 'table-danger'"
-            >
-              <td>Agreement {{ agreement.number }}</td>
-              <td>{{ agreement.area }}</td>
-              <td>{{ agreement.createdBy }}</td>
-              <td>{{ agreement.date }}</td>
-              <td>
-                <span *ngIf="agreement.completed">✔</span>
-                <span *ngIf="!agreement.completed">❌</span>
-              </td>
-              <td>
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  routerLink="details/asd"
-                >
-                  Info
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-danger mx-2"
-                  (click)="deleteAgreement(agreement)"
-                  *ngIf="agreements.length"
-                >
-                  Remove
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table> -->
-
-      <!-- <div *ngIf="removedAgreement; else notRemoved">
-        <h3>Removed agreement:</h3>
-        <span>{{ removedAgreement | json }}</span>
-      </div> -->
-
-      <!-- <ng-template #notRemoved>
-        <h3>No elements removed</h3>
-      </ng-template> -->
-
-      <!-- <button
-        type="button"
-        class="btn btn-danger mt-3"
-        (click)="remove()"
-        *ngIf="agreements.length"
-      >
-        Remove
-      </button> -->
     </div>
   </div>
-</div>
+</p-card>
+<!-- </div> -->

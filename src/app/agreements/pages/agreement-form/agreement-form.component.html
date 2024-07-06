@@ -1,149 +1,9 @@
-<!-- <div class="container p-5">
-  <h1>Create Agreement (bootstrap)</h1>
-  <hr />
-
-  <div
-    class="alert alert-success alert-dismissible fade show"
-    role="alert"
-    *ngIf="success"
-  >
-    Agreement created successfully!
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="alert"
-      aria-label="Close"
-    ></button>
-  </div>
-
-  <div class="row">
-    <div class="col">
-      <form class="form" action="POST" (ngSubmit)="create()">
-        <div class="input-group mb-3">
-          <label class="input-group-text" for="name">Agreement</label>
-          <input
-            class="form-control"
-            type="number"
-            name="name"
-            id="name"
-            required
-            [(ngModel)]="newAgreement.number"
-          />
-        </div>
-
-        <div class="input-group mb-3">
-          <label class="input-group-text" for="area">Area</label>
-          <select class="form-select" name="area" id="area">
-            <option selected>Choose...</option>
-            <option value="Human Resourses">Human Resourses</option>
-            <option value="Economy">Economy</option>
-            <option value="Logistics">Logistics</option>
-          </select>
-        </div>
-
-        <div class="input-group mb-3">
-          <label class="input-group-text" for="meeting">Meeting</label>
-          <select class="form-select" id="meeting" name="meeting">
-            <option selected>Choose...</option>
-            <option value="meeting 1">Meeting 1</option>
-            <option value="meeting 2">Meeting 2</option>
-            <option value="meeting 3">Meeting 3</option>
-          </select>
-          <label class="input-group-text" for="session">Session</label>
-          <select class="form-select" id="session" name="session">
-            <option selected>Choose...</option>
-            <option value="ordinary">Ordinary</option>
-            <option value="extraordinary">Extraordinary</option>
-          </select>
-        </div>
-
-        <div class="input-group mb-3">
-          <label class="input-group-text" for="createdBy">Created by</label>
-          <select class="form-select" name="createdBy" id="createdBy">
-            <option selected>Choose...</option>
-            <option value="Doug Left">Doug Left</option>
-            <option value="Douglas">Douglas Izquierdo</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        <div class="input-group mb-3">
-          <label class="input-group-text" for="date">Date</label>
-          <input
-            class="form-control"
-            type="text"
-            name="date"
-            id="date"
-            placeholder="2024-05-17"
-            required
-            [value]="newAgreement.date"
-            [(ngModel)]="newAgreement.date"
-          />
-        </div>
-
-        <div class="input-group mb-3">
-          <label class="input-group-text" for="description">Solution</label>
-          <textarea
-            class="form-control"
-            type="text"
-            name="description"
-            id="description"
-            required
-            [value]="newAgreement.description"
-            [(ngModel)]="newAgreement.description"
-          ></textarea>
-        </div>
-
-        <div class="input-group mb-3">
-          <div class="input-group-text">
-            <input
-              class="form-check-input mt-0"
-              type="checkbox"
-              [value]="newAgreement.completed"
-              [(ngModel)]="newAgreement.completed"
-              aria-label="Checkbox for following text input"
-            />
-          </div>
-          <input
-            type="text"
-            class="form-control"
-            aria-label="Text input with checkbox"
-            value="Completed"
-            disabled
-          />
-        </div>
-
-        comment this block
-        <div class="form-check">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            [value]="newAgreement.completed"
-            id="completed"
-          />
-          <label class="form-check-label" for="completed"> Completed </label>
-        </div>
-
-        <div class="row justify-content-center">
-          <button class="btn btn-success col-2 mx-2" type="submit">
-            Create
-          </button>
-          <button
-            class="btn btn-primary col-2 mx-2"
-            type="button"
-            routerLink=""
-          >
-            Back
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div> -->
-
 <div class="container">
   <!-- <div class="card m-3 p-5"> -->
-  <p-card class="m-3 p-5" header="Crear Acuerdo">
+  <p-card
+    class="m-3 p-5"
+    [header]="newAgreement.id ? 'Actualizar Acuerdo' : 'Crear Acuerdo'"
+  >
     <!-- <h1>Crear Acuerdo</h1>
     <hr /> -->
 
@@ -157,8 +17,39 @@
       ></p-messages>
     </div> -->
 
-    <form class="form" action="POST" (ngSubmit)="create()" #agreementsTable>
+    <form
+      class="form"
+      action="POST"
+      (ngSubmit)="create()"
+      [formGroup]="agreementForm"
+      autocomplete="off"
+    >
       <div class="row justify-content-center">
+        <div class="row mb-3 justify-content-center">
+          <!-- FIXME: arreglar el layout xk aparece mas a la izquierda -->
+          <label for="content" class="col-3 align-self-center text-end"
+            >Contenido del acuerdo:
+          </label>
+          <!-- <div class="col"> -->
+          <input
+            class="col mx-1"
+            type="text"
+            pInputText
+            id="content"
+            formControlName="content"
+            placeholder="Contenido del acuerdo..."
+          />
+          <div class="row">
+            <div class="col-3"></div>
+            <small
+              id="content-help"
+              class="p-error col"
+              *ngIf="validate('content')"
+              >{{ contentErrorMsg }}</small
+            >
+          </div>
+          <!-- </div> -->
+        </div>
         <div class="col">
           <!-- <div class="flex-auto mb-3">
           <label for="number" class="mb-2 block font-bold">Número: </label>
@@ -174,84 +65,103 @@
         </div> -->
 
           <div class="row mb-3 justify-content-center">
-            <!-- FIXME: asociar al atributo -->
-            <!-- FIXME: arreglar el layout xk aparece mas a la izquierda -->
-            <!-- BUG: validar todos los campos -->
-            <label for="content" class="col align-self-center text-end mx-2"
-              >Contenido del acuerdo:
-            </label>
-            <input
-              type="text"
-              pInputText
-              name="content"
-              id="content"
-              class="col"
-              [(ngModel)]="value"
-              (input)="keyPressed($event)"
-            />
-          </div>
-
-          <div class="row mb-3 justify-content-center">
-            <!-- FIXME: este campo debe ser un dropdown -->
-            <!-- FIXME: arreglar el layout xk aparece mas a la izquierda -->
-            <label for="responsible" class="col align-self-center text-end mx-2"
-              >Responsable:
-            </label>
-            <input
-              type="text"
-              pInputText
-              name="responsible"
-              id="responsible"
-              class="col"
-            />
-          </div>
-
-          <div class="row mb-3 justify-content-center">
             <label for="area" class="col align-self-center text-end"
               >Área:
             </label>
-            <p-dropdown
-              [options]="areas"
-              [(ngModel)]="newAgreement.area"
-              placeholder="Seleccione ..."
-              name="area"
-              class="col"
-            ></p-dropdown>
+            <div class="col">
+              <p-dropdown
+                class="row"
+                id="area"
+                [options]="areasDb"
+                optionLabel="name"
+                optionValue="pk_id"
+                formControlName="workArea"
+                placeholder="-- Seleccione --"
+              ></p-dropdown>
+              <small
+                id="area-help"
+                class="p-error row mx-3"
+                *ngIf="validate('workArea')"
+                >{{ workAreaErrorMsg }}</small
+              >
+            </div>
+          </div>
+
+          <div class="row mb-3 justify-content-center">
+            <!-- FIXME: arreglar el layout xk aparece mas a la izquierda -->
+            <label for="responsible" class="col align-self-center text-end"
+              >Responsable:
+            </label>
+            <div class="col">
+              <p-dropdown
+                class="row"
+                id="responsible"
+                [options]="workers"
+                optionLabel="name"
+                optionValue="pk_id"
+                formControlName="responsible"
+                placeholder="-- Seleccione --"
+              ></p-dropdown>
+              <small
+                id="responsible-help"
+                class="p-error row mx-3"
+                *ngIf="validate('responsible')"
+                >{{ responsibleErrorMsg }}</small
+              >
+            </div>
           </div>
 
           <div class="row mb-3 justify-content-center">
             <label for="createdBy" class="col align-self-center text-end"
               >Creado por:
             </label>
-            <p-dropdown
-              [options]="creators"
-              [(ngModel)]="newAgreement.createdBy"
-              placeholder="Seleccione ..."
-              name="createdBy"
-              class="col"
-            ></p-dropdown>
+            <div class="col">
+              <p-dropdown
+                class="row"
+                id="createdBy"
+                optionLabel="name"
+                optionValue="pk_id"
+                [options]="workers"
+                formControlName="createdBy"
+                placeholder="-- Seleccione --"
+              ></p-dropdown>
+              <small
+                id="createdBy-help"
+                class="p-error row mx-3"
+                *ngIf="validate('createdBy')"
+                >{{ createdByErrorMsg }}</small
+              >
+            </div>
           </div>
 
           <div class="row mb-3 justify-content-center">
-            <label for="date" class="col align-self-center text-end"
+            <label for="complianceDate" class="col align-self-center text-end"
               >Fecha de cumplimiento del acuerdo:
             </label>
-            <p-calendar
-              [(ngModel)]="newAgreement.agreementCompilanceDate"
-              dateFormat="mm/dd/yy"
-              name="date"
-              class="col"
-            ></p-calendar>
+            <div class="col">
+              <p-calendar
+                class="row"
+                id="compilanceDate"
+                dateFormat="mm/dd/yy"
+                formControlName="compilanceDate"
+              ></p-calendar>
+              <small
+                id="compilanceDate-help"
+                class="p-error row mx-3"
+                *ngIf="validate('compilanceDate')"
+                >{{ compilanceDateErrorMsg }}</small
+              >
+            </div>
           </div>
 
           <div class="row mb-3 justify-content-center">
             <p-checkbox
-              [(ngModel)]="checked"
-              [binary]="true"
-              inputId="completed"
-              name="completed"
               class="col justify-content-end"
+              id="completed"
+              [binary]="true"
+              formControlName="status"
             ></p-checkbox>
+            <!-- inputId="completed" -->
             <label for="completed" class="col align-self-center"
               >Cumplido</label
             >
@@ -263,84 +173,123 @@
             <label for="meeting" class="col-5 align-self-center text-end"
               >Reunión:
             </label>
-            <p-dropdown
-              [options]="meetings"
-              [(ngModel)]="newAgreement.meeting"
-              placeholder="Seleccione ..."
-              name="meeting"
-              class="col"
-            ></p-dropdown>
+            <div class="col">
+              <p-dropdown
+                class="row"
+                id="meeting"
+                [options]="meetings"
+                optionLabel="name"
+                optionValue="pk_id"
+                formControlName="meeting"
+                placeholder="-- Seleccione --"
+              ></p-dropdown>
+              <small
+                id="meeting-help"
+                class="p-error row mx-3"
+                *ngIf="validate('meeting')"
+                >{{ meetingErrorMsg }}</small
+              >
+            </div>
           </div>
 
           <div class="row mb-3 justify-content-center">
             <label for="session" class="col-5 align-self-center text-end"
               >Sesión:
             </label>
-            <p-dropdown
-              [options]="sessions"
-              [(ngModel)]="newAgreement.session"
-              placeholder="Seleccione ..."
-              name="session"
-              class="col"
-            ></p-dropdown>
+            <div class="col">
+              <p-dropdown
+                class="row"
+                id="session"
+                [options]="sessions"
+                optionLabel="name"
+                optionValue="pk_id"
+                formControlName="session"
+                placeholder="-- Seleccione --"
+              ></p-dropdown>
+              <small
+                id="session-help"
+                class="p-error row mx-3"
+                *ngIf="validate('session')"
+                >{{ sessionErrorMsg }}</small
+              >
+            </div>
           </div>
 
           <div class="row mb-3 justify-content-center">
-            <label for="date" class="col-5 align-self-center text-end"
+            <label for="meetingDate" class="col-5 align-self-center text-end"
               >Fecha de la reunión:
             </label>
-            <p-calendar
-              [(ngModel)]="newAgreement.meetingDate"
-              dateFormat="mm/dd/yy"
-              [maxDate]="today"
-              name="date"
-              class="col"
-            ></p-calendar>
+            <div class="col">
+              <p-calendar
+                class="row"
+                ngClass="date"
+                id="meetingDate"
+                dateFormat="mm/dd/yy"
+                formControlName="meetingDate"
+              ></p-calendar>
+              <small
+                id="meetingDate-help"
+                class="p-error row mx-3"
+                *ngIf="validate('meetingDate')"
+                >{{ meetingDateErrorMsg }}</small
+              >
+            </div>
           </div>
 
           <div class="row mb-3 justify-content-center">
-            <label for="start" class="col-5 align-self-center text-end"
+            <label for="startTime" class="col-5 align-self-center text-end"
               >Hora de inicio de la reunión:
             </label>
-            <p-calendar
-              [(ngModel)]="newAgreement.meetingStartTime"
-              [timeOnly]="true"
-              [minDate]="getDayBeginning()"
-              [maxDate]="today"
-              name="start"
-              class="col"
-            ></p-calendar>
+            <div class="col">
+              <p-calendar
+                class="col"
+                id="startTime"
+                [timeOnly]="true"
+                formControlName="meetingStartTime"
+              ></p-calendar>
+              <small
+                id="startTime-help"
+                class="p-error row mx-3"
+                *ngIf="validate('meetingStartTime')"
+                >{{ meetingStartTimeErrorMsg }}</small
+              >
+            </div>
           </div>
 
           <div class="row mb-3 justify-content-center">
-            <label for="end" class="col-5 align-self-center text-end"
+            <label for="endTime" class="col-5 align-self-center text-end"
               >Hora de fin de la reunión:
             </label>
-            <p-calendar
-              [(ngModel)]="newAgreement.meetingEndTime"
-              [timeOnly]="true"
-              [minDate]="getDayBeginning()"
-              [maxDate]="getDayEnd()"
-              name="end"
-              class="col"
-            ></p-calendar>
+            <div class="col">
+              <p-calendar
+                class="col"
+                ngClass="date"
+                id="endTime"
+                [timeOnly]="true"
+                formControlName="meetingEndTime"
+              ></p-calendar>
+              <small
+                id="endTime-help"
+                class="p-error row mx-3"
+                *ngIf="validate('meetingEndTime')"
+                >{{ meetingEndTimeErrorMsg }}</small
+              >
+            </div>
           </div>
         </div>
 
         <div class="row mb-5 justify-content-center">
-          <label for="solution" class="col-3 align-self-center text-end"
-            >Solución:
+          <label for="answer" class="col-3 align-self-center text-end"
+            >Respuesta:
           </label>
           <!-- FIXME: arreglar k el textarea se puede cambiar de tamano -->
           <textarea
-            id="solution"
-            rows="5"
-            cols="100"
-            [autoResize]="true"
-            pInputTextarea
-            [(ngModel)]="newAgreement.solution"
-            name="solution"
             class="col mx-2"
+            pInputTextarea
+            [autoResize]="true"
+            id="answer"
+            formControlName="answer"
+            placeholder="Respuesta..."
           ></textarea>
         </div>
 
@@ -362,13 +311,26 @@
             severity="success"
             class="col-2 mx-2"
             type="submit"
+            *ngIf="!newAgreement.id; else update"
+            [disabled]="agreementForm.invalid"
           ></p-button>
+          <ng-template #update>
+            <p-button
+              label="Actualizar"
+              icon="pi pi-check"
+              severity="success"
+              class="col-2 mx-2"
+              type="submit"
+            ></p-button>
+          </ng-template>
           <p-button
             label="Cancelar"
             icon="pi pi-times"
             class="col-2 mx-2"
             type="button"
-            routerLink=""
+            [routerLink]="
+              !newAgreement.id ? '/acuerdos' : ['/detalles/', newAgreement.id]
+            "
           ></p-button>
         </div>
       </div>
@@ -376,4 +338,19 @@
     <!-- <p-card /> -->
     <!-- </div> -->
   </p-card>
+</div>
+
+<div class="row container">
+  <div class="col">
+    <pre>{{ agreementForm.value | json }}</pre>
+    <br />
+    <span>valid:</span>
+    <pre>{{ agreementForm.valid }}</pre>
+    <pre>{{ agreementForm.errors | json }}</pre>
+    <br />
+    <span>responsible:</span>
+    <pre>{{ agreementForm.get("responsible")?.valid }}</pre>
+    <pre>{{ agreementForm.get("responsible")?.errors | json }}</pre>
+    <br />
+  </div>
 </div>

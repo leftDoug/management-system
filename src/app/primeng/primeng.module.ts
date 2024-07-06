@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 
 import { ButtonModule } from 'primeng/button';
-import { MessagesModule } from 'primeng/messages';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DropdownModule } from 'primeng/dropdown';
@@ -14,13 +13,11 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CardModule } from 'primeng/card';
+import { MessagesModule } from 'primeng/messages';
 
 @NgModule({
-  declarations: [],
-  imports: [],
   exports: [
     ButtonModule,
-    MessagesModule,
     BrowserAnimationsModule,
     InputNumberModule,
     DropdownModule,
@@ -33,6 +30,7 @@ import { CardModule } from 'primeng/card';
     ToastModule,
     ConfirmDialogModule,
     CardModule,
+    MessagesModule,
   ],
 })
 export class PrimengModule {}

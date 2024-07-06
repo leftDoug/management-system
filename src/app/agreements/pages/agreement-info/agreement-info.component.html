@@ -14,7 +14,7 @@
         </li> -->
         <!-- TODO: agregar contenido y encargado -->
         <li class="list-group-item">
-          <strong>Área: </strong>{{ agreement!.area }}
+          <strong>Área: </strong>{{ agreement!.workArea }}
         </li>
         <li class="list-group-item">
           <strong>Creado por: </strong>{{ agreement!.createdBy }}
@@ -42,7 +42,7 @@
           >{{ agreement!.meetingEndTime | date : "H:mm" }}
         </li>
         <li class="list-group-item">
-          <strong>Solución: </strong>{{ agreement!.solution }}
+          <strong>Solución: </strong>{{ agreement!.answer }}
         </li>
         <li class="list-group-item">
           <strong>Estado: </strong>
@@ -70,13 +70,14 @@
           agreement!.status === 'en proceso' ||
           agreement!.status === 'incumplido'
         "
+        [routerLink]="['/editar/', agreement!.id]"
       ></p-button>
       <p-button
         icon="pi pi-times"
         label="Cancelar"
         class="col-2 mx-2"
         type="button"
-        routerLink=""
+        routerLink="/acuerdos"
       ></p-button>
       <!-- TODO: poner un tiempo para la notificacion -->
       <p-button
@@ -85,10 +86,10 @@
         severity="danger"
         class="col-2 mx-2"
         type="button"
-        (click)="remove()"
         *ngIf="
           agreement!.status !== 'cumplido' && agreement!.status !== 'anulado'
         "
+        (onClick)="remove()"
       ></p-button>
     </div>
   </div>

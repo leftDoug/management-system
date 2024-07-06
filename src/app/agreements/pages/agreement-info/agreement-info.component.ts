@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Agreement } from '../../interfaces/agreements.interface';
+import { Agreement, Status } from '../../interfaces/agreement.interface';
 import { ActivatedRoute } from '@angular/router';
 import { AgreementsService } from '../../services/agreements.service';
+import { switchMap } from 'rxjs';
 import {
   ConfirmEventType,
   ConfirmationService,
@@ -11,12 +12,27 @@ import {
 
 @Component({
   selector: 'app-agreement',
-  templateUrl: './agreement.component.html',
-  styleUrls: ['./agreement.component.css'],
+  templateUrl: './agreement-info.component.html',
+  styleUrls: ['./agreement-info.component.css'],
   providers: [ConfirmationService, MessageService],
 })
-export class AgreementComponent implements OnInit {
-  agreement: Agreement | undefined;
+export class AgreementInfoComponent implements OnInit {
+  agreement: Agreement = {
+    id: '',
+    number: 0,
+    content: '',
+    workArea: '',
+    meeting: '',
+    meetingDate: new Date(),
+    meetingStartTime: new Date(),
+    meetingEndTime: new Date(),
+    session: '',
+    createdBy: '',
+    responsible: '',
+    answer: '',
+    agreementCompilanceDate: new Date(),
+    status: Status.incumplido,
+  };
   messages: Message[] = [];
   canceled: boolean = false;
 
@@ -28,15 +44,27 @@ export class AgreementComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.activatedRoute.params.subscribe(({ id }) => {
-      this.agreement = this.agreementsService.getById(id);
-    });
-    this.messages = [
-      {
-        severity: 'info',
-        detail: `El acuerdo ${this.agreement?.number} fue anulado`,
-      },
-    ];
+    this.activatedRoute.params
+      .pipe(switchMap(({ id }) => this.agreementsService.getById(id)))
+      .subscribe((resp) => {
+        this.agreement = resp;
+      });
+    // this.activatedRoute.params.subscribe(({ id }) => {
+    //   this.agreementsService
+    //     .getById(id)
+    //     .subscribe((resp) => (this.agreement = resp));
+    // });
+    // this.activatedRoute.params.subscribe(({ id }) => {
+    //   if (id)
+    //     if (this.agreementsService.getById(id))
+    //       this.agreement = this.agreementsService.getById(id);
+    // });
+    // this.messages = [
+    //   {
+    //     severity: 'info',
+    //     detail: `El acuerdo ${this.agreement!.number} fue anulado`,
+    //   },
+    // ];
   }
 
   // BUG: getSeverity esta implementado 2 veces
@@ -65,7 +93,7 @@ export class AgreementComponent implements OnInit {
           detail: 'El acuerdo ha sido anulado',
           summary: 'Acuerdo Anulado',
         });
-        this.agreementsService.remove(this.agreement!.id);
+        this.agreementsService.remove(this.agreement!.id!);
         this.canceled = true;
       },
       reject: () => {},
