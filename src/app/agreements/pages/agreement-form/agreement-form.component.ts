@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Agreement, Status } from '../../interfaces/agreement.interface';
+import { Agreement } from '../../interfaces/agreement.interface';
 import { AgreementsService } from '../../services/agreements.service';
 import { Message, MessageService, PrimeNGConfig } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
@@ -11,7 +11,7 @@ import { Worker } from 'src/app/workers/interfaces/worker.interface';
 import { AreasService } from 'src/app/areas/services/areas.service';
 import { WorkersService } from 'src/app/workers/services/workers.service';
 import { Meeting } from 'src/app/meetings/interfaces/meeting.interface';
-import { MeetingService } from 'src/app/meetings/services/meetings.service';
+import { MeetingsService } from 'src/app/meetings/services/meetings.service';
 import { Session } from 'src/app/sessions/interfaces/session.interface';
 import { SessionsService } from 'src/app/sessions/services/sessions.service';
 
@@ -24,10 +24,8 @@ import { SessionsService } from 'src/app/sessions/services/sessions.service';
 export class AgreementFormComponent implements OnInit {
   agreementForm: FormGroup = this.fb.group(
     {
-      id: [''],
-      number: [0],
       content: ['', [Validators.required, Validators.minLength(10)]],
-      workArea: ['', Validators.required],
+      area: ['', Validators.required],
       meeting: ['', Validators.required],
       meetingDate: [
         new Date(),
@@ -46,7 +44,7 @@ export class AgreementFormComponent implements OnInit {
       responsible: [{ value: '', disabled: true }, Validators.required],
       answer: [''],
       compilanceDate: [new Date(), Validators.required],
-      status: [Status.incumplido],
+      status: [false],
     },
     {
       validators: [
@@ -63,19 +61,20 @@ export class AgreementFormComponent implements OnInit {
   );
 
   newAgreement: Agreement = {
-    id: '',
+    PK_id: '',
+    FK_idArea: '',
+    FK_idResponsible: '',
+    FK_idCreatedBy: '',
+    FK_idMeeting: '',
+    FK_idSession: '',
     number: 0,
     content: '',
-    responsible: '',
-    workArea: '',
-    createdBy: '',
-    agreementCompilanceDate: new Date(),
-    status: Status.incumplido,
-    meeting: '',
-    session: '',
+    compilanceDate: new Date(),
     meetingDate: new Date(),
     meetingStartTime: new Date(),
     meetingEndTime: new Date(),
+    completed: false,
+    canceled: false,
     answer: '',
   };
   // success: boolean = false;
@@ -86,14 +85,14 @@ export class AgreementFormComponent implements OnInit {
   //   { label: 'Contabilidad', value: 'Contabilidad', id: 'co' },
   //   { label: 'Logística', value: 'Logística', id: 'lo' },
   // ];
-  areasDb: Area[] = [];
+  areas: Area[] = [];
   meetings: Meeting[] = [];
   sessions: Session[] = [];
   workers: Worker[] = [];
   today: Date = new Date();
-  value: string = '';
-  checked: boolean = false;
-  num?: number;
+  // value: string = '';
+  // checked: boolean = false;
+  // num?: number;
 
   get contentErrorMsg(): string {
     if (this.agreementForm.get('content')?.errors!['required']) {
@@ -113,9 +112,9 @@ export class AgreementFormComponent implements OnInit {
     return '';
   }
 
-  get workAreaErrorMsg(): string {
-    if (this.agreementForm.get('workArea')?.errors!['required']) {
-      return 'El area es requerida';
+  get areaErrorMsg(): string {
+    if (this.agreementForm.get('area')?.errors!['required']) {
+      return 'El área es requerida';
     }
 
     return '';
@@ -211,7 +210,7 @@ export class AgreementFormComponent implements OnInit {
     private agreementsService: AgreementsService,
     private areasService: AreasService,
     private workersService: WorkersService,
-    private meetingsService: MeetingService,
+    private meetingsService: MeetingsService,
     private sessionsService: SessionsService,
     private primengConfig: PrimeNGConfig,
     private activatedRoute: ActivatedRoute,
@@ -239,13 +238,13 @@ export class AgreementFormComponent implements OnInit {
     // this.agreementsService.getAll().subscribe((resp) => {
     //   this.getCurrentNumber(resp.at(-1)!.number!);
     // });
-    this.areasService.getAll().subscribe((resp) => (this.areasDb = resp));
+    this.areasService.getAll().subscribe((resp) => (this.areas = resp));
     this.meetingsService.getAll().subscribe((resp) => (this.meetings = resp));
     this.sessionsService.getAll().subscribe((resp) => (this.sessions = resp));
     // tap se usa para hacer acciones paralelas (resetear workers en este caso)
     // switchMap se usa para cambiar la respuesta k se da (en este caso llamar a otro servicio y asi usar solo 1 subscribe)
     this.agreementForm
-      .get('workArea')
+      .get('area')
       ?.valueChanges.pipe(
         tap((_) => {
           this.agreementForm.get('responsible')?.reset('');
@@ -256,21 +255,22 @@ export class AgreementFormComponent implements OnInit {
       .subscribe((resp) => (this.workers = resp));
   }
 
-  getCurrentNumber(n: number): void {
-    this.num = n;
-    console.log(this.num);
-  }
+  // getCurrentNumber(n: number): void {
+  //   this.num = n;
+  //   console.log(this.num);
+  // }
 
-  keyPressed(event: any) {
-    this.value = event.target.value;
-    console.log(this.value);
-  }
+  // keyPressed(event: any) {
+  //   this.value = event.target.value;
+  //   console.log(this.value);
+  // }
 
   create(): void {
-    this.generateNumber();
+    // TODO: descomentar
+    // this.generateNumber();
     this.generateId();
     this.setTime();
-    this.setStatus();
+    // this.setStatus();
     // this.agreementsService.insert(this.newAgreement);
     this.agreementsService.add(this.newAgreement).subscribe(console.log);
     console.log(this.newAgreement);
@@ -321,35 +321,32 @@ export class AgreementFormComponent implements OnInit {
   //     : this.today;
   // }
 
-  generateNumber(): void {
-    this.agreementsService.getAll().subscribe((resp) => {
-      this.getCurrentNumber(resp.at(-1)!.number!);
-    });
-    // this.num = this.agreementsService.agreements.at(-1)?.number;
-    // console.log(this.num);
-    this.newAgreement.number = this.num ? this.num + 1 : 1;
-    console.log(this.newAgreement.number);
-  }
+  // FIXME: arreglar
+  // generateNumber(): void {
+  //   this.agreementsService.getAll().subscribe((resp) => {
+  //     this.getCurrentNumber(resp.at(-1)!.number!);
+  //   });
+  //   // this.num = this.agreementsService.agreements.at(-1)?.number;
+  //   // console.log(this.num);
+  //   this.newAgreement.number = this.num ? this.num + 1 : 1;
+  //   console.log(this.newAgreement.number);
+  // }
 
   generateId(): void {
-    const area: string = this.areasDb.find(
-      (x) => x.name === this.newAgreement.workArea
-    )!.pk_id;
-    const num: number = this.newAgreement.number;
-    const id: string = `${area}${num}`;
-    this.newAgreement.id = id;
+    this.newAgreement.PK_id =
+      this.newAgreement.FK_idArea + this.newAgreement.number;
   }
 
   // FIXME: actualizar el estado de cada acuerdo cada vez k se muestre la tabla
-  setStatus(): void {
-    if (this.checked) this.newAgreement.status = Status.cumplido;
-    else if (
-      this.newAgreement.agreementCompilanceDate.getTime() -
-        new Date().getTime() >=
-      0
-    )
-      this.newAgreement.status = Status.en_proceso;
-  }
+  // setStatus(): void {
+  //   if (this.checked) this.newAgreement.status = Status.cumplido;
+  //   else if (
+  //     this.newAgreement.agreementCompilanceDate.getTime() -
+  //       new Date().getTime() >=
+  //     0
+  //   )
+  //     this.newAgreement.status = Status.en_proceso;
+  // }
 
   validate(control: string): boolean {
     if (

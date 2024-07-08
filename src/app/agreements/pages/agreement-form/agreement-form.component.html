@@ -2,7 +2,7 @@
   <!-- <div class="card m-3 p-5"> -->
   <p-card
     class="m-3 p-5"
-    [header]="newAgreement.id ? 'Actualizar Acuerdo' : 'Crear Acuerdo'"
+    [header]="newAgreement.PK_id ? 'Actualizar Acuerdo' : 'Crear Acuerdo'"
   >
     <!-- <h1>Crear Acuerdo</h1>
     <hr /> -->
@@ -72,17 +72,17 @@
               <p-dropdown
                 class="row"
                 id="area"
-                [options]="areasDb"
+                [options]="areas"
                 optionLabel="name"
-                optionValue="pk_id"
-                formControlName="workArea"
+                optionValue="PK_idArea"
+                formControlName="area"
                 placeholder="-- Seleccione --"
               ></p-dropdown>
               <small
                 id="area-help"
                 class="p-error row mx-3"
                 *ngIf="validate('workArea')"
-                >{{ workAreaErrorMsg }}</small
+                >{{ areaErrorMsg }}</small
               >
             </div>
           </div>
@@ -98,7 +98,7 @@
                 id="responsible"
                 [options]="workers"
                 optionLabel="name"
-                optionValue="pk_id"
+                optionValue="PK_idResponsible"
                 formControlName="responsible"
                 placeholder="-- Seleccione --"
               ></p-dropdown>
@@ -110,7 +110,7 @@
               >
             </div>
           </div>
-
+          <!-- FIXME: sustituir x inputtext del usuario logeado -->
           <div class="row mb-3 justify-content-center">
             <label for="createdBy" class="col align-self-center text-end"
               >Creado por:
@@ -120,7 +120,7 @@
                 class="row"
                 id="createdBy"
                 optionLabel="name"
-                optionValue="pk_id"
+                optionValue="PK_idCreatedBy"
                 [options]="workers"
                 formControlName="createdBy"
                 placeholder="-- Seleccione --"
@@ -159,7 +159,7 @@
               class="col justify-content-end"
               id="completed"
               [binary]="true"
-              formControlName="status"
+              formControlName="completed"
             ></p-checkbox>
             <!-- inputId="completed" -->
             <label for="completed" class="col align-self-center"
@@ -179,7 +179,7 @@
                 id="meeting"
                 [options]="meetings"
                 optionLabel="name"
-                optionValue="pk_id"
+                optionValue="PK_idMeeting"
                 formControlName="meeting"
                 placeholder="-- Seleccione --"
               ></p-dropdown>
@@ -202,7 +202,7 @@
                 id="session"
                 [options]="sessions"
                 optionLabel="name"
-                optionValue="pk_id"
+                optionValue="PK_idSession"
                 formControlName="session"
                 placeholder="-- Seleccione --"
               ></p-dropdown>
@@ -311,7 +311,7 @@
             severity="success"
             class="col-2 mx-2"
             type="submit"
-            *ngIf="!newAgreement.id; else update"
+            *ngIf="!newAgreement.PK_id; else update"
             [disabled]="agreementForm.invalid"
           ></p-button>
           <ng-template #update>
@@ -321,6 +321,7 @@
               severity="success"
               class="col-2 mx-2"
               type="submit"
+              [disabled]="agreementForm.invalid"
             ></p-button>
           </ng-template>
           <p-button
@@ -329,7 +330,9 @@
             class="col-2 mx-2"
             type="button"
             [routerLink]="
-              !newAgreement.id ? '/acuerdos' : ['/detalles/', newAgreement.id]
+              !newAgreement.PK_id
+                ? '/acuerdos'
+                : ['/detalles/', newAgreement.PK_id]
             "
           ></p-button>
         </div>

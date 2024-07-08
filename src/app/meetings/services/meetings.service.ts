@@ -7,12 +7,16 @@ import { Meeting } from '../interfaces/meeting.interface';
 @Injectable({
   providedIn: 'root',
 })
-export class MeetingService {
+export class MeetingsService {
   private _apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<Meeting[]> {
     return this.http.get<Meeting[]>(`${this._apiUrl}/reuniones`);
+  }
+
+  getById(id: string): Observable<Meeting> {
+    return this.http.get<Meeting>(`${this._apiUrl}/reuniones/${id}`);
   }
 }

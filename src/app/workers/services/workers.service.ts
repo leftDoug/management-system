@@ -21,4 +21,8 @@ export class WorkersService {
       `${this._apiUrl}/trabajadores?fk_idArea=${area}`
     );
   }
+
+  getById(id: string): Observable<Worker> {
+    return this.http.get<Worker>(`${this._apiUrl}/trabajadores/${id}`);
+  }
 }

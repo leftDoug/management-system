@@ -1,4 +1,4 @@
 export interface Session {
-  pk_id: string;
+  PK_id: string;
   name: string;
 }

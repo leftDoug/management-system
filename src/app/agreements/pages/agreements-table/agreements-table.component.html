@@ -18,13 +18,14 @@
   <div class="row">
     <div class="col">
       <div class="card">
+        <!-- XXX: el valor anterior de area era workArea -->
         <p-table
           [value]="agreements"
           [tableStyle]="{ 'min-width': '60rem' }"
           #tAgreements
           [globalFilterFields]="[
             'content',
-            'workArea',
+            'area',
             'responsible',
             'meeting',
             'session',
@@ -78,7 +79,7 @@
                 Sesión <p-sortIcon field="session"></p-sortIcon>
               </th>
               <th pSortableColumn="meetingDate" style="width: 5%">
-                Fecha <p-sortIcon field="meetingDateate"></p-sortIcon>
+                Creado <p-sortIcon field="meetingDate"></p-sortIcon>
               </th>
               <th pSortableColumn="status" style="width: 5%">
                 Estado <p-sortIcon field="status"></p-sortIcon>
@@ -102,6 +103,8 @@
                     <p-dropdown
                       [ngModel]="value"
                       [options]="areas"
+                      optionLabel="name"
+                      optionValue="name"
                       (onChange)="filter($event.value)"
                       placeholder="Todas"
                     >
@@ -110,7 +113,7 @@
                 </p-columnFilter>
               </th>
               <th>
-                <p-columnFilter
+                <!-- <p-columnFilter
                   field="responsible"
                   matchMode="equals"
                   [showMenu]="false"
@@ -122,13 +125,13 @@
                   >
                     <p-dropdown
                       [ngModel]="value"
-                      [options]="responsibles"
+                      [options]="workers"
                       (onChange)="filter($event.value)"
                       placeholder="Todos"
                     >
                     </p-dropdown>
                   </ng-template>
-                </p-columnFilter>
+                </p-columnFilter> -->
               </th>
               <th>
                 <p-columnFilter
@@ -144,6 +147,8 @@
                     <p-dropdown
                       [ngModel]="value"
                       [options]="meetings"
+                      optionLabel="name"
+                      optionValue="name"
                       (onChange)="filter($event.value)"
                       placeholder="Todas"
                     >
@@ -165,6 +170,8 @@
                     <p-dropdown
                       [ngModel]="value"
                       [options]="sessions"
+                      optionLabel="name"
+                      optionValue="name"
                       (onChange)="filter($event.value)"
                       placeholder="Todas"
                     >
@@ -193,14 +200,12 @@
                   >
                     <p-dropdown
                       [ngModel]="value"
-                      [options]="statuses2"
+                      [options]="status"
                       (onChange)="filter($event.value)"
-                      placeholder="Todas"
+                      placeholder="Todos"
                     >
                       <ng-template let-option pTemplate="item">
-                        <span class="badge" [class]="getSeverity(option)">{{
-                          option
-                        }}</span>
+                        <span class="badge" badge-cfg [status]="option"></span>
                       </ng-template>
                     </p-dropdown>
                   </ng-template>
@@ -210,18 +215,20 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-agreement>
-            <tr [class]="setRowColor(agreement)">
+            <tr badge-cfg [status]="agreement.status" [isTable]="true">
               <td>{{ agreement.number }}</td>
               <td>{{ agreement.content }}</td>
-              <td>{{ agreement.workArea }}</td>
+              <td>{{ agreement.area }}</td>
               <td>{{ agreement.responsible }}</td>
               <td>{{ agreement.meeting }}</td>
               <td>{{ agreement.session }}</td>
               <td>{{ agreement.meetingDate | date : "MM/dd/yyyy" }}</td>
               <td>
-                <span class="badge" [class]="getSeverity(agreement.status)">{{
-                  agreement.status | uppercase
-                }}</span>
+                <span
+                  class="badge"
+                  badge-cfg
+                  [status]="agreement.status"
+                ></span>
               </td>
               <td>
                 <p-button
@@ -265,3 +272,12 @@
   </div>
 </p-card>
 <!-- </div> -->
+
+<div class="row">
+  <div class="col">
+    <pre>{{ agreements | json }}</pre>
+  </div>
+  <div class="col">
+    <pre>{{ meetings | json }}</pre>
+  </div>
+</div>

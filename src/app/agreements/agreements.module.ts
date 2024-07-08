@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchComponent } from './components/search/search.component';
 import { RouterModule } from '@angular/router';
 import { PrimengModule } from '../primeng/primeng.module';
+import { BadgeDirective } from './directives/badge.directive';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { PrimengModule } from '../primeng/primeng.module';
     AgreementFormComponent,
     AgreementsTableComponent,
     SearchComponent,
+    BadgeDirective,
   ],
   imports: [
     CommonModule,

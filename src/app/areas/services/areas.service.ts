@@ -15,4 +15,8 @@ export class AreasService {
   getAll(): Observable<Area[]> {
     return this.http.get<Area[]>(`${this._apiUrl}/areas`);
   }
+
+  getById(id: string): Observable<Area> {
+    return this.http.get<Area>(`${this._apiUrl}/areas/${id}`);
+  }
 }

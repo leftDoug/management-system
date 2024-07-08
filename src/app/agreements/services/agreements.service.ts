@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Agreement, Status } from '../interfaces/agreement.interface';
+import { Agreement } from '../interfaces/agreement.interface';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 
 @Injectable({
@@ -76,7 +76,7 @@ export class AgreementsService {
 
   update(agreement: Agreement): Observable<Agreement> {
     return this.http.put<Agreement>(
-      `${this._apiUrl}/acuerdos/${agreement.id}`,
+      `${this._apiUrl}/acuerdos/${agreement.PK_id}`,
       agreement
     );
   }
@@ -93,13 +93,9 @@ export class AgreementsService {
   //   this._agreements.push(agreement);
   // }
 
-  remove(id: string): void {
+  cancel(agreement: Agreement): Observable<Agreement> {
     // this.getById(id).status = Status.anulado;
-    this.getById(id).subscribe((resp) => {
-      let agreement: Agreement = resp;
-      agreement.status = Status.anulado;
-      console.log(agreement);
-      return this.update(agreement);
-    });
+    agreement.canceled = true;
+    return this.update(agreement);
   }
 }

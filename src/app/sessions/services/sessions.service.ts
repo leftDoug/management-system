@@ -15,4 +15,8 @@ export class SessionsService {
   getAll(): Observable<Session[]> {
     return this.http.get<Session[]>(`${this._apiUrl}/sesiones`);
   }
+
+  getById(id: string): Observable<Session> {
+    return this.http.get<Session>(`${this._apiUrl}/sesiones/${id}`);
+  }
 }
