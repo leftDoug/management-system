@@ -107,7 +107,7 @@ export class AgreementInfoComponent implements OnInit {
     return getStatus(this.agreement);
   }
 
-  remove(): void {
+  cancel(): void {
     this.confirmationService.confirm({
       message: 'Está seguro de que desea anular este acuerdo?',
       header: 'Anular Acuerdo',

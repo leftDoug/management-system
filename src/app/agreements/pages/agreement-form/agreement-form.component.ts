@@ -245,32 +245,17 @@ export class AgreementFormComponent implements OnInit {
             session: this.newAgreement.FK_idSession,
           });
         });
+    } else {
+      this.agreementsService
+        .getAll()
+        .subscribe(
+          (resp) => (this.newAgreement.number = resp.at(-1)?.number! + 1)
+        );
     }
-    // FIXME: ver x k no se puede devolver directamente resp aqui
-    // this.agreementsService.getAll().subscribe((resp) => {
-    //   this.getCurrentNumber(resp.at(-1)!.number!);
-    // });
     this.areasService.getAll().subscribe((resp) => (this.areas = resp));
     this.meetingsService.getAll().subscribe((resp) => (this.meetings = resp));
     this.sessionsService.getAll().subscribe((resp) => (this.sessions = resp));
 
-    // this.agreementForm.reset({
-    //   answer: this.newAgreement.answer,
-    //   area: this.newAgreement.FK_idArea,
-    //   compilanceDate: this.newAgreement.compilanceDate,
-    //   completed: this.newAgreement.completed,
-    //   content: this.newAgreement.content,
-    //   createdBy: this.newAgreement.FK_idCreatedBy,
-    //   meeting: this.newAgreement.FK_idMeeting,
-    //   meetingDate: this.newAgreement.meetingDate,
-    //   meetingEndTime: this.newAgreement.meetingEndTime,
-    //   meetingStartTime: this.newAgreement.meetingStartTime,
-    //   responsible: this.newAgreement.FK_idResponsible,
-    //   session: this.newAgreement.FK_idSession,
-    // });
-
-    // tap se usa para hacer acciones paralelas (resetear workers en este caso)
-    // switchMap se usa para cambiar la respuesta k se da (en este caso llamar a otro servicio y asi usar solo 1 subscribe)
     this.agreementForm
       .get('area')
       ?.valueChanges.pipe(
@@ -283,49 +268,81 @@ export class AgreementFormComponent implements OnInit {
       .subscribe((resp) => (this.workers = resp));
   }
 
-  // getCurrentNumber(n: number): void {
-  //   this.num = n;
-  //   console.log(this.num);
-  // }
-
-  // keyPressed(event: any) {
-  //   this.value = event.target.value;
-  //   console.log(this.value);
-  // }
-
   create(): void {
-    // TODO: descomentar
-    // this.generateNumber();
-    this.generateId();
+    this.newAgreement.FK_idArea = this.agreementForm.get('area')?.value;
+    this.newAgreement.FK_idCreatedBy =
+      this.agreementForm.get('createdBy')?.value;
+    this.newAgreement.FK_idMeeting = this.agreementForm.get('meeting')?.value;
+    this.newAgreement.FK_idResponsible =
+      this.agreementForm.get('responsible')?.value;
+    this.newAgreement.FK_idSession = this.agreementForm.get('session')?.value;
+    this.newAgreement.answer = this.agreementForm.get('answer')?.value;
+    this.newAgreement.completed = this.agreementForm.get('completed')?.value;
+    this.newAgreement.content = this.agreementForm.get('content')?.value;
+    this.newAgreement.meetingDate = new Date(
+      this.agreementForm.get('meetingDate')?.value
+    );
+
     this.setTime();
-    // this.setStatus();
-    // this.agreementsService.insert(this.newAgreement);
-    this.agreementsService.add(this.newAgreement).subscribe(console.log);
-    console.log(this.newAgreement);
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Acuerdo Creado',
-      detail: 'El acuerdo ha sido creado.',
-    });
-    this.agreementForm.reset();
+
+    if (!this.newAgreement.id) {
+      this.generateId();
+
+      this.agreementsService.add(this.newAgreement).subscribe(console.log);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Acuerdo Creado',
+        detail: 'El acuerdo ha sido creado.',
+      });
+
+      this.agreementForm.reset();
+      this.newAgreement.id = '';
+    } else {
+      this.agreementsService.update(this.newAgreement).subscribe(console.log);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Acuerdo Actualizado',
+        detail: 'El acuerdo ha sido actualizado.',
+      });
+    }
+
+    this.agreementForm.reset(this.agreementForm.value);
   }
 
   setTime(): void {
-    let hours: number = this.newAgreement.meetingStartTime.getHours();
-    let minutes: number = this.newAgreement.meetingStartTime.getMinutes();
+    let hours: number = this.agreementForm
+      .get('meetingStartTime')
+      ?.value.getHours();
+    let minutes: number = this.agreementForm
+      .get('meetingStartTime')
+      ?.value.getMinutes();
+
     this.newAgreement.meetingStartTime = new Date(
-      this.newAgreement.meetingStartTime
+      this.agreementForm.get('meetingDate')?.value
     );
+
     this.newAgreement.meetingStartTime.setHours(hours);
     this.newAgreement.meetingStartTime.setMinutes(minutes);
 
-    hours = this.newAgreement.meetingEndTime.getHours();
-    minutes = this.newAgreement.meetingEndTime.getMinutes();
+    hours = this.agreementForm.get('meetingEndTime')?.value.getHours();
+    minutes = this.agreementForm.get('meetingEndTime')?.value.getMinutes();
+
     this.newAgreement.meetingEndTime = new Date(
-      this.newAgreement.meetingEndTime
+      this.agreementForm.get('meetingDate')?.value
     );
+
     this.newAgreement.meetingEndTime.setHours(hours);
     this.newAgreement.meetingEndTime.setMinutes(minutes);
+
+    this.newAgreement.compilanceDate = new Date(
+      this.agreementForm.get('compilanceDate')?.value
+    );
+
+    this.newAgreement.compilanceDate.setHours(23);
+    this.newAgreement.compilanceDate.setMinutes(59);
+    this.newAgreement.compilanceDate.setSeconds(59);
   }
 
   // getDayBeginning(): Date {

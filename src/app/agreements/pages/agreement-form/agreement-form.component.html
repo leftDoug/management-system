@@ -2,7 +2,11 @@
   <!-- <div class="card m-3 p-5"> -->
   <p-card
     class="m-3 p-5"
-    [header]="newAgreement.id ? 'Actualizar Acuerdo' : 'Crear Acuerdo'"
+    [header]="
+      newAgreement.id
+        ? 'Actualizar Acuerdo No. ' + newAgreement.number
+        : 'Crear Acuerdo No. ' + newAgreement.number
+    "
   >
     <!-- <h1>Crear Acuerdo</h1>
     <hr /> -->
@@ -343,13 +347,13 @@
 
 <div class="row container">
   <div class="col">
-    <pre>{{ newAgreement | json }}</pre>
-    <!-- <br />
+    <!-- <pre>{{ newAgreement | json }}</pre>
+    <br /> -->
     <span>valid:</span>
-    <pre>{{ agreementForm.valid }}</pre>
+    <pre>{{ agreementForm.invalid }}</pre>
     <pre>{{ agreementForm.errors | json }}</pre>
     <br />
-    <span>responsible:</span>
+    <!-- <span>responsible:</span>
     <pre>{{ agreementForm.get("responsible")?.valid }}</pre>
     <pre>{{ agreementForm.get("responsible")?.errors | json }}</pre>
     <br /> -->

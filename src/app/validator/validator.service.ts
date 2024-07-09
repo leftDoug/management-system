@@ -64,6 +64,8 @@ export class ValidatorService {
         return {
           endBeginningError: true,
         };
+      } else {
+        formGroup.get(e)?.setErrors(this.timeLimits(formGroup.get(e)?.value));
       }
 
       return null;
