@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Agreement } from '../../interfaces/agreement.interface';
 import { AgreementsService } from '../../services/agreements.service';
 import { Message, MessageService, PrimeNGConfig } from 'primeng/api';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap, tap } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ValidatorService } from 'src/app/validator/validator.service';
@@ -27,6 +27,7 @@ export class AgreementFormComponent implements OnInit {
       answer: [''],
       area: ['', Validators.required],
       compilanceDate: [new Date(), Validators.required],
+      completed: [false],
       content: ['', [Validators.required, Validators.minLength(10)]],
       createdBy: ['', Validators.required],
       meeting: ['', Validators.required],
@@ -44,7 +45,6 @@ export class AgreementFormComponent implements OnInit {
       ],
       responsible: [{ value: '', disabled: true }, Validators.required],
       session: ['', Validators.required],
-      status: [false],
     },
     {
       validators: [
@@ -216,7 +216,8 @@ export class AgreementFormComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private messageService: MessageService,
     private fb: FormBuilder,
-    private validatorService: ValidatorService
+    private validatorService: ValidatorService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -224,11 +225,27 @@ export class AgreementFormComponent implements OnInit {
     // this.messages = [
     //   { severity: 'success', detail: 'Agreement created successfully' },
     // ];
-    this.activatedRoute.params
-      .pipe(switchMap(({ id }) => this.agreementsService.getById(id)))
-      .subscribe((resp) => {
-        this.agreementForm.setValue({ ['answer']: resp.answer });
-      });
+    if (this.router.url.includes('editar')) {
+      this.activatedRoute.params
+        .pipe(switchMap(({ id }) => this.agreementsService.getById(id)))
+        .subscribe((resp) => {
+          this.newAgreement = resp;
+          this.agreementForm.reset({
+            answer: this.newAgreement.answer,
+            area: this.newAgreement.FK_idArea,
+            compilanceDate: new Date(this.newAgreement.compilanceDate),
+            completed: this.newAgreement.completed,
+            content: this.newAgreement.content,
+            createdBy: this.newAgreement.FK_idCreatedBy,
+            meeting: this.newAgreement.FK_idMeeting,
+            meetingDate: new Date(this.newAgreement.meetingDate),
+            meetingEndTime: new Date(this.newAgreement.meetingEndTime),
+            meetingStartTime: new Date(this.newAgreement.meetingStartTime),
+            responsible: this.newAgreement.FK_idResponsible,
+            session: this.newAgreement.FK_idSession,
+          });
+        });
+    }
     // FIXME: ver x k no se puede devolver directamente resp aqui
     // this.agreementsService.getAll().subscribe((resp) => {
     //   this.getCurrentNumber(resp.at(-1)!.number!);
@@ -236,12 +253,28 @@ export class AgreementFormComponent implements OnInit {
     this.areasService.getAll().subscribe((resp) => (this.areas = resp));
     this.meetingsService.getAll().subscribe((resp) => (this.meetings = resp));
     this.sessionsService.getAll().subscribe((resp) => (this.sessions = resp));
+
+    // this.agreementForm.reset({
+    //   answer: this.newAgreement.answer,
+    //   area: this.newAgreement.FK_idArea,
+    //   compilanceDate: this.newAgreement.compilanceDate,
+    //   completed: this.newAgreement.completed,
+    //   content: this.newAgreement.content,
+    //   createdBy: this.newAgreement.FK_idCreatedBy,
+    //   meeting: this.newAgreement.FK_idMeeting,
+    //   meetingDate: this.newAgreement.meetingDate,
+    //   meetingEndTime: this.newAgreement.meetingEndTime,
+    //   meetingStartTime: this.newAgreement.meetingStartTime,
+    //   responsible: this.newAgreement.FK_idResponsible,
+    //   session: this.newAgreement.FK_idSession,
+    // });
+
     // tap se usa para hacer acciones paralelas (resetear workers en este caso)
     // switchMap se usa para cambiar la respuesta k se da (en este caso llamar a otro servicio y asi usar solo 1 subscribe)
     this.agreementForm
       .get('area')
       ?.valueChanges.pipe(
-        tap((_) => {
+        tap(() => {
           this.agreementForm.get('responsible')?.reset('');
           this.agreementForm.get('responsible')?.enable();
         }),

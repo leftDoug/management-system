@@ -18,7 +18,7 @@ export class WorkersService {
 
   getByArea(area: string): Observable<Worker[]> {
     return this.http.get<Worker[]>(
-      `${this._apiUrl}/trabajadores?fk_idArea=${area}`
+      `${this._apiUrl}/trabajadores?FK_idArea=${area}`
     );
   }
 

@@ -74,7 +74,7 @@
                 id="area"
                 [options]="areas"
                 optionLabel="name"
-                optionValue="PK_idArea"
+                optionValue="id"
                 formControlName="area"
                 placeholder="-- Seleccione --"
               ></p-dropdown>
@@ -98,7 +98,7 @@
                 id="responsible"
                 [options]="workers"
                 optionLabel="name"
-                optionValue="PK_idResponsible"
+                optionValue="id"
                 formControlName="responsible"
                 placeholder="-- Seleccione --"
               ></p-dropdown>
@@ -120,7 +120,7 @@
                 class="row"
                 id="createdBy"
                 optionLabel="name"
-                optionValue="PK_idCreatedBy"
+                optionValue="id"
                 [options]="workers"
                 formControlName="createdBy"
                 placeholder="-- Seleccione --"
@@ -179,7 +179,7 @@
                 id="meeting"
                 [options]="meetings"
                 optionLabel="name"
-                optionValue="PK_idMeeting"
+                optionValue="id"
                 formControlName="meeting"
                 placeholder="-- Seleccione --"
               ></p-dropdown>
@@ -202,7 +202,7 @@
                 id="session"
                 [options]="sessions"
                 optionLabel="name"
-                optionValue="PK_idSession"
+                optionValue="id"
                 formControlName="session"
                 placeholder="-- Seleccione --"
               ></p-dropdown>
@@ -321,7 +321,7 @@
               severity="success"
               class="col-2 mx-2"
               type="submit"
-              [disabled]="agreementForm.invalid"
+              [disabled]="agreementForm.invalid || agreementForm.pristine"
             ></p-button>
           </ng-template>
           <p-button
@@ -343,8 +343,8 @@
 
 <div class="row container">
   <div class="col">
-    <pre>{{ agreementForm.value | json }}</pre>
-    <br />
+    <pre>{{ newAgreement | json }}</pre>
+    <!-- <br />
     <span>valid:</span>
     <pre>{{ agreementForm.valid }}</pre>
     <pre>{{ agreementForm.errors | json }}</pre>
@@ -352,6 +352,12 @@
     <span>responsible:</span>
     <pre>{{ agreementForm.get("responsible")?.valid }}</pre>
     <pre>{{ agreementForm.get("responsible")?.errors | json }}</pre>
-    <br />
+    <br /> -->
   </div>
 </div>
+
+<!-- <div class="row">
+  <div class="col">
+    <pre>{{ newAgreement | json }}</pre>
+  </div>
+</div> -->
