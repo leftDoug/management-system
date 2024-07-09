@@ -24,26 +24,26 @@ import { SessionsService } from 'src/app/sessions/services/sessions.service';
 export class AgreementFormComponent implements OnInit {
   agreementForm: FormGroup = this.fb.group(
     {
-      content: ['', [Validators.required, Validators.minLength(10)]],
+      answer: [''],
       area: ['', Validators.required],
+      compilanceDate: [new Date(), Validators.required],
+      content: ['', [Validators.required, Validators.minLength(10)]],
+      createdBy: ['', Validators.required],
       meeting: ['', Validators.required],
       meetingDate: [
         new Date(),
         [Validators.required, this.validatorService.meetingDate],
       ],
-      meetingStartTime: [
-        new Date(),
-        [Validators.required, this.validatorService.timeLimits],
-      ],
       meetingEndTime: [
         new Date(),
         [Validators.required, this.validatorService.timeLimits],
       ],
-      session: ['', Validators.required],
-      createdBy: ['', Validators.required],
+      meetingStartTime: [
+        new Date(),
+        [Validators.required, this.validatorService.timeLimits],
+      ],
       responsible: [{ value: '', disabled: true }, Validators.required],
-      answer: [''],
-      compilanceDate: [new Date(), Validators.required],
+      session: ['', Validators.required],
       status: [false],
     },
     {
@@ -61,21 +61,21 @@ export class AgreementFormComponent implements OnInit {
   );
 
   newAgreement: Agreement = {
-    PK_id: '',
+    id: '',
     FK_idArea: '',
-    FK_idResponsible: '',
     FK_idCreatedBy: '',
     FK_idMeeting: '',
+    FK_idResponsible: '',
     FK_idSession: '',
-    number: 0,
-    content: '',
-    compilanceDate: new Date(),
-    meetingDate: new Date(),
-    meetingStartTime: new Date(),
-    meetingEndTime: new Date(),
-    completed: false,
-    canceled: false,
     answer: '',
+    canceled: false,
+    compilanceDate: new Date(),
+    completed: false,
+    content: '',
+    meetingDate: new Date(),
+    meetingEndTime: new Date(),
+    meetingStartTime: new Date(),
+    number: 0,
   };
   // success: boolean = false;
   // messages: Message[] = [];
@@ -88,8 +88,8 @@ export class AgreementFormComponent implements OnInit {
   areas: Area[] = [];
   meetings: Meeting[] = [];
   sessions: Session[] = [];
-  workers: Worker[] = [];
   today: Date = new Date();
+  workers: Worker[] = [];
   // value: string = '';
   // checked: boolean = false;
   // num?: number;
@@ -224,16 +224,11 @@ export class AgreementFormComponent implements OnInit {
     // this.messages = [
     //   { severity: 'success', detail: 'Agreement created successfully' },
     // ];
-    this.activatedRoute.params.subscribe(({ id }) => {
-      if (id) {
-        this.agreementsService.getById(id).subscribe((resp) => {
-          if (resp) this.newAgreement = resp;
-          console.log(this.newAgreement);
-        });
-        // if (this.agreementsService.getById(id))
-        //   this.newAgreement = this.agreementsService.getById(id);
-      }
-    });
+    this.activatedRoute.params
+      .pipe(switchMap(({ id }) => this.agreementsService.getById(id)))
+      .subscribe((resp) => {
+        this.agreementForm.setValue({ ['answer']: resp.answer });
+      });
     // FIXME: ver x k no se puede devolver directamente resp aqui
     // this.agreementsService.getAll().subscribe((resp) => {
     //   this.getCurrentNumber(resp.at(-1)!.number!);
@@ -333,7 +328,7 @@ export class AgreementFormComponent implements OnInit {
   // }
 
   generateId(): void {
-    this.newAgreement.PK_id =
+    this.newAgreement.id =
       this.newAgreement.FK_idArea + this.newAgreement.number;
   }
 

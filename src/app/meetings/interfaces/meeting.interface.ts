@@ -1,5 +1,5 @@
 export interface Meeting {
-  PK_id: string;
+  id: string;
   FK_idWorkArea: string;
   name: string;
 }

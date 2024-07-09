@@ -2,7 +2,7 @@
   <!-- <div class="card m-3 p-5"> -->
   <p-card
     class="m-3 p-5"
-    [header]="newAgreement.PK_id ? 'Actualizar Acuerdo' : 'Crear Acuerdo'"
+    [header]="newAgreement.id ? 'Actualizar Acuerdo' : 'Crear Acuerdo'"
   >
     <!-- <h1>Crear Acuerdo</h1>
     <hr /> -->
@@ -311,7 +311,7 @@
             severity="success"
             class="col-2 mx-2"
             type="submit"
-            *ngIf="!newAgreement.PK_id; else update"
+            *ngIf="!newAgreement.id; else update"
             [disabled]="agreementForm.invalid"
           ></p-button>
           <ng-template #update>
@@ -330,9 +330,7 @@
             class="col-2 mx-2"
             type="button"
             [routerLink]="
-              !newAgreement.PK_id
-                ? '/acuerdos'
-                : ['/detalles/', newAgreement.PK_id]
+              !newAgreement.id ? '/acuerdos' : ['/detalles/', newAgreement.id]
             "
           ></p-button>
         </div>

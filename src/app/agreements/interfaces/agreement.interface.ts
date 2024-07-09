@@ -1,36 +1,36 @@
 export interface Agreement {
-  PK_id: string;
+  id: string;
   FK_idArea: string;
-  FK_idResponsible: string;
   FK_idCreatedBy: string;
   FK_idMeeting: string;
+  FK_idResponsible: string;
   FK_idSession: string;
-  number: number;
-  content: string;
-  compilanceDate: Date;
-  meetingDate: Date;
-  meetingStartTime: Date;
-  meetingEndTime: Date;
-  completed: boolean;
-  canceled: boolean;
   answer: string;
+  canceled: boolean;
+  compilanceDate: Date;
+  completed: boolean;
+  content: string;
+  meetingDate: Date;
+  meetingEndTime: Date;
+  meetingStartTime: Date;
+  number: number;
 }
 
 export interface AgreementWithStatus {
-  PK_id: string;
-  number: number;
-  content: string;
+  id: string;
   area: string;
-  responsible: string;
+  content: string;
   meeting: string;
-  session: string;
   meetingDate: Date;
+  number: number;
+  responsible: string;
+  session: string;
   status: Status;
 }
 
 export enum Status {
-  fulfilled = 'cumplido',
-  inProcess = 'en proceso',
-  unfulfilled = 'incumplido',
-  canceled = 'anulado',
+  canceled = 'ANULADO',
+  fulfilled = 'CUMPLIDO',
+  inProcess = 'EN PROCESO',
+  unfulfilled = 'INCUMPLIDO',
 }

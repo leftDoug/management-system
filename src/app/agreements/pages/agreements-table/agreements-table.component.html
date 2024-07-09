@@ -1,24 +1,7 @@
-<!-- <div class="container p-3">
-  <h1>ACUERDOS</h1>
-  <hr /> -->
-<!-- <div class="row my-2 justify-content-between">
-    <div class="col-3">
-      <button type="button" class="btn btn-success" routerLink="create">
-        Create Agreement
-      </button>
-    </div>
-    <div class="col-3">
-      <button type="button" class="btn btn-primary">Export</button>
-    </div>
-    <div class="col-5">
-      <app-search></app-search>
-    </div>
-  </div> -->
 <p-card class="m-3 p-5" header="Listado de Acuerdos">
   <div class="row">
     <div class="col">
       <div class="card">
-        <!-- XXX: el valor anterior de area era workArea -->
         <p-table
           [value]="agreements"
           [tableStyle]="{ 'min-width': '60rem' }"
@@ -112,27 +95,7 @@
                   </ng-template>
                 </p-columnFilter>
               </th>
-              <th>
-                <!-- <p-columnFilter
-                  field="responsible"
-                  matchMode="equals"
-                  [showMenu]="false"
-                >
-                  <ng-template
-                    pTemplate="filter"
-                    let-value
-                    let-filter="filterCallback"
-                  >
-                    <p-dropdown
-                      [ngModel]="value"
-                      [options]="workers"
-                      (onChange)="filter($event.value)"
-                      placeholder="Todos"
-                    >
-                    </p-dropdown>
-                  </ng-template>
-                </p-columnFilter> -->
-              </th>
+              <th></th>
               <th>
                 <p-columnFilter
                   field="meeting"
@@ -205,7 +168,9 @@
                       placeholder="Todos"
                     >
                       <ng-template let-option pTemplate="item">
-                        <span class="badge" badge-cfg [status]="option"></span>
+                        <span class="badge" [class]="setSeverity(option)">{{
+                          option
+                        }}</span>
                       </ng-template>
                     </p-dropdown>
                   </ng-template>
@@ -215,7 +180,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-agreement>
-            <tr badge-cfg [status]="agreement.status" [isTable]="true">
+            <tr row-cfg [status]="agreement.status">
               <td>{{ agreement.number }}</td>
               <td>{{ agreement.content }}</td>
               <td>{{ agreement.area }}</td>
@@ -224,11 +189,9 @@
               <td>{{ agreement.session }}</td>
               <td>{{ agreement.meetingDate | date : "MM/dd/yyyy" }}</td>
               <td>
-                <span
-                  class="badge"
-                  badge-cfg
-                  [status]="agreement.status"
-                ></span>
+                <span class="badge" [class]="setSeverity(agreement.status)">{{
+                  agreement.status
+                }}</span>
               </td>
               <td>
                 <p-button
@@ -271,13 +234,3 @@
     </div>
   </div>
 </p-card>
-<!-- </div> -->
-
-<div class="row">
-  <div class="col">
-    <pre>{{ agreements | json }}</pre>
-  </div>
-  <div class="col">
-    <pre>{{ meetings | json }}</pre>
-  </div>
-</div>

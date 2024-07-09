@@ -1,5 +1,5 @@
 export interface Worker {
-  PK_id: string;
+  id: string;
   FK_idWorkArea: string;
   name: string;
 }

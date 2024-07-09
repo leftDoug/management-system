@@ -76,7 +76,7 @@ export class AgreementsService {
 
   update(agreement: Agreement): Observable<Agreement> {
     return this.http.put<Agreement>(
-      `${this._apiUrl}/acuerdos/${agreement.PK_id}`,
+      `${this._apiUrl}/acuerdos/${agreement.id}`,
       agreement
     );
   }

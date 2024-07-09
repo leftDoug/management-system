@@ -1,4 +1,4 @@
 export interface Area {
-  PK_id: string;
+  id: string;
   name: string;
 }
