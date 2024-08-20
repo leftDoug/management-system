@@ -23,7 +23,6 @@ import { getSeverity } from 'src/app/shared/severity-status';
 export class AgreementsTableComponent implements OnInit {
   agreements: AgreementWithStatus[] = [];
   areas: Area[] = [];
-  workers: Worker[] = [];
   meetings: Meeting[] = [];
   sessions: Session[] = [];
   status: Status[] = [
@@ -33,6 +32,7 @@ export class AgreementsTableComponent implements OnInit {
     Status.unfulfilled,
   ];
   today: Date = new Date();
+  workers: Worker[] = [];
 
   constructor(
     private agreementsService: AgreementsService,
@@ -139,7 +139,7 @@ export class AgreementsTableComponent implements OnInit {
     }
   }
 
-  setSeverity(status: Status): string {
+  setSeverity(status: Status) {
     return getSeverity(null, status);
   }
 }

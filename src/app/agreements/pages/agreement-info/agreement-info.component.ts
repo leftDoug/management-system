@@ -3,12 +3,7 @@ import { Agreement, Status } from '../../interfaces/agreement.interface';
 import { ActivatedRoute } from '@angular/router';
 import { AgreementsService } from '../../services/agreements.service';
 import { switchMap, tap } from 'rxjs';
-import {
-  ConfirmEventType,
-  ConfirmationService,
-  Message,
-  MessageService,
-} from 'primeng/api';
+import { ConfirmationService, Message, MessageService } from 'primeng/api';
 import { AreasService } from 'src/app/areas/services/areas.service';
 import { WorkersService } from 'src/app/workers/services/workers.service';
 import { MeetingsService } from 'src/app/meetings/services/meetings.service';
@@ -42,10 +37,8 @@ export class AgreementInfoComponent implements OnInit {
   area: string = '';
   createdBy: string = '';
   meeting: string = '';
-  messages: Message[] = [];
   responsible: string = '';
   session: string = '';
-  // canceled: boolean = false;
 
   // TODO: poner un delay para k no se vea el estado inicial al abrir la pagina
 
@@ -53,11 +46,11 @@ export class AgreementInfoComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private agreementsService: AgreementsService,
     private areasService: AreasService,
-    private workersService: WorkersService,
-    private meetingsService: MeetingsService,
-    private sessionsService: SessionsService,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private meetingsService: MeetingsService,
+    private messageService: MessageService,
+    private sessionsService: SessionsService,
+    private workersService: WorkersService
   ) {}
 
   ngOnInit(): void {
@@ -91,16 +84,14 @@ export class AgreementInfoComponent implements OnInit {
         })
       )
       .subscribe((resp) => (this.agreement = resp));
-    // this.messages = [
-    //   {
-    //     severity: 'info',
-    //     detail: `El acuerdo ${this.agreement!.number} fue anulado`,
-    //   },
-    // ];
   }
 
   get severity(): string {
     return getSeverity(this.agreement, null);
+  }
+
+  setSeverity(status: Status) {
+    return getSeverity(null, status);
   }
 
   get status(): Status {
@@ -122,7 +113,6 @@ export class AgreementInfoComponent implements OnInit {
         this.agreementsService
           .cancel(this.agreement)
           .subscribe((resp) => (this.agreement = resp));
-        // this.canceled = true;
       },
       reject: () => {},
       rejectButtonStyleClass: 'mx-3',

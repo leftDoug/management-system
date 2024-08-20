@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Agreement } from '../../interfaces/agreement.interface';
 import { AgreementsService } from '../../services/agreements.service';
-import { Message, MessageService, PrimeNGConfig } from 'primeng/api';
+import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap, tap } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -60,6 +60,8 @@ export class AgreementFormComponent implements OnInit {
     }
   );
 
+  areas: Area[] = [];
+  meetings: Meeting[] = [];
   newAgreement: Agreement = {
     id: '',
     FK_idArea: '',
@@ -77,147 +79,22 @@ export class AgreementFormComponent implements OnInit {
     meetingStartTime: new Date(),
     number: 0,
   };
-  // success: boolean = false;
-  // messages: Message[] = [];
-  // areas: Area[] = [
-  //   { label: 'RRHH', value: 'RRHH', id: 'rh' },
-  //   { label: 'Transporte', value: 'Transporte', id: 'tr' },
-  //   { label: 'Contabilidad', value: 'Contabilidad', id: 'co' },
-  //   { label: 'Logística', value: 'Logística', id: 'lo' },
-  // ];
-  areas: Area[] = [];
-  meetings: Meeting[] = [];
   sessions: Session[] = [];
   today: Date = new Date();
   workers: Worker[] = [];
-  // value: string = '';
-  // checked: boolean = false;
-  // num?: number;
-
-  get contentErrorMsg(): string {
-    if (this.agreementForm.get('content')?.errors!['required']) {
-      return 'El contenido es requerido';
-    } else if (this.agreementForm.get('content')?.errors!['minlength']) {
-      return 'El contenido debe tener al menos 10 caracteres';
-    }
-
-    return '';
-  }
-
-  get responsibleErrorMsg(): string {
-    if (this.agreementForm.get('responsible')?.errors!['required']) {
-      return 'El responsable es requerido';
-    }
-
-    return '';
-  }
-
-  get areaErrorMsg(): string {
-    if (this.agreementForm.get('area')?.errors!['required']) {
-      return 'El área es requerida';
-    }
-
-    return '';
-  }
-
-  get createdByErrorMsg(): string {
-    if (this.agreementForm.get('createdBy')?.errors!['required']) {
-      return 'El creador es requerido';
-    }
-
-    return '';
-  }
-
-  get compilanceDateErrorMsg(): string {
-    if (this.agreementForm.get('compilanceDate')?.errors!['required']) {
-      return 'La fecha de cumplimiento es requerida';
-    } else if (
-      this.agreementForm.get('compilanceDate')?.errors![
-        'meetingCompilanceError'
-      ]
-    ) {
-      return 'La fecha de cumplimiento no puede ser anterior a la de la reunión';
-    }
-
-    return '';
-  }
-
-  get meetingErrorMsg(): string {
-    if (this.agreementForm.get('meeting')?.errors!['required']) {
-      return 'La reunión es requerida';
-    }
-
-    return '';
-  }
-
-  get sessionErrorMsg(): string {
-    if (this.agreementForm.get('session')?.errors!['required']) {
-      return 'La sesión es requerida';
-    }
-
-    return '';
-  }
-
-  get meetingDateErrorMsg(): string {
-    if (this.agreementForm.get('meetingDate')?.errors!['required']) {
-      return 'La fecha de la reunión es requerida';
-    } else if (
-      this.agreementForm.get('meetingDate')?.errors!['meetingDateError']
-    ) {
-      return 'La fecha de la reunión no puede ser posterior a hoy';
-    }
-
-    return '';
-  }
-
-  get meetingStartTimeErrorMsg(): string {
-    if (this.agreementForm.get('meetingStartTime')?.errors!['required']) {
-      return 'La hora de inicio es requerida';
-    } else if (
-      this.agreementForm.get('meetingStartTime')?.errors!['tooEarlyError']
-    ) {
-      return 'La hora de inicio no puede ser anterior a las 09:00';
-    } else if (
-      this.agreementForm.get('meetingStartTime')?.errors!['tooLateError']
-    ) {
-      return 'La hora de inicio no puede ser posterior a las 17:00';
-    }
-
-    return '';
-  }
-
-  get meetingEndTimeErrorMsg(): string {
-    if (this.agreementForm.get('meetingEndTime')?.errors!['required']) {
-      return 'La hora de fin es requerida';
-    } else if (
-      this.agreementForm.get('meetingEndTime')?.errors!['tooEarlyError']
-    ) {
-      return 'La hora de fin no puede ser anterior a las 09:00';
-    } else if (
-      this.agreementForm.get('meetingEndTime')?.errors!['tooLateError']
-    ) {
-      return 'La hora de fin no puede ser posterior a las 17:00';
-    } else if (
-      this.agreementForm.get('meetingEndTime')?.errors!['endBeginningError']
-    ) {
-      return 'La hora de fin no puede ser anterior a la hora de inicio';
-    }
-
-    return '';
-  }
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private agreementsService: AgreementsService,
     private areasService: AreasService,
-    private workersService: WorkersService,
-    private meetingsService: MeetingsService,
-    private sessionsService: SessionsService,
-    private primengConfig: PrimeNGConfig,
-    private activatedRoute: ActivatedRoute,
-    private messageService: MessageService,
     private fb: FormBuilder,
+    private meetingsService: MeetingsService,
+    private messageService: MessageService,
+    private primengConfig: PrimeNGConfig,
+    private router: Router,
+    private sessionsService: SessionsService,
     private validatorService: ValidatorService,
-    private router: Router
+    private workersService: WorkersService
   ) {}
 
   ngOnInit(): void {
@@ -268,6 +145,118 @@ export class AgreementFormComponent implements OnInit {
       .subscribe((resp) => (this.workers = resp));
   }
 
+  get areaErrorMsg(): string {
+    if (this.agreementForm.get('area')?.errors!['required']) {
+      return 'El área es requerida';
+    }
+
+    return '';
+  }
+
+  get compilanceDateErrorMsg(): string {
+    if (this.agreementForm.get('compilanceDate')?.errors!['required']) {
+      return 'La fecha de cumplimiento es requerida';
+    } else if (
+      this.agreementForm.get('compilanceDate')?.errors![
+        'meetingCompilanceError'
+      ]
+    ) {
+      return 'La fecha de cumplimiento no puede ser anterior a la de la reunión';
+    }
+
+    return '';
+  }
+
+  get contentErrorMsg(): string {
+    if (this.agreementForm.get('content')?.errors!['required']) {
+      return 'El contenido es requerido';
+    } else if (this.agreementForm.get('content')?.errors!['minlength']) {
+      return 'El contenido debe tener al menos 10 caracteres';
+    }
+
+    return '';
+  }
+
+  get createdByErrorMsg(): string {
+    if (this.agreementForm.get('createdBy')?.errors!['required']) {
+      return 'El creador es requerido';
+    }
+
+    return '';
+  }
+
+  get meetingErrorMsg(): string {
+    if (this.agreementForm.get('meeting')?.errors!['required']) {
+      return 'La reunión es requerida';
+    }
+
+    return '';
+  }
+
+  get meetingDateErrorMsg(): string {
+    if (this.agreementForm.get('meetingDate')?.errors!['required']) {
+      return 'La fecha de la reunión es requerida';
+    } else if (
+      this.agreementForm.get('meetingDate')?.errors!['meetingDateError']
+    ) {
+      return 'La fecha de la reunión no puede ser posterior a hoy';
+    }
+
+    return '';
+  }
+
+  get meetingEndTimeErrorMsg(): string {
+    if (this.agreementForm.get('meetingEndTime')?.errors!['required']) {
+      return 'La hora de fin es requerida';
+    } else if (
+      this.agreementForm.get('meetingEndTime')?.errors!['tooEarlyError']
+    ) {
+      return 'La hora de fin no puede ser anterior a las 09:00';
+    } else if (
+      this.agreementForm.get('meetingEndTime')?.errors!['tooLateError']
+    ) {
+      return 'La hora de fin no puede ser posterior a las 17:00';
+    } else if (
+      this.agreementForm.get('meetingEndTime')?.errors!['endBeginningError']
+    ) {
+      return 'La hora de fin no puede ser anterior a la hora de inicio';
+    }
+
+    return '';
+  }
+
+  get meetingStartTimeErrorMsg(): string {
+    if (this.agreementForm.get('meetingStartTime')?.errors!['required']) {
+      return 'La hora de inicio es requerida';
+    } else if (
+      this.agreementForm.get('meetingStartTime')?.errors!['tooEarlyError']
+    ) {
+      return 'La hora de inicio no puede ser anterior a las 09:00';
+    } else if (
+      this.agreementForm.get('meetingStartTime')?.errors!['tooLateError']
+    ) {
+      return 'La hora de inicio no puede ser posterior a las 17:00';
+    }
+
+    return '';
+  }
+
+  get responsibleErrorMsg(): string {
+    if (this.agreementForm.get('responsible')?.errors!['required']) {
+      return 'El responsable es requerido';
+    }
+
+    return '';
+  }
+
+  get sessionErrorMsg(): string {
+    if (this.agreementForm.get('session')?.errors!['required']) {
+      return 'La sesión es requerida';
+    }
+
+    return '';
+  }
+
   create(): void {
     this.newAgreement.FK_idArea = this.agreementForm.get('area')?.value;
     this.newAgreement.FK_idCreatedBy =
@@ -288,16 +277,25 @@ export class AgreementFormComponent implements OnInit {
     if (!this.newAgreement.id) {
       this.generateId();
 
-      this.agreementsService.add(this.newAgreement).subscribe(console.log);
+      this.agreementsService.add(this.newAgreement).subscribe();
+
+      this.newAgreement.id = '';
+      this.newAgreement.number = this.newAgreement.number + 1;
+
+      // FIXME: esta dando palo aqui xk no se vuelven a crear las fechas en el reset
+      this.agreementForm.reset({
+        compilanceDate: new Date(this.newAgreement.compilanceDate),
+        meetingDate: new Date(this.newAgreement.meetingDate),
+        meetingEndTime: new Date(this.newAgreement.meetingEndTime),
+        meetingStartTime: new Date(this.newAgreement.meetingStartTime),
+        responsible: { value: '', disabled: true },
+      });
 
       this.messageService.add({
         severity: 'success',
         summary: 'Acuerdo Creado',
         detail: 'El acuerdo ha sido creado.',
       });
-
-      this.agreementForm.reset();
-      this.newAgreement.id = '';
     } else {
       this.agreementsService.update(this.newAgreement).subscribe(console.log);
 
@@ -306,9 +304,14 @@ export class AgreementFormComponent implements OnInit {
         summary: 'Acuerdo Actualizado',
         detail: 'El acuerdo ha sido actualizado.',
       });
-    }
 
-    this.agreementForm.reset(this.agreementForm.value);
+      this.agreementForm.reset(this.agreementForm.value);
+    }
+  }
+
+  generateId(): void {
+    this.newAgreement.id =
+      this.newAgreement.FK_idArea + this.newAgreement.number;
   }
 
   setTime(): void {
@@ -345,54 +348,6 @@ export class AgreementFormComponent implements OnInit {
     this.newAgreement.compilanceDate.setSeconds(59);
   }
 
-  // getDayBeginning(): Date {
-  //   const beginning: Date = new Date(this.today);
-  //   beginning.setHours(9);
-  //   beginning.setMinutes(0);
-  //   return beginning;
-  // }
-
-  // getDayEnd(): Date {
-  //   const beginning: Date = new Date(this.today);
-  //   beginning.setHours(17);
-  //   beginning.setMinutes(0);
-  //   return beginning;
-  // }
-
-  // getNotTodayEnd(): Date {
-  //   return this.newAgreement.meetingDate.getTime() <=
-  //     this.getDayBeginning().getTime()
-  //     ? this.getDayEnd()
-  //     : this.today;
-  // }
-
-  // FIXME: arreglar
-  // generateNumber(): void {
-  //   this.agreementsService.getAll().subscribe((resp) => {
-  //     this.getCurrentNumber(resp.at(-1)!.number!);
-  //   });
-  //   // this.num = this.agreementsService.agreements.at(-1)?.number;
-  //   // console.log(this.num);
-  //   this.newAgreement.number = this.num ? this.num + 1 : 1;
-  //   console.log(this.newAgreement.number);
-  // }
-
-  generateId(): void {
-    this.newAgreement.id =
-      this.newAgreement.FK_idArea + this.newAgreement.number;
-  }
-
-  // FIXME: actualizar el estado de cada acuerdo cada vez k se muestre la tabla
-  // setStatus(): void {
-  //   if (this.checked) this.newAgreement.status = Status.cumplido;
-  //   else if (
-  //     this.newAgreement.agreementCompilanceDate.getTime() -
-  //       new Date().getTime() >=
-  //     0
-  //   )
-  //     this.newAgreement.status = Status.en_proceso;
-  // }
-
   validate(control: string): boolean {
     if (
       control === 'content' &&
@@ -401,6 +356,10 @@ export class AgreementFormComponent implements OnInit {
       this.agreementForm.get(control)?.errors!['required']
     ) {
       this.agreementForm.controls[control].markAsDirty();
+    }
+
+    if (control === 'meetingEndTime') {
+      if (this.agreementForm.get(control)?.errors!) return true;
     }
 
     return (

@@ -9,15 +9,17 @@ import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { AuthModule } from './auth/auth.module';
+import { AreasModule } from './areas/areas.module';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    CommonModule,
+    // CommonModule,
     HttpClientModule,
-    PrimengModule,
+    // PrimengModule,
     AgreementsModule,
+    AreasModule,
     AuthModule,
     AppRoutingModule,
     SharedModule,

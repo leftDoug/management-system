@@ -14,6 +14,8 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CardModule } from 'primeng/card';
 import { MessagesModule } from 'primeng/messages';
+import { TabMenuModule } from 'primeng/tabmenu';
+import { DividerModule } from 'primeng/divider';
 
 @NgModule({
   exports: [
@@ -31,6 +33,8 @@ import { MessagesModule } from 'primeng/messages';
     ConfirmDialogModule,
     CardModule,
     MessagesModule,
+    TabMenuModule,
+    DividerModule,
   ],
 })
 export class PrimengModule {}

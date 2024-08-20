@@ -1,88 +1,103 @@
-<p-card class="m-3 p-5" header="Listado de Acuerdos">
-  <div class="row">
-    <div class="col">
-      <div class="card">
-        <p-table
-          [value]="agreements"
-          [tableStyle]="{ 'min-width': '60rem' }"
-          #tAgreements
-          [globalFilterFields]="[
-            'content',
-            'area',
-            'responsible',
-            'meeting',
-            'session',
-            'meetingDate',
-            'status'
-          ]"
-        >
-          <ng-template pTemplate="caption">
-            <div class="d-flex justify-content-between">
-              <p-button
-                label="Crear Acuerdo"
-                icon="pi pi-plus"
-                severity="success"
-                routerLink="/agregar"
-              ></p-button>
-              <span class="p-input-icon-left ml-5">
-                <i class="pi pi-search"></i>
-                <input
-                  pInputText
-                  type="text"
-                  placeholder="Buscar..."
-                  ngClass="search"
-                  (input)="
-                    tAgreements.filterGlobal(
-                      $any($event.target).value,
-                      'contains'
-                    )
-                  "
-                />
-              </span>
-            </div>
-          </ng-template>
-          <ng-template pTemplate="header">
-            <tr>
-              <th pSortableColumn="number" style="width: 5%">
+<div class="flex flex-wrap align-items-center justify-content-center">
+  <div class="p-5 w-full">
+    <p-card class="min-w-700" header="Listado de Acuerdos">
+      <p-table
+        #tAgreements
+        [value]="agreements"
+        [globalFilterFields]="[
+          'content',
+          'area',
+          'responsible',
+          'meeting',
+          'session',
+          'meetingDate',
+          'status'
+        ]"
+        [tableStyle]="{ 'min-width': '60rem' }"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex justify-content-between">
+            <p-button
+              label="Crear Acuerdo"
+              icon="pi pi-plus"
+              severity="success"
+              routerLink="/acuerdos/agregar"
+            ></p-button>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                placeholder="Buscar..."
+                (input)="
+                  tAgreements.filterGlobal(
+                    $any($event.target).value,
+                    'contains'
+                  )
+                "
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="number" class="md:min-w-min">
+              <div class="flex align-items-center justify-content-center">
                 No. <p-sortIcon field="number"></p-sortIcon>
-              </th>
-              <th pSortableColumn="content">
+              </div>
+            </th>
+            <th pSortableColumn="content">
+              <div class="flex align-items-center justify-content-center">
                 Contenido <p-sortIcon field="content"></p-sortIcon>
-              </th>
-              <th pSortableColumn="area" style="width: 5%">
+              </div>
+            </th>
+            <th pSortableColumn="area">
+              <div class="flex align-items-center justify-content-center">
                 Área <p-sortIcon field="area"></p-sortIcon>
-              </th>
-              <th pSortableColumn="responsible" style="width: 10%">
+              </div>
+            </th>
+            <th pSortableColumn="responsible">
+              <div class="flex align-items-center justify-content-center">
                 Responsable <p-sortIcon field="responsible"></p-sortIcon>
-              </th>
-              <th pSortableColumn="meeting" style="width: 5%">
+              </div>
+            </th>
+            <th pSortableColumn="meeting">
+              <div class="flex align-items-center justify-content-center">
                 Reunión <p-sortIcon field="meeting"></p-sortIcon>
-              </th>
-              <th pSortableColumn="session" style="width: 5%">
+              </div>
+            </th>
+            <th pSortableColumn="session">
+              <div class="flex align-items-center justify-content-center">
                 Sesión <p-sortIcon field="session"></p-sortIcon>
-              </th>
-              <th pSortableColumn="meetingDate" style="width: 5%">
+              </div>
+            </th>
+            <th pSortableColumn="meetingDate">
+              <div class="flex align-items-center justify-content-center">
                 Creado <p-sortIcon field="meetingDate"></p-sortIcon>
-              </th>
-              <th pSortableColumn="status" style="width: 5%">
+              </div>
+            </th>
+            <th pSortableColumn="status">
+              <div class="flex align-items-center justify-content-center">
                 Estado <p-sortIcon field="status"></p-sortIcon>
-              </th>
-              <th style="width: 5%"></th>
-            </tr>
-            <tr>
-              <th></th>
-              <th></th>
-              <th>
-                <p-columnFilter
-                  field="area"
-                  matchMode="equals"
-                  [showMenu]="false"
+              </div>
+            </th>
+            <th></th>
+          </tr>
+          <tr>
+            <th></th>
+            <th></th>
+            <th>
+              <p-columnFilter
+                field="area"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
                 >
-                  <ng-template
-                    pTemplate="filter"
-                    let-value
-                    let-filter="filterCallback"
-                  >
+                  <div class="w-100">
                     <p-dropdown
                       [ngModel]="value"
                       [options]="areas"
@@ -92,145 +107,181 @@
                       placeholder="Todas"
                     >
                     </p-dropdown>
-                  </ng-template>
-                </p-columnFilter>
-              </th>
-              <th></th>
-              <th>
-                <p-columnFilter
-                  field="meeting"
-                  matchMode="equals"
-                  [showMenu]="false"
+                  </div>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th></th>
+            <th>
+              <p-columnFilter
+                field="meeting"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
                 >
-                  <ng-template
-                    pTemplate="filter"
-                    let-value
-                    let-filter="filterCallback"
+                  <p-dropdown
+                    [ngModel]="value"
+                    [options]="meetings"
+                    optionLabel="name"
+                    optionValue="name"
+                    (onChange)="filter($event.value)"
+                    placeholder="Todas"
                   >
-                    <p-dropdown
-                      [ngModel]="value"
-                      [options]="meetings"
-                      optionLabel="name"
-                      optionValue="name"
-                      (onChange)="filter($event.value)"
-                      placeholder="Todas"
-                    >
-                    </p-dropdown>
-                  </ng-template>
-                </p-columnFilter>
-              </th>
-              <th>
-                <p-columnFilter
-                  field="session"
-                  matchMode="equals"
-                  [showMenu]="false"
+                  </p-dropdown>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter
+                field="session"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
                 >
-                  <ng-template
-                    pTemplate="filter"
-                    let-value
-                    let-filter="filterCallback"
+                  <p-dropdown
+                    [ngModel]="value"
+                    [options]="sessions"
+                    optionLabel="name"
+                    optionValue="name"
+                    (onChange)="filter($event.value)"
+                    placeholder="Todas"
                   >
-                    <p-dropdown
-                      [ngModel]="value"
-                      [options]="sessions"
-                      optionLabel="name"
-                      optionValue="name"
-                      (onChange)="filter($event.value)"
-                      placeholder="Todas"
-                    >
-                    </p-dropdown>
-                  </ng-template>
-                </p-columnFilter>
-              </th>
-              <th>
-                <!-- FIXME: mostrar el texto en español -->
-                <!-- <p-columnFilter
+                  </p-dropdown>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th>
+              <!-- FIXME: mostrar el texto en español -->
+              <!-- <p-columnFilter
                   type="date"
                   field="meetingDate"
                   display="menu"
                 ></p-columnFilter> -->
-              </th>
-              <th>
-                <p-columnFilter
-                  field="status"
-                  matchMode="equals"
-                  [showMenu]="false"
+            </th>
+            <th>
+              <p-columnFilter
+                field="status"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
                 >
-                  <ng-template
-                    pTemplate="filter"
-                    let-value
-                    let-filter="filterCallback"
+                  <p-dropdown
+                    [ngModel]="value"
+                    [options]="status"
+                    (onChange)="filter($event.value)"
+                    placeholder="Todos"
                   >
-                    <p-dropdown
-                      [ngModel]="value"
-                      [options]="status"
-                      (onChange)="filter($event.value)"
-                      placeholder="Todos"
-                    >
-                      <ng-template let-option pTemplate="item">
-                        <span class="badge" [class]="setSeverity(option)">{{
-                          option
-                        }}</span>
-                      </ng-template>
-                    </p-dropdown>
-                  </ng-template>
-                </p-columnFilter>
-              </th>
-              <th></th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-agreement>
-            <tr row-cfg [status]="agreement.status">
-              <td>{{ agreement.number }}</td>
-              <td>{{ agreement.content }}</td>
-              <td>{{ agreement.area }}</td>
-              <td>{{ agreement.responsible }}</td>
-              <td>{{ agreement.meeting }}</td>
-              <td>{{ agreement.session }}</td>
-              <td>{{ agreement.meetingDate | date : "MM/dd/yyyy" }}</td>
-              <td>
-                <span class="badge" [class]="setSeverity(agreement.status)">{{
-                  agreement.status
-                }}</span>
-              </td>
-              <td>
+                    <ng-template let-option pTemplate="item">
+                      <p-tag
+                        [severity]="setSeverity(option)"
+                        [value]="option"
+                      />
+                      <!-- <span class="badge" [class]="setSeverity(option)">{{
+                      option
+                    }}</span> -->
+                    </ng-template>
+                  </p-dropdown>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-agreement>
+          <tr row-cfg [status]="agreement.status">
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                <strong>{{ agreement.number }}</strong>
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ agreement.content }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ agreement.area }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ agreement.responsible }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ agreement.meeting }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ agreement.session }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ agreement.meetingDate | date : "MM/dd/yyyy" }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                <p-tag
+                  [severity]="setSeverity(agreement.status)"
+                  [value]="agreement.status"
+                />
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
                 <p-button
                   icon="pi pi-info-circle"
                   label="Info"
                   [text]="true"
-                  [routerLink]="['/detalles/', agreement.id]"
+                  [routerLink]="['/acuerdos/detalles/', agreement.id]"
                 ></p-button>
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="5" class="text-danger">
-                No se encontró ningún acuerdo.
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="summary">
-            <div class="row">
-              <span class="col text-center"
-                >Acuerdos: {{ agreements ? agreements.length : 0 }}</span
-              >
-              <span class="col text-center"
-                >Cumplidos: {{ fulfilledAgreements }}</span
-              >
-              <span class="col text-center"
-                >Inumplidos: {{ unfulfilledAgreements }}</span
-              >
-              <span class="col text-center"
-                >Anulados: {{ canceledAgreements }}</span
-              >
-              <span class="col text-center"
-                >En proceso: {{ inProcessAgreements }}</span
-              >
-            </div>
-          </ng-template>
-        </p-table>
-      </div>
-    </div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5">No se encontró ningún acuerdo.</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="flex justify-content-evenly">
+            <span class="flex align-text-center justify-content-center"
+              >Acuerdos: {{ agreements ? agreements.length : 0 }}</span
+            >
+            <span class="flex align-text-center justify-content-center"
+              >Cumplidos: {{ fulfilledAgreements }}</span
+            >
+            <span class="flex align-text-center justify-content-center"
+              >Inumplidos: {{ unfulfilledAgreements }}</span
+            >
+            <span class="flex align-text-center justify-content-center"
+              >Anulados: {{ canceledAgreements }}</span
+            >
+            <span
+              class="min-w-max flex align-text-center justify-content-center"
+              >En proceso: {{ inProcessAgreements }}</span
+            >
+          </div>
+        </ng-template>
+      </p-table>
+    </p-card>
   </div>
-</p-card>
+</div>

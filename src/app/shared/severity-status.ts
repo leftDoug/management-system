@@ -17,7 +17,7 @@ export function getStatus(agreement: Agreement): Status {
 export function getSeverity(
   agreement: Agreement | null,
   agreementStatus: Status | null
-): string {
+) {
   let status: Status;
 
   if (agreement) status = getStatus(agreement);
@@ -25,16 +25,12 @@ export function getSeverity(
 
   switch (status) {
     case Status.canceled:
-      return 'text-bg-secondary';
+      return 'secondary';
     case Status.fulfilled:
-      return 'text-bg-success';
+      return 'success';
     case Status.inProcess:
-      return 'text-bg-primary';
+      return 'info';
     case Status.unfulfilled:
-      return 'text-bg-danger';
-    default:
-      break;
+      return 'danger';
   }
-
-  return '';
 }

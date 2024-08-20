@@ -1,74 +1,122 @@
-<div class="container p-3">
-  <div class="row justify-content-center">
-    <div class="col-8">
-      <h1>Acuerdo {{ agreement.number }}</h1>
-      <ul class="list-group">
-        <li class="list-group-item">
-          <strong>Contenido: </strong>{{ agreement.content }}
-        </li>
-        <li class="list-group-item"><strong>Área: </strong>{{ area }}</li>
-        <li class="list-group-item">
-          <strong>Responsable: </strong>{{ responsible }}
-        </li>
-        <li class="list-group-item">
-          <strong>Creado por: </strong>{{ createdBy }}
-        </li>
-        <li class="list-group-item">
-          <strong>Fecha de cumplimiento del acuerdo: </strong
-          >{{ agreement.compilanceDate | date : "MM/dd/yyyy" }}
-        </li>
-        <li class="list-group-item"><strong>Reunión: </strong>{{ meeting }}</li>
-        <li class="list-group-item"><strong>Sesión: </strong>{{ session }}</li>
-        <li class="list-group-item">
-          <strong>Fecha de la reunión: </strong
-          >{{ agreement.meetingDate | date : "MM/dd/yyyy" }}
-        </li>
-        <li class="list-group-item">
-          <strong>Hora de inicio de la reunión: </strong
-          >{{ agreement.meetingStartTime | date : "H:mm" }}
-        </li>
-        <li class="list-group-item">
-          <strong>Hora de fin de la reunión: </strong
-          >{{ agreement.meetingEndTime | date : "H:mm" }}
-        </li>
-        <li class="list-group-item">
-          <strong>Respuesta: </strong>{{ agreement.answer }}
-        </li>
-        <li class="list-group-item">
-          <strong>Estado: </strong>
-          <span class="badge" [class]="severity">{{ status | uppercase }}</span>
-        </li>
-      </ul>
+<div class="flex align-items-center justify-content-center">
+  <p-card class="p-5 w-full">
+    <p-toast></p-toast>
+    <div class="">
+      <h1 class="flex gap-3 mt-0 ml-5">
+        Acuerdo {{ agreement.number }}
+        <p-tag
+          [severity]="setSeverity(status)"
+          [value]="status"
+          class="flex align-self-center"
+        />
+      </h1>
+
+      <p-divider align="left" type="solid">
+        <strong>Contenido</strong>
+      </p-divider>
+      <p class="ml-5">{{ agreement.content }}</p>
+
+      <div class="grid">
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Área</strong>
+          </p-divider>
+          <p class="ml-5">{{ area }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Responsable</strong>
+          </p-divider>
+          <p class="ml-5">{{ responsible }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Creado por</strong>
+          </p-divider>
+          <p class="ml-5">{{ createdBy }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Fecha de cumplimiento</strong>
+          </p-divider>
+          <p class="ml-5">
+            {{ agreement.compilanceDate | date : "MM/dd/yyyy" }}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Reunión</strong>
+          </p-divider>
+          <p class="ml-5">{{ meeting }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Sesión</strong>
+          </p-divider>
+          <p class="ml-5">{{ session }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Fecha de la reunión</strong>
+          </p-divider>
+          <p class="ml-5">{{ agreement.meetingDate | date : "MM/dd/yyyy" }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Hora de inicio</strong>
+          </p-divider>
+          <p class="ml-5">{{ agreement.meetingStartTime | date : "H:mm" }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Hora de fin</strong>
+          </p-divider>
+          <p class="ml-5">{{ agreement.meetingEndTime | date : "H:mm" }}</p>
+        </div>
+      </div>
+
+      <p-divider align="left" type="solid">
+        <strong>Respuesta</strong>
+      </p-divider>
+      <p class="ml-5">{{ agreement.answer }}</p>
     </div>
 
-    <div class="row justify-content-center mt-3">
-      <p-toast></p-toast>
-      <p-confirmDialog></p-confirmDialog>
-      <p-button
-        icon="pi pi-pencil"
-        label="Editar"
-        severity="success"
-        class="col-2 mx-2"
-        type="button"
-        *ngIf="!agreement.completed && !agreement.canceled"
-        [routerLink]="['/editar/', agreement.id]"
-      ></p-button>
-      <p-button
-        icon="pi pi-times"
-        label="Cancelar"
-        class="col-2 mx-2"
-        type="button"
-        routerLink="/acuerdos"
-      ></p-button>
-      <p-button
-        icon="pi pi-ban"
-        label="Anular"
-        severity="danger"
-        class="col-2 mx-2"
-        type="button"
-        *ngIf="!agreement.completed && !agreement.canceled"
-        (onClick)="cancel()"
-      ></p-button>
-    </div>
-  </div>
+    <ng-template pTemplate="footer">
+      <div class="flex gap-3 justify-content-center">
+        <p-button
+          icon="pi pi-pencil"
+          label="Editar"
+          severity="success"
+          type="button"
+          *ngIf="!agreement.completed && !agreement.canceled"
+          [routerLink]="['/acuerdos/editar/', agreement.id]"
+        ></p-button>
+        <p-button
+          icon="pi pi-times"
+          label="Cancelar"
+          type="button"
+          routerLink="/acuerdos"
+        ></p-button>
+        <p-button
+          icon="pi pi-ban"
+          label="Anular"
+          severity="danger"
+          type="button"
+          *ngIf="!agreement.completed && !agreement.canceled"
+          (onClick)="cancel()"
+        ></p-button>
+      </div>
+    </ng-template>
+    <p-confirmDialog></p-confirmDialog>
+  </p-card>
 </div>

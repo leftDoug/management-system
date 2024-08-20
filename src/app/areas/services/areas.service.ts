@@ -19,4 +19,16 @@ export class AreasService {
   getById(id: string): Observable<Area> {
     return this.http.get<Area>(`${this._apiUrl}/areas/${id}`);
   }
+
+  add(area: Area): Observable<Area> {
+    return this.http.post<Area>(`${this._apiUrl}/areas`, area);
+  }
+
+  update(area: Area): Observable<Area> {
+    return this.http.put<Area>(`${this._apiUrl}/areas/${area.id}`, area);
+  }
+
+  remove(id: string): Observable<Area> {
+    return this.http.delete<Area>(`${this._apiUrl}/areas/${id}`);
+  }
 }

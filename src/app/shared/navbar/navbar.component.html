@@ -1,6 +1,8 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<!-- <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">CUADRO DE MANDO</a>
+    <a class="navbar-brand" href="#"
+      ><strong>FEVEX</strong>_<small>Meet</small></a
+    >
     <button
       class="navbar-toggler"
       type="button"
@@ -15,12 +17,25 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <a class="nav-link active" aria-current="page" routerLink="acuerdos"
-          >ACUERDOS</a
+          ><strong>ACUERDOS</strong></a
         >
-        <a class="nav-link" href="#">Features</a>
-        <a class="nav-link" href="#">Pricing</a>
-        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+        <a class="nav-link" href="#"><strong>AGENDAS</strong></a>
+        <a class="nav-link" href="areas"><strong>ÁREAS</strong></a>
+        <a class="nav-link" href="#"><strong>REUNIONES</strong></a>
+        <a class="nav-link" href="#"><strong>TIPOS DE REUNIONES</strong></a>
+        <a class="nav-link" href="#"><strong>TRABAJADORES</strong></a>
       </div>
     </div>
   </div>
-</nav>
+</nav> -->
+
+<p-tabMenu [model]="items">
+  <ng-template pTemplate="item" let-item>
+    <a [routerLink]="item.route" class="p-menuitem-link">
+      <!-- <span [class]="item.icon"></span> -->
+      <span class="ml-2">
+        {{ item.label }}
+      </span>
+    </a>
+  </ng-template>
+</p-tabMenu>

@@ -1,0 +1,73 @@
+<div class="flex align-items-center justify-content-center">
+  <p-card
+    class="p-5 w-full"
+    [header]="newArea.id ? 'Actualizar área ' + newArea.name : 'Crear área'"
+  >
+    <p-toast></p-toast>
+    <form
+      class="form"
+      action="POST"
+      (ngSubmit)="create()"
+      [formGroup]="areaForm"
+      autocomplete="off"
+    >
+      <div class="grid">
+        <label
+          for="name"
+          class="col-2 flex align-items-center justify-content-end"
+          >Área:
+        </label>
+
+        <input
+          class="col ml-2 mr-3"
+          type="text"
+          pInputText
+          id="name"
+          formControlName="name"
+          placeholder="Nombre del área..."
+        />
+      </div>
+
+      <div class="grid">
+        <div class="col-2"></div>
+
+        <small id="area-help" class="p-error col ml-2" *ngIf="validate()">{{
+          areaErrorMsg
+        }}</small>
+      </div>
+
+      <!-- botones -->
+      <div class="gap-6 mt-5 flex align-items-center justify-content-center">
+        <p-button
+          label="Crear"
+          icon="pi pi-check"
+          severity="success"
+          class=""
+          type="submit"
+          *ngIf="!newArea.id; else update"
+          [disabled]="areaForm.invalid"
+        ></p-button>
+
+        <ng-template #update>
+          <p-button
+            label="Actualizar"
+            icon="pi pi-check"
+            severity="success"
+            class="col-2 mx-2"
+            type="submit"
+            [disabled]="areaForm.invalid || areaForm.pristine"
+          ></p-button>
+        </ng-template>
+
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          class=""
+          type="button"
+          [routerLink]="'/areas'"
+        ></p-button>
+      </div>
+      <!-- fin botones -->
+    </form>
+  </p-card>
+</div>

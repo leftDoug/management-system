@@ -7,45 +7,15 @@ import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
 export class ValidatorService {
   constructor() {}
 
-  // dayBeginning(control: FormControl): ValidationErrors | null {
-  //   const beginning: Date = new Date(control.value);
-  //   beginning.setHours(9);
-  //   beginning.setMinutes(0);
-
-  //   if (beginning.getTime() > control.value.getTime()) {
-  //     return { tooEarlyError: true };
-  //   }
-
-  //   return null;
-  // }
-
-  // dayEnd(control: FormControl): ValidationErrors | null {
-  //   const end: Date = new Date(control.value);
-  //   end.setHours(17);
-  //   end.setMinutes(0);
-
-  //   if (end.getTime() < control.value.getTime()) {
-  //     return { tooLateError: true };
-  //   }
-
-  //   return null;
-  // }
-
   timeLimits(control: FormControl): ValidationErrors | null {
     const time: Date = new Date(control.value);
     const beginning: Date = new Date(time);
-    const end: Date = new Date(time);
 
-    beginning.setHours(9);
+    beginning.setHours(7);
     beginning.setMinutes(0);
-    end.setHours(17);
-    end.setMinutes(0);
 
     if (time.getTime() < beginning.getTime()) {
       return { tooEarlyError: true };
-    }
-    if (time.getTime() > end.getTime()) {
-      return { tooLateError: true };
     }
 
     return null;
@@ -78,16 +48,18 @@ export class ValidatorService {
       const compilance: Date = new Date(formGroup.get(c)?.value);
 
       if (meeting.getTime() > compilance.getTime()) {
-        formGroup.get(c)?.setErrors({ meetingCompilanceError: true });
+        if (!formGroup.get(c)?.errors) {
+          formGroup.get(c)?.setErrors({ meetingCompilanceError: true });
+        }
+
         return {
           meetingCompilanceError: true,
         };
       } else {
-        formGroup.get(c)?.setErrors(null);
+        formGroup
+          .get(c)
+          ?.setErrors(!formGroup.get(c)?.value ? { required: true } : null);
       }
-      // else {
-      //   return this.compilanceDate(formGroup.get(c) as FormControl);
-      // }
 
       return null;
     };
@@ -103,17 +75,4 @@ export class ValidatorService {
 
     return null;
   }
-
-  // compilanceDate(control: FormControl): ValidationErrors | null {
-  //   const compilanceDate: Date = new Date(control.value);
-  //   const today: Date = new Date();
-
-  //   if (today.getTime() > compilanceDate.getTime()) {
-  //     return {
-  //       compilanceDateError: true,
-  //     };
-  //   }
-
-  //   return null;
-  // }
 }
