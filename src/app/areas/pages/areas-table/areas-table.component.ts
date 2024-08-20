@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Area } from '../../interfaces/area.interface';
 import { AreasService } from '../../services/areas.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -9,7 +9,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   styleUrls: ['./areas-table.component.css'],
   providers: [ConfirmationService, MessageService],
 })
-export class AreasTableComponent {
+export class AreasTableComponent implements OnInit {
   areas: Area[] = [];
 
   constructor(

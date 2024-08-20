@@ -11,8 +11,8 @@ export class NavbarComponent {
     { label: 'Acuerdos', route: 'acuerdos' },
     { label: 'Agendas', route: '' },
     { label: 'Áreas', route: 'areas' },
-    { label: 'Reuniones', route: '' },
-    { label: 'Tipos de Reuniones', route: '' },
+    { label: 'Reuniones', route: 'reuniones' },
+    { label: 'Tipos de Reuniones', route: 'tipos-de-reuniones' },
     { label: 'Trabajadores', route: '' },
   ];
 }

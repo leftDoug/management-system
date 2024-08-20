@@ -10,6 +10,8 @@ import { SharedModule } from './shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { AuthModule } from './auth/auth.module';
 import { AreasModule } from './areas/areas.module';
+import { MeetingsModule } from './meetings/meetings.module';
+import { TypesOfMeetingsModule } from './types-of-meetings/types-of-meetings.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +22,8 @@ import { AreasModule } from './areas/areas.module';
     // PrimengModule,
     AgreementsModule,
     AreasModule,
+    MeetingsModule,
+    TypesOfMeetingsModule,
     AuthModule,
     AppRoutingModule,
     SharedModule,

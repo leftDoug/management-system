@@ -6,6 +6,9 @@ import { AgreementFormComponent } from './agreements/pages/agreement-form/agreem
 import { LoginComponent } from './auth/pages/login/login.component';
 import { AreasTableComponent } from './areas/pages/areas-table/areas-table.component';
 import { AreaFormComponent } from './areas/pages/area-form/area-form.component';
+import { TypesOfMeetingsTableComponent } from './types-of-meetings/pages/types-of-meetings-table/types-of-meetings-table.component';
+import { MeetingsTableComponent } from './meetings/pages/meetings-table/meetings-table.component';
+import { TypeOfMeetingFormComponent } from './types-of-meetings/pages/type-of-meeting-form/type-of-meeting-form.component';
 
 const routes: Routes = [
   // {
@@ -32,6 +35,13 @@ const routes: Routes = [
   { path: 'areas', component: AreasTableComponent },
   { path: 'areas/agregar', component: AreaFormComponent },
   { path: 'areas/editar/:id', component: AreaFormComponent },
+  { path: 'reuniones', component: MeetingsTableComponent },
+  { path: 'tipos-de-reuniones', component: TypesOfMeetingsTableComponent },
+  { path: 'tipos-de-reuniones/agregar', component: TypeOfMeetingFormComponent },
+  {
+    path: 'tipos-de-reuniones/editar/:id',
+    component: TypeOfMeetingFormComponent,
+  },
   { path: '**', redirectTo: 'acuerdos' },
 ];
 

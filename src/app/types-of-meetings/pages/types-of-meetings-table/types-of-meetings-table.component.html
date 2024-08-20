@@ -1,0 +1,144 @@
+<div class="flex flex-wrap align-items-center justify-content-center">
+  <div class="p-5 w-full">
+    <p-card class="min-w-700" header="Listado de Tipos de Reuniones">
+      <p-toast></p-toast>
+      <p-table
+        [value]="typesOfMeetings"
+        [tableStyle]="{ 'min-width': '60rem' }"
+        #tTypesOfMeetings
+        [globalFilterFields]="['name', 'area', 'frequency']"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex justify-content-between">
+            <p-button
+              label="Crear Tipo de Reunión"
+              icon="pi pi-plus"
+              severity="success"
+              routerLink="/tipos-de-reuniones/agregar"
+            ></p-button>
+            <span class="p-input-icon-left ml-5">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                placeholder="Buscar..."
+                ngClass="search"
+                (input)="
+                  tTypesOfMeetings.filterGlobal(
+                    $any($event.target).value,
+                    'contains'
+                  )
+                "
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">
+              Tipo de Reunión <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="area">
+              Área <p-sortIcon field="FK_idWorkArea"></p-sortIcon>
+            </th>
+            <th pSortableColumn="frequency">
+              Frecuencia <p-sortIcon field="frequency"></p-sortIcon>
+            </th>
+            <th style="width: 5%"></th>
+          </tr>
+          <tr>
+            <th></th>
+            <th>
+              <p-columnFilter
+                field="area"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
+                >
+                  <div class="w-100">
+                    <p-dropdown
+                      [ngModel]="value"
+                      [options]="areas"
+                      optionLabel="name"
+                      optionValue="name"
+                      (onChange)="filter($event.value)"
+                      placeholder="Todas"
+                    >
+                    </p-dropdown>
+                  </div>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter
+                field="frequency"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
+                >
+                  <div class="w-100">
+                    <p-dropdown
+                      [ngModel]="value"
+                      [options]="frequencies"
+                      (onChange)="filter($event.value)"
+                      placeholder="Todas"
+                    >
+                    </p-dropdown>
+                  </div>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-typeOfMeeting>
+          <tr>
+            <td>{{ typeOfMeeting.name }}</td>
+            <td>{{ typeOfMeeting.FK_idWorkArea }}</td>
+            <td>{{ typeOfMeeting.frequency }}</td>
+            <td class="flex align-items-center justify-content-center">
+              <p-button
+                icon="pi pi-pencil"
+                label="Editar"
+                [text]="true"
+                [routerLink]="['/tipos-de-reuniones/editar/', typeOfMeeting.id]"
+              ></p-button>
+
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                label="Eliminar"
+                [text]="true"
+                (onClick)="remove($event, typeOfMeeting.id)"
+              ></p-button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-danger">
+              No se encontró ningún tipo de reunión.
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="row">
+            <span class="col text-center"
+              >Tipos de Reunión:
+              {{ typesOfMeetings ? typesOfMeetings.length : 0 }}</span
+            >
+          </div>
+        </ng-template>
+      </p-table>
+      <p-confirmDialog></p-confirmDialog>
+    </p-card>
+  </div>
+</div>
