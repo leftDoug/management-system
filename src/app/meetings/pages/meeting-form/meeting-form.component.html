@@ -1,0 +1,315 @@
+<div class="flex align-items-center justify-content-center">
+  <p-card
+    class="p-5 w-full"
+    [header]="newMeeting.id ? 'Actualizar Reunión' : 'Crear Reunión'"
+  >
+    <form
+      class="form"
+      action="POST"
+      (ngSubmit)="create()"
+      [formGroup]="meetingForm"
+      autocomplete="off"
+    >
+      <!-- contenido -->
+      <div class="grid">
+        <label
+          for="name"
+          class="col-2 flex align-items-center justify-content-end"
+          >Reunión:
+        </label>
+
+        <input
+          class="col ml-2 mr-3"
+          type="text"
+          pInputText
+          id="name"
+          formControlName="name"
+          placeholder="Reunión..."
+        />
+      </div>
+
+      <div class="grid">
+        <div class="col-2"></div>
+
+        <small
+          id="name-help"
+          class="p-error col ml-2"
+          *ngIf="validate('name')"
+          >{{ nameErrorMsg }}</small
+        >
+      </div>
+      <!-- fin contenido -->
+
+      <!-- 2 columnas -->
+      <div class="grid mt-1">
+        <!-- izquierda -->
+        <div class="col">
+          <!-- tipo de reunion -->
+          <!-- FIXME: sustituir x inputtext del usuario logeado -->
+          <div class="grid">
+            <label
+              for="typeOfMeeting"
+              class="col-4 flex align-items-center justify-content-end"
+              >Tipo de Reunión:
+            </label>
+
+            <p-dropdown
+              class="col"
+              id="typeOfMeeting"
+              optionLabel="name"
+              optionValue="id"
+              [options]="typesOfMeetings"
+              formControlName="typeOfMeeting"
+              placeholder="-- Seleccione --"
+            ></p-dropdown>
+          </div>
+
+          <div class="grid">
+            <div class="col-4"></div>
+
+            <small
+              id="typpeOfMeeting-help"
+              class="p-error col pt-0 ml-2"
+              *ngIf="validate('typeOfMeeting')"
+              >{{ typeOfMeetingErrorMsg }}</small
+            >
+          </div>
+          <!-- fin tipo de reunion -->
+
+          <!-- area -->
+          <div class="grid mt-1 mb-3">
+            <label
+              for="area"
+              class="col-4 flex align-items-center justify-content-end"
+              >Área:
+            </label>
+
+            <input
+              class="flex col-6 ml-2"
+              type="text"
+              pInputText
+              id="area"
+              [(ngModel)]="area"
+              [ngModelOptions]="{ standalone: true }"
+              [disabled]="true"
+            />
+          </div>
+          <!-- fin area -->
+
+          <!-- responsible -->
+          <div class="grid">
+            <label
+              for="responsible"
+              class="col-4 flex align-items-center justify-content-end"
+              >Responsable:
+            </label>
+
+            <p-dropdown
+              class="col"
+              id="responsible"
+              [options]="workers"
+              optionLabel="name"
+              optionValue="id"
+              formControlName="responsible"
+              placeholder="-- Seleccione --"
+            ></p-dropdown>
+          </div>
+
+          <div class="grid">
+            <div class="col-4"></div>
+
+            <small
+              id="responsible-help"
+              class="p-error col pt-0 ml-2"
+              *ngIf="validate('responsible')"
+              >{{ responsibleErrorMsg }}</small
+            >
+          </div>
+          <!-- fin responsible -->
+
+          <!-- session -->
+          <div class="grid">
+            <label
+              for="session"
+              class="col-4 flex align-items-center justify-content-end"
+              >Sesión:
+            </label>
+
+            <p-dropdown
+              class="col mr-3"
+              id="session"
+              [options]="sessions"
+              formControlName="session"
+              placeholder="-- Seleccione --"
+            ></p-dropdown>
+          </div>
+
+          <div class="grid">
+            <div class="col-4"></div>
+
+            <small
+              id="session-help"
+              class="p-error col pt-0 ml-2 mr-3"
+              *ngIf="validate('session')"
+              >{{ sessionErrorMsg }}</small
+            >
+          </div>
+          <!-- fin session -->
+        </div>
+        <!-- fin izquierda -->
+
+        <!-- derecha -->
+        <div class="col">
+          <!-- date -->
+          <div class="grid">
+            <label
+              for="date"
+              class="col-4 flex align-items-center justify-content-end"
+              >Fecha:
+            </label>
+
+            <p-calendar
+              class="col"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              inputId="date"
+              dateFormat="mm/dd/yy"
+              formControlName="date"
+            ></p-calendar>
+            <div class="col-4"></div>
+          </div>
+
+          <div class="grid">
+            <div class="col-4"></div>
+
+            <small
+              id="date-help"
+              class="p-error col pt-0 ml-2 mr-3"
+              *ngIf="validate('date')"
+              >{{ dateErrorMsg }}</small
+            >
+          </div>
+          <!-- fin date -->
+
+          <!-- start -->
+          <div class="grid">
+            <label
+              for="startTime"
+              class="col-4 flex align-items-center justify-content-end"
+              >Hora de inicio:
+            </label>
+
+            <p-calendar
+              class="col flex align-items-center align-self-center"
+              inputId="startTime"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              [timeOnly]="true"
+              formControlName="startTime"
+            >
+              <ng-template pTemplate="inputicon">
+                <i
+                  class="pi pi-clock pointer-events-none pointer-events-none"
+                ></i> </ng-template
+            ></p-calendar>
+            <div class="col-4"></div>
+          </div>
+
+          <div class="grid">
+            <div class="col-4"></div>
+
+            <small
+              id="startTime-help"
+              class="p-error col pt-0 ml-2"
+              *ngIf="validate('startTime')"
+              >{{ startTimeErrorMsg }}</small
+            >
+          </div>
+          <!-- fin start -->
+
+          <!-- end -->
+          <div class="grid">
+            <label
+              for="endTime"
+              class="col-4 flex align-items-center justify-content-end"
+              >Hora de fin:
+            </label>
+
+            <p-calendar
+              class="col flex align-items-center align-self-center"
+              inputId="endTime"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              [timeOnly]="true"
+              formControlName="endTime"
+            >
+              <ng-template pTemplate="inputicon">
+                <i
+                  class="pi pi-clock pointer-events-none pointer-events-none"
+                ></i>
+              </ng-template>
+            </p-calendar>
+            <div class="col-4"></div>
+          </div>
+
+          <div class="grid">
+            <div class="col-4"></div>
+
+            <small
+              id="endTime-help"
+              class="p-error col pt-0 ml-2"
+              *ngIf="validate('endTime')"
+              >{{ endTimeErrorMsg }}</small
+            >
+          </div>
+          <!-- fin end -->
+        </div>
+        <!-- fin derecha -->
+      </div>
+      <!-- fin 2 columnas -->
+
+      <!-- botones -->
+      <div class="gap-6 mt-5 flex align-items-center justify-content-center">
+        <p-toast></p-toast>
+
+        <p-button
+          label="Crear"
+          icon="pi pi-check"
+          severity="success"
+          class=""
+          type="submit"
+          *ngIf="!newMeeting.id; else update"
+          [disabled]="meetingForm.invalid"
+        ></p-button>
+
+        <ng-template #update>
+          <p-button
+            label="Actualizar"
+            icon="pi pi-check"
+            severity="success"
+            class="col-2 mx-2"
+            type="submit"
+            [disabled]="meetingForm.invalid || meetingForm.pristine"
+          ></p-button>
+        </ng-template>
+
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          class=""
+          type="button"
+          [routerLink]="
+            !newMeeting.id
+              ? '/reuniones'
+              : ['/reuniones/detalles/', newMeeting.id]
+          "
+        ></p-button>
+      </div>
+      <!-- fin botones -->
+    </form>
+  </p-card>
+</div>
+
+<pre>
+  {{ area | json }}
+</pre>

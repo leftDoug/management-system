@@ -71,7 +71,7 @@ export class TypesOfMeetingsTableComponent implements OnInit {
         });
         this.typesOfMeetingsService.remove(id).subscribe(console.log);
         this.typesOfMeetings = this.typesOfMeetings.filter(
-          (typpeOfMeeting) => typpeOfMeeting.id !== id
+          (typeOfMeeting) => typeOfMeeting.id !== id
         );
       },
       reject: () => {},

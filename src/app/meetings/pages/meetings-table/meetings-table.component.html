@@ -1,1 +1,202 @@
-<p>meetings-table works!</p>
+<div class="flex flex-wrap align-items-center justify-content-center">
+  <div class="p-5 w-full">
+    <p-card class="min-w-700" header="Listado de Reuniones">
+      <p-table
+        #tMeetings
+        [value]="meetings"
+        [globalFilterFields]="[
+          'name',
+          'typeOfMeeting',
+          'area',
+          'session',
+          'date'
+        ]"
+        [tableStyle]="{ 'min-width': '60rem' }"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex justify-content-between">
+            <p-button
+              label="Crear Reunión"
+              icon="pi pi-plus"
+              severity="success"
+              routerLink="/reuniones/agregar"
+            ></p-button>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                placeholder="Buscar..."
+                (input)="
+                  tMeetings.filterGlobal($any($event.target).value, 'contains')
+                "
+              />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">
+              <div class="flex align-items-center justify-content-center">
+                Reunión <p-sortIcon field="name"></p-sortIcon>
+              </div>
+            </th>
+            <th pSortableColumn="typeOfMeeting">
+              <div class="flex align-items-center justify-content-center">
+                Tipo de Reunión <p-sortIcon field="typeOfMeeting"></p-sortIcon>
+              </div>
+            </th>
+            <th pSortableColumn="area">
+              <div class="flex align-items-center justify-content-center">
+                Área <p-sortIcon field="area"></p-sortIcon>
+              </div>
+            </th>
+            <th pSortableColumn="session">
+              <div class="flex align-items-center justify-content-center">
+                Sesión <p-sortIcon field="session"></p-sortIcon>
+              </div>
+            </th>
+            <th pSortableColumn="date">
+              <div class="flex align-items-center justify-content-center">
+                Fecha <p-sortIcon field="date"></p-sortIcon>
+              </div>
+            </th>
+            <th></th>
+          </tr>
+          <tr>
+            <th></th>
+            <th>
+              <p-columnFilter
+                field="typeOfMeeting"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
+                >
+                  <p-dropdown
+                    [ngModel]="value"
+                    [options]="typesOfMeetings"
+                    optionLabel="name"
+                    optionValue="name"
+                    (onChange)="filter($event.value)"
+                    placeholder="Todas"
+                  >
+                  </p-dropdown>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter
+                field="area"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
+                >
+                  <div class="w-100">
+                    <p-dropdown
+                      [ngModel]="value"
+                      [options]="areas"
+                      optionLabel="name"
+                      optionValue="name"
+                      (onChange)="filter($event.value)"
+                      placeholder="Todas"
+                    >
+                    </p-dropdown>
+                  </div>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter
+                field="session"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
+                >
+                  <p-dropdown
+                    [ngModel]="value"
+                    [options]="sessions"
+                    (onChange)="filter($event.value)"
+                    placeholder="Todas"
+                  >
+                  </p-dropdown>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th>
+              <!-- FIXME: mostrar el texto en español -->
+              <!-- <p-columnFilter
+                  type="date"
+                  field="meetingDate"
+                  display="menu"
+                ></p-columnFilter> -->
+            </th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-meeting>
+          <tr>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ meeting.name }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ meeting.typeOfMeeting }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ meeting.area }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ meeting.session }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                {{ meeting.date | date : "MM/dd/yyyy" }}
+              </div>
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center">
+                <p-button
+                  icon="pi pi-info-circle"
+                  label="Info"
+                  [text]="true"
+                  [routerLink]="['/reuniones/detalles/', meeting.id]"
+                ></p-button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5">No se encontró ninguna reunión.</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="row">
+            <span class="col text'center"
+              >Reuniones: {{ meetings ? meetings.length : 0 }}</span
+            >
+          </div>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+</div>

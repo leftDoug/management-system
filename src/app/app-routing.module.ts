@@ -9,6 +9,8 @@ import { AreaFormComponent } from './areas/pages/area-form/area-form.component';
 import { TypesOfMeetingsTableComponent } from './types-of-meetings/pages/types-of-meetings-table/types-of-meetings-table.component';
 import { MeetingsTableComponent } from './meetings/pages/meetings-table/meetings-table.component';
 import { TypeOfMeetingFormComponent } from './types-of-meetings/pages/type-of-meeting-form/type-of-meeting-form.component';
+import { MeetingFormComponent } from './meetings/pages/meeting-form/meeting-form.component';
+import { MeetingInfoComponent } from './meetings/pages/meeting-info/meeting-info.component';
 
 const routes: Routes = [
   // {
@@ -36,6 +38,9 @@ const routes: Routes = [
   { path: 'areas/agregar', component: AreaFormComponent },
   { path: 'areas/editar/:id', component: AreaFormComponent },
   { path: 'reuniones', component: MeetingsTableComponent },
+  { path: 'reuniones/agregar', component: MeetingFormComponent },
+  { path: 'reuniones/detalles/:id', component: MeetingInfoComponent },
+  { path: 'reuniones/editar/:id', component: MeetingFormComponent },
   { path: 'tipos-de-reuniones', component: TypesOfMeetingsTableComponent },
   { path: 'tipos-de-reuniones/agregar', component: TypeOfMeetingFormComponent },
   {

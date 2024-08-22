@@ -19,4 +19,19 @@ export class MeetingsService {
   getById(id: string): Observable<Meeting> {
     return this.http.get<Meeting>(`${this._apiUrl}/reuniones/${id}`);
   }
+
+  add(meeting: Meeting): Observable<Meeting> {
+    return this.http.post<Meeting>(`${this._apiUrl}/reuniones`, meeting);
+  }
+
+  update(meeting: Meeting): Observable<Meeting> {
+    return this.http.put<Meeting>(
+      `${this._apiUrl}/reuniones/${meeting.id}`,
+      meeting
+    );
+  }
+
+  remove(id: string): Observable<Meeting> {
+    return this.http.delete<Meeting>(`${this._apiUrl}/reuniones/${id}`);
+  }
 }

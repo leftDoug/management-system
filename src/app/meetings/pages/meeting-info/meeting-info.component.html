@@ -1,0 +1,79 @@
+<div class="flex align-items-center justify-content-center">
+  <p-card class="p-5 w-full">
+    <p-toast></p-toast>
+    <h1 class="flex mt-0 ml-5">{{ meeting.name }}</h1>
+    <div class="">
+      <div class="grid">
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Tipo de Reunión</strong>
+          </p-divider>
+          <p class="ml-5">{{ typeOfMeeting }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Sesión</strong>
+          </p-divider>
+          <p class="ml-5">{{ meeting.session }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Responsable</strong>
+          </p-divider>
+          <p class="ml-5">{{ responsible }}</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Fecha</strong>
+          </p-divider>
+          <p class="ml-5">{{ meeting.date | date : "MM/dd/yyyy" }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Hora de inicio</strong>
+          </p-divider>
+          <p class="ml-5">{{ meeting.startTime | date : "H:mm" }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Hora de fin</strong>
+          </p-divider>
+          <p class="ml-5">{{ meeting.endTime | date : "H:mm" }}</p>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="flex gap-3 justify-content-center">
+        <p-button
+          icon="pi pi-pencil"
+          label="Editar"
+          severity="success"
+          type="button"
+          [routerLink]="['/reuniones/editar/', meeting.id]"
+        ></p-button>
+        <p-button
+          icon="pi pi-times"
+          label="Atrás"
+          type="button"
+          routerLink="/reuniones"
+        ></p-button>
+        <p-button
+          icon="pi pi-trash"
+          label="Eliminar"
+          severity="danger"
+          type="button"
+          (onClick)="remove($event)"
+        ></p-button>
+      </div>
+    </ng-template>
+    <p-confirmDialog></p-confirmDialog>
+  </p-card>
+</div>
