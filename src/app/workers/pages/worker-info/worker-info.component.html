@@ -1,1 +1,71 @@
-<p>worker-info works!</p>
+<div class="flex align-items-center justify-content-center">
+  <p-card class="p-5 w-full">
+    <p-toast></p-toast>
+    <h1 class="flex mt-0 ml-5">{{ worker.name }}</h1>
+    <div class="">
+      <div class="grid">
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Cargo</strong>
+          </p-divider>
+          <p class="ml-5">{{ worker.occupation }}</p>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Email</strong>
+          </p-divider>
+          <p class="ml-5">{{ worker.email }}</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Área(s)</strong>
+          </p-divider>
+          <ul *ngFor="let area of areas">
+            <li>{{ area.name }}</li>
+          </ul>
+        </div>
+
+        <div class="col">
+          <p-divider align="left" type="solid">
+            <strong>Secretario/a de actas</strong>
+          </p-divider>
+          <p class="ml-5">{{ worker.secretary ? "Sí" : "No" }}</p>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="flex gap-3 justify-content-center">
+        <p-button
+          icon="pi pi-pencil"
+          label="Editar"
+          severity="success"
+          type="button"
+          [routerLink]="['/trabajadores/editar/', worker.id]"
+        ></p-button>
+        <p-button
+          icon="pi pi-times"
+          label="Atrás"
+          type="button"
+          routerLink="/trabajadores"
+        ></p-button>
+        <p-button
+          icon="pi pi-trash"
+          label="Eliminar"
+          severity="danger"
+          type="button"
+          (onClick)="remove($event)"
+        ></p-button>
+      </div>
+    </ng-template>
+    <p-confirmDialog></p-confirmDialog>
+  </p-card>
+</div>
+
+<pre>
+  {{ workersAreas | json }}
+</pre>

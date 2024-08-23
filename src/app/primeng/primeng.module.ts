@@ -16,6 +16,8 @@ import { CardModule } from 'primeng/card';
 import { MessagesModule } from 'primeng/messages';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { DividerModule } from 'primeng/divider';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { KeyFilterModule } from 'primeng/keyfilter';
 
 @NgModule({
   exports: [
@@ -35,6 +37,8 @@ import { DividerModule } from 'primeng/divider';
     MessagesModule,
     TabMenuModule,
     DividerModule,
+    MultiSelectModule,
+    KeyFilterModule,
   ],
 })
 export class PrimengModule {}

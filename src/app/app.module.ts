@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { AreasModule } from './areas/areas.module';
 import { MeetingsModule } from './meetings/meetings.module';
 import { TypesOfMeetingsModule } from './types-of-meetings/types-of-meetings.module';
+import { WorkersModule } from './workers/workers.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,6 +25,7 @@ import { TypesOfMeetingsModule } from './types-of-meetings/types-of-meetings.mod
     AreasModule,
     MeetingsModule,
     TypesOfMeetingsModule,
+    WorkersModule,
     AuthModule,
     AppRoutingModule,
     SharedModule,

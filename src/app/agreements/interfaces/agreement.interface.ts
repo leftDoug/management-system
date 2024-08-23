@@ -16,6 +16,19 @@ export interface Agreement {
   number: number;
 }
 
+export interface AgreementX {
+  id: string;
+  FK_idCreatedBy: string;
+  FK_idMeeting: string;
+  FK_idResponsible: string;
+  answer: string;
+  canceled: boolean;
+  compilanceDate: Date;
+  completed: boolean;
+  content: string;
+  number: number;
+}
+
 export interface AgreementWithStatus {
   id: string;
   area: string;

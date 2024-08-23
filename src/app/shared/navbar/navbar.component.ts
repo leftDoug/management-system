@@ -13,6 +13,6 @@ export class NavbarComponent {
     { label: 'Áreas', route: 'areas' },
     { label: 'Reuniones', route: 'reuniones' },
     { label: 'Tipos de Reuniones', route: 'tipos-de-reuniones' },
-    { label: 'Trabajadores', route: '' },
+    { label: 'Trabajadores', route: 'trabajadores' },
   ];
 }

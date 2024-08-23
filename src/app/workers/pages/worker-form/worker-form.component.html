@@ -1,1 +1,201 @@
-<p>worker-form works!</p>
+<div class="flex align-items-center justify-content-center">
+  <p-card
+    class="p-5 w-full"
+    [header]="newWorker.id ? 'Actualizar Trabajador' : 'Crear Trabajador'"
+  >
+    <p-toast></p-toast>
+    <form
+      class="form"
+      action="POST"
+      (ngSubmit)="create()"
+      [formGroup]="workerForm"
+      autocomplete="off"
+    >
+      <!-- nombre -->
+      <div class="grid">
+        <label
+          for="name"
+          class="col-2 flex align-items-center justify-content-end"
+          >Nombre y apellidos:
+        </label>
+
+        <input
+          class="col ml-2 mr-3"
+          type="text"
+          pInputText
+          [pKeyFilter]="namePattern"
+          id="name"
+          formControlName="name"
+          placeholder="Nombre y apellidos..."
+        />
+      </div>
+
+      <div class="grid">
+        <div class="col-2"></div>
+
+        <small
+          id="name-help"
+          class="p-error col ml-2"
+          *ngIf="validate('name')"
+          >{{ nameErrorMsg }}</small
+        >
+      </div>
+      <!-- fin name -->
+
+      <!-- 2 columnas -->
+      <div class="grid mt-1">
+        <!-- izquierda -->
+        <div class="col">
+          <!-- occupation -->
+          <div class="grid">
+            <label
+              for="occupation"
+              class="col-4 flex align-items-center justify-content-end"
+              >Cargo:
+            </label>
+
+            <input
+              class="flex col-6 ml-2"
+              type="text"
+              pInputText
+              [pKeyFilter]="namePattern"
+              id="occupation"
+              formControlName="occupation"
+              placeholder="Cargo..."
+            />
+          </div>
+
+          <div class="grid">
+            <div class="col-4"></div>
+
+            <small
+              id="occupation-help"
+              class="p-error col pt-2 ml-2"
+              *ngIf="validate('occupation')"
+              >{{ occupationErrorMsg }}</small
+            >
+          </div>
+          <!-- fin occupation -->
+
+          <!-- areas -->
+          <div class="grid">
+            <label
+              for="areas"
+              class="col-4 flex align-items-center justify-content-end"
+              >Área(s):
+            </label>
+
+            <p-multiSelect
+              class="col"
+              [options]="areas"
+              optionLabel="name"
+              optionValue="id"
+              formControlName="areas"
+              placeholder="-- Seleccione --"
+            ></p-multiSelect>
+          </div>
+
+          <div class="grid">
+            <div class="col-4"></div>
+
+            <small
+              id="area-help"
+              class="p-error col pt-0 ml-2"
+              *ngIf="validate('areas')"
+              >{{ areasErrorMsg }}</small
+            >
+          </div>
+          <!-- fin areas -->
+        </div>
+        <!-- fin izquierda -->
+
+        <!-- derecha -->
+        <div class="col">
+          <!-- email -->
+          <div class="grid">
+            <label
+              for="email"
+              class="col-4 flex align-items-center justify-content-end"
+              >Email:
+            </label>
+
+            <input
+              class="flex col-6 ml-2"
+              type="email"
+              pInputText
+              id="email"
+              formControlName="email"
+              placeholder="ejemplo@gmail.com"
+            />
+          </div>
+
+          <div class="grid">
+            <div class="col-4"></div>
+
+            <small
+              id="email-help"
+              class="p-error col pt-2 ml-2"
+              *ngIf="validate('email')"
+              >{{ emailErrorMsg }}</small
+            >
+          </div>
+          <!-- fin occupation -->
+
+          <!-- checkbox -->
+          <div class="grid mt-2">
+            <div class="col-4"></div>
+            <div class="col field-checkbox">
+              <p-checkbox
+                class=""
+                inputId="secretary"
+                [binary]="true"
+                formControlName="secretary"
+              ></p-checkbox>
+              <label for="secretary" class="">Secretario/a de actas</label>
+            </div>
+          </div>
+          <!-- fin checkbox -->
+        </div>
+        <!-- fin derecha -->
+      </div>
+      <!-- fin 2 columnas -->
+
+      <!-- botones -->
+      <div class="gap-6 mt-5 flex align-items-center justify-content-center">
+        <p-button
+          label="Crear"
+          icon="pi pi-check"
+          severity="success"
+          class=""
+          type="submit"
+          *ngIf="!newWorker.id; else update"
+          [disabled]="workerForm.invalid"
+        ></p-button>
+
+        <ng-template #update>
+          <p-button
+            label="Actualizar"
+            icon="pi pi-check"
+            severity="success"
+            class="col-2 mx-2"
+            type="submit"
+            [disabled]="workerForm.invalid || workerForm.pristine"
+          ></p-button>
+        </ng-template>
+
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          class=""
+          type="button"
+          [routerLink]="
+            !newWorker.id
+              ? '/trabajadores'
+              : ['/trabajadores/detalles/', newWorker.id]
+          "
+        ></p-button>
+      </div>
+      <!-- fin botones -->
+    </form>
+  </p-card>
+</div>

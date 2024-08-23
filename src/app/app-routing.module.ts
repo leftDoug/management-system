@@ -11,6 +11,9 @@ import { MeetingsTableComponent } from './meetings/pages/meetings-table/meetings
 import { TypeOfMeetingFormComponent } from './types-of-meetings/pages/type-of-meeting-form/type-of-meeting-form.component';
 import { MeetingFormComponent } from './meetings/pages/meeting-form/meeting-form.component';
 import { MeetingInfoComponent } from './meetings/pages/meeting-info/meeting-info.component';
+import { WorkersTableComponent } from './workers/pages/workers-table/workers-table.component';
+import { WorkerFormComponent } from './workers/pages/worker-form/worker-form.component';
+import { WorkerInfoComponent } from './workers/pages/worker-info/worker-info.component';
 
 const routes: Routes = [
   // {
@@ -43,6 +46,10 @@ const routes: Routes = [
   { path: 'reuniones/editar/:id', component: MeetingFormComponent },
   { path: 'tipos-de-reuniones', component: TypesOfMeetingsTableComponent },
   { path: 'tipos-de-reuniones/agregar', component: TypeOfMeetingFormComponent },
+  { path: 'trabajadores', component: WorkersTableComponent },
+  { path: 'trabajadores/agregar', component: WorkerFormComponent },
+  { path: 'trabajadores/detalles/:id', component: WorkerInfoComponent },
+  { path: 'trabajadores/editar/:id', component: WorkerFormComponent },
   {
     path: 'tipos-de-reuniones/editar/:id',
     component: TypeOfMeetingFormComponent,

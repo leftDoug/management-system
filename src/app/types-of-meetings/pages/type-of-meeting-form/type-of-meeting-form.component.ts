@@ -62,7 +62,10 @@ export class TypeOfMeetingFormComponent implements OnInit {
         });
     }
 
-    this.areasService.getAll().subscribe((resp) => (this.areas = resp));
+    this.areasService.getAll().subscribe((resp) => {
+      this.areas = resp;
+      this.areas.sort((a, b) => a.name.localeCompare(b.name));
+    });
   }
 
   get areaErrorMsg(): string {

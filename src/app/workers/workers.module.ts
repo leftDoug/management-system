@@ -1,18 +1,25 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { WorkersRoutingModule } from './workers-routing.module';
-import { HttpClientModule } from '@angular/common/http';
 import { WorkerFormComponent } from './pages/worker-form/worker-form.component';
 import { WorkersTableComponent } from './pages/workers-table/workers-table.component';
 import { WorkerInfoComponent } from './pages/worker-info/worker-info.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { PrimengModule } from '../primeng/primeng.module';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
-    WorkerFormComponent,
     WorkersTableComponent,
-    WorkerInfoComponent
+    WorkerFormComponent,
+    WorkerInfoComponent,
   ],
-  imports: [CommonModule, HttpClientModule, WorkersRoutingModule],
+  imports: [
+    CommonModule,
+    PrimengModule,
+    RouterModule,
+    ReactiveFormsModule,
+    FormsModule,
+  ],
 })
 export class WorkersModule {}
