@@ -7,13 +7,17 @@ import { switchMap, tap } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ValidatorService } from 'src/app/validator/validator.service';
 import { Area } from 'src/app/areas/interfaces/area.interface';
-import { Worker } from 'src/app/workers/interfaces/worker.interface';
+import { Worker, WorkerX } from 'src/app/workers/interfaces/worker.interface';
 import { AreasService } from 'src/app/areas/services/areas.service';
 import { WorkersService } from 'src/app/workers/services/workers.service';
 import { Meeting } from 'src/app/meetings/interfaces/meeting.interface';
 import { MeetingsService } from 'src/app/meetings/services/meetings.service';
 import { Session } from 'src/app/sessions/interfaces/session.interface';
 import { SessionsService } from 'src/app/sessions/services/sessions.service';
+import { WorkersAreasService } from 'src/app/shared/services/workers-areas.service';
+import { TypesOfMeetingsService } from 'src/app/types-of-meetings/services/types-of-meetings.service';
+import { WorkerArea } from 'src/app/shared/navbar/worker-area.interface';
+import { TypeOfMeeting } from 'src/app/types-of-meetings/interfaces/type-of-meeting.interface';
 
 @Component({
   selector: 'app-agreement-form',
@@ -25,33 +29,15 @@ export class AgreementFormComponent implements OnInit {
   agreementForm: FormGroup = this.fb.group(
     {
       answer: [''],
-      area: ['', Validators.required],
-      compilanceDate: [new Date(), Validators.required],
+      compilanceDate: [{ value: '', disabled: true }, Validators.required],
       completed: [false],
       content: ['', [Validators.required, Validators.minLength(10)]],
-      createdBy: ['', Validators.required],
+      createdBy: [{ value: '', disabled: true }, Validators.required],
       meeting: ['', Validators.required],
-      meetingDate: [
-        new Date(),
-        [Validators.required, this.validatorService.meetingDate],
-      ],
-      meetingEndTime: [
-        new Date(),
-        [Validators.required, this.validatorService.timeLimits],
-      ],
-      meetingStartTime: [
-        new Date(),
-        [Validators.required, this.validatorService.timeLimits],
-      ],
       responsible: [{ value: '', disabled: true }, Validators.required],
-      session: ['', Validators.required],
     },
     {
       validators: [
-        this.validatorService.compareBeginningAndEnd(
-          'meetingStartTime',
-          'meetingEndTime'
-        ),
         this.validatorService.compareMeetingAndCompilance(
           'meetingDate',
           'compilanceDate'
@@ -60,41 +46,37 @@ export class AgreementFormComponent implements OnInit {
     }
   );
 
-  areas: Area[] = [];
   meetings: Meeting[] = [];
   newAgreement: Agreement = {
     id: '',
-    FK_idArea: '',
     FK_idCreatedBy: '',
     FK_idMeeting: '',
     FK_idResponsible: '',
-    FK_idSession: '',
     answer: '',
     canceled: false,
     compilanceDate: new Date(),
     completed: false,
     content: '',
-    meetingDate: new Date(),
-    meetingEndTime: new Date(),
-    meetingStartTime: new Date(),
     number: 0,
   };
-  sessions: Session[] = [];
   today: Date = new Date();
-  workers: Worker[] = [];
+  workers: WorkerX[] = [];
+  secretaries: WorkerX[] = [];
+  workersArea: WorkerArea[] = [];
+  typeOfMeeting: TypeOfMeeting | undefined;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private agreementsService: AgreementsService,
-    private areasService: AreasService,
     private fb: FormBuilder,
     private meetingsService: MeetingsService,
     private messageService: MessageService,
     private primengConfig: PrimeNGConfig,
     private router: Router,
-    private sessionsService: SessionsService,
     private validatorService: ValidatorService,
-    private workersService: WorkersService
+    private workersService: WorkersService,
+    private workersAreasService: WorkersAreasService,
+    private typesOfMeetingsService: TypesOfMeetingsService
   ) {}
 
   ngOnInit(): void {
@@ -109,17 +91,12 @@ export class AgreementFormComponent implements OnInit {
           this.newAgreement = resp;
           this.agreementForm.reset({
             answer: this.newAgreement.answer,
-            area: this.newAgreement.FK_idArea,
             compilanceDate: new Date(this.newAgreement.compilanceDate),
             completed: this.newAgreement.completed,
             content: this.newAgreement.content,
             createdBy: this.newAgreement.FK_idCreatedBy,
             meeting: this.newAgreement.FK_idMeeting,
-            meetingDate: new Date(this.newAgreement.meetingDate),
-            meetingEndTime: new Date(this.newAgreement.meetingEndTime),
-            meetingStartTime: new Date(this.newAgreement.meetingStartTime),
             responsible: this.newAgreement.FK_idResponsible,
-            session: this.newAgreement.FK_idSession,
           });
         });
     } else {
@@ -129,28 +106,54 @@ export class AgreementFormComponent implements OnInit {
           (resp) => (this.newAgreement.number = resp.at(-1)?.number! + 1)
         );
     }
-    this.areasService.getAll().subscribe((resp) => (this.areas = resp));
+
     this.meetingsService.getAll().subscribe((resp) => (this.meetings = resp));
-    this.sessionsService.getAll().subscribe((resp) => (this.sessions = resp));
 
     this.agreementForm
-      .get('area')
+      .get('meeting')
       ?.valueChanges.pipe(
         tap(() => {
+          this.agreementForm.get('createdBy')?.reset('');
+          this.agreementForm.get('createdBy')?.enable();
+
+          this.agreementForm.get('compilanceDate')?.reset('');
+          this.agreementForm.get('compilanceDate')?.enable();
+
           this.agreementForm.get('responsible')?.reset('');
           this.agreementForm.get('responsible')?.enable();
         }),
-        switchMap((area) => this.workersService.getByArea(area))
+        // switchMap((im) => this.meetingsService.getById(im)),
+        switchMap((im) => {
+          const m = this.meetings.find((m) => im === m.id)!;
+
+          return this.typesOfMeetingsService.getById(m.FK_idTypeOfMeeting);
+        })
       )
-      .subscribe((resp) => (this.workers = resp));
-  }
+      .subscribe((t) => {
+        this.typeOfMeeting = t;
 
-  get areaErrorMsg(): string {
-    if (this.agreementForm.get('area')?.errors!['required']) {
-      return 'El área es requerida';
-    }
+        this.workersAreasService
+          .getByIdArea(this.typeOfMeeting.FK_idWorkArea)
+          .subscribe((wa) => (this.workersArea = wa));
 
-    return '';
+        this.workersService.xgetAll().subscribe((w) => {
+          const responsibles: WorkerX[] = [];
+          const s: WorkerX[] = [];
+
+          w.forEach((worker) => {
+            if (this.workersArea.find((wa) => worker.id === wa.FK_idWorker)) {
+              responsibles.push(worker);
+
+              if (worker.secretary) {
+                s.push(worker);
+              }
+            }
+          });
+
+          this.workers = responsibles;
+          this.secretaries = s;
+        });
+      });
   }
 
   get compilanceDateErrorMsg(): string {
@@ -205,42 +208,6 @@ export class AgreementFormComponent implements OnInit {
     return '';
   }
 
-  get meetingEndTimeErrorMsg(): string {
-    if (this.agreementForm.get('meetingEndTime')?.errors!['required']) {
-      return 'La hora de fin es requerida';
-    } else if (
-      this.agreementForm.get('meetingEndTime')?.errors!['tooEarlyError']
-    ) {
-      return 'La hora de fin no puede ser anterior a las 09:00';
-    } else if (
-      this.agreementForm.get('meetingEndTime')?.errors!['tooLateError']
-    ) {
-      return 'La hora de fin no puede ser posterior a las 17:00';
-    } else if (
-      this.agreementForm.get('meetingEndTime')?.errors!['endBeginningError']
-    ) {
-      return 'La hora de fin no puede ser anterior a la hora de inicio';
-    }
-
-    return '';
-  }
-
-  get meetingStartTimeErrorMsg(): string {
-    if (this.agreementForm.get('meetingStartTime')?.errors!['required']) {
-      return 'La hora de inicio es requerida';
-    } else if (
-      this.agreementForm.get('meetingStartTime')?.errors!['tooEarlyError']
-    ) {
-      return 'La hora de inicio no puede ser anterior a las 09:00';
-    } else if (
-      this.agreementForm.get('meetingStartTime')?.errors!['tooLateError']
-    ) {
-      return 'La hora de inicio no puede ser posterior a las 17:00';
-    }
-
-    return '';
-  }
-
   get responsibleErrorMsg(): string {
     if (this.agreementForm.get('responsible')?.errors!['required']) {
       return 'El responsable es requerido';
@@ -249,46 +216,31 @@ export class AgreementFormComponent implements OnInit {
     return '';
   }
 
-  get sessionErrorMsg(): string {
-    if (this.agreementForm.get('session')?.errors!['required']) {
-      return 'La sesión es requerida';
-    }
-
-    return '';
-  }
-
   create(): void {
-    this.newAgreement.FK_idArea = this.agreementForm.get('area')?.value;
     this.newAgreement.FK_idCreatedBy =
       this.agreementForm.get('createdBy')?.value;
     this.newAgreement.FK_idMeeting = this.agreementForm.get('meeting')?.value;
     this.newAgreement.FK_idResponsible =
       this.agreementForm.get('responsible')?.value;
-    this.newAgreement.FK_idSession = this.agreementForm.get('session')?.value;
     this.newAgreement.answer = this.agreementForm.get('answer')?.value;
     this.newAgreement.completed = this.agreementForm.get('completed')?.value;
     this.newAgreement.content = this.agreementForm.get('content')?.value;
-    this.newAgreement.meetingDate = new Date(
-      this.agreementForm.get('meetingDate')?.value
-    );
-
-    this.setTime();
+    this.newAgreement.compilanceDate =
+      this.agreementForm.get('compilanceDate')?.value;
 
     if (!this.newAgreement.id) {
       this.generateId();
 
-      this.agreementsService.add(this.newAgreement).subscribe();
+      this.agreementsService.add(this.newAgreement).subscribe(console.log);
 
       this.newAgreement.id = '';
       this.newAgreement.number = this.newAgreement.number + 1;
 
       // FIXME: esta dando palo aqui xk no se vuelven a crear las fechas en el reset
       this.agreementForm.reset({
-        compilanceDate: new Date(this.newAgreement.compilanceDate),
-        meetingDate: new Date(this.newAgreement.meetingDate),
-        meetingEndTime: new Date(this.newAgreement.meetingEndTime),
-        meetingStartTime: new Date(this.newAgreement.meetingStartTime),
         responsible: { value: '', disabled: true },
+        createdBy: { value: '', disabled: true },
+        compilanceDate: { value: '', disabled: true },
       });
 
       this.messageService.add({
@@ -311,41 +263,7 @@ export class AgreementFormComponent implements OnInit {
 
   generateId(): void {
     this.newAgreement.id =
-      this.newAgreement.FK_idArea + this.newAgreement.number;
-  }
-
-  setTime(): void {
-    let hours: number = this.agreementForm
-      .get('meetingStartTime')
-      ?.value.getHours();
-    let minutes: number = this.agreementForm
-      .get('meetingStartTime')
-      ?.value.getMinutes();
-
-    this.newAgreement.meetingStartTime = new Date(
-      this.agreementForm.get('meetingDate')?.value
-    );
-
-    this.newAgreement.meetingStartTime.setHours(hours);
-    this.newAgreement.meetingStartTime.setMinutes(minutes);
-
-    hours = this.agreementForm.get('meetingEndTime')?.value.getHours();
-    minutes = this.agreementForm.get('meetingEndTime')?.value.getMinutes();
-
-    this.newAgreement.meetingEndTime = new Date(
-      this.agreementForm.get('meetingDate')?.value
-    );
-
-    this.newAgreement.meetingEndTime.setHours(hours);
-    this.newAgreement.meetingEndTime.setMinutes(minutes);
-
-    this.newAgreement.compilanceDate = new Date(
-      this.agreementForm.get('compilanceDate')?.value
-    );
-
-    this.newAgreement.compilanceDate.setHours(23);
-    this.newAgreement.compilanceDate.setMinutes(59);
-    this.newAgreement.compilanceDate.setSeconds(59);
+      this.newAgreement.FK_idMeeting + this.newAgreement.number;
   }
 
   validate(control: string): boolean {
@@ -356,10 +274,6 @@ export class AgreementFormComponent implements OnInit {
       this.agreementForm.get(control)?.errors!['required']
     ) {
       this.agreementForm.controls[control].markAsDirty();
-    }
-
-    if (control === 'meetingEndTime') {
-      if (this.agreementForm.get(control)?.errors!) return true;
     }
 
     return (

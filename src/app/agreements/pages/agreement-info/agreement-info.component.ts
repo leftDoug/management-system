@@ -19,37 +19,28 @@ import { getSeverity, getStatus } from 'src/app/shared/severity-status';
 export class AgreementInfoComponent implements OnInit {
   agreement: Agreement = {
     id: '',
-    FK_idArea: '',
     FK_idCreatedBy: '',
     FK_idMeeting: '',
     FK_idResponsible: '',
-    FK_idSession: '',
     answer: '',
     canceled: false,
     compilanceDate: new Date(),
     completed: false,
     content: '',
-    meetingDate: new Date(),
-    meetingEndTime: new Date(),
-    meetingStartTime: new Date(),
     number: 0,
   };
-  area: string = '';
   createdBy: string = '';
   meeting: string = '';
   responsible: string = '';
-  session: string = '';
 
   // TODO: poner un delay para k no se vea el estado inicial al abrir la pagina
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private agreementsService: AgreementsService,
-    private areasService: AreasService,
     private confirmationService: ConfirmationService,
     private meetingsService: MeetingsService,
     private messageService: MessageService,
-    private sessionsService: SessionsService,
     private workersService: WorkersService
   ) {}
 
@@ -57,11 +48,6 @@ export class AgreementInfoComponent implements OnInit {
     this.activatedRoute.params
       .pipe(
         switchMap(({ id }) => this.agreementsService.getById(id)),
-        tap((resp) => {
-          this.areasService
-            .getById(resp.FK_idArea)
-            .subscribe((resp) => (this.area = resp.name));
-        }),
         tap((resp) => {
           this.workersService
             .getById(resp.FK_idCreatedBy)
@@ -76,11 +62,6 @@ export class AgreementInfoComponent implements OnInit {
           this.workersService
             .getById(resp.FK_idResponsible)
             .subscribe((resp) => (this.responsible = resp.name));
-        }),
-        tap((resp) => {
-          this.sessionsService
-            .getById(resp.FK_idSession)
-            .subscribe((resp) => (this.session = resp.name));
         })
       )
       .subscribe((resp) => (this.agreement = resp));

@@ -48,21 +48,21 @@
       <div class="grid mt-1">
         <!-- izquierda -->
         <div class="col">
-          <!-- area -->
+          <!-- meeting -->
           <div class="grid">
             <label
-              for="area"
+              for="meeting"
               class="col-4 flex align-items-center justify-content-end"
-              >Área:
+              >Reunión:
             </label>
 
             <p-dropdown
-              class="col"
-              inputId="area"
-              [options]="areas"
+              class="col mr-3"
+              inputId="meeting"
+              [options]="meetings"
               optionLabel="name"
               optionValue="id"
-              formControlName="area"
+              formControlName="meeting"
               placeholder="-- Seleccione --"
             ></p-dropdown>
           </div>
@@ -71,76 +71,13 @@
             <div class="col-4"></div>
 
             <small
-              id="area-help"
-              class="p-error col pt-0 ml-2"
-              *ngIf="validate('area')"
-              >{{ areaErrorMsg }}</small
+              id="meeting-help"
+              class="p-error col pt-0 ml-2 mr-3"
+              *ngIf="validate('meeting')"
+              >{{ meetingErrorMsg }}</small
             >
           </div>
-          <!-- fin area -->
-
-          <!-- responsible -->
-          <div class="grid">
-            <label
-              for="responsible"
-              class="col-4 flex align-items-center justify-content-end"
-              >Responsable:
-            </label>
-
-            <p-dropdown
-              class="col"
-              id="responsible"
-              [options]="workers"
-              optionLabel="name"
-              optionValue="id"
-              formControlName="responsible"
-              placeholder="-- Seleccione --"
-            ></p-dropdown>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="responsible-help"
-              class="p-error col pt-0 ml-2"
-              *ngIf="validate('responsible')"
-              >{{ responsibleErrorMsg }}</small
-            >
-          </div>
-          <!-- fin responsible -->
-
-          <!-- creator -->
-          <!-- FIXME: sustituir x inputtext del usuario logeado -->
-          <div class="grid">
-            <label
-              for="createdBy"
-              class="col-4 flex align-items-center justify-content-end"
-              >Creado por:
-            </label>
-
-            <p-dropdown
-              class="col"
-              id="createdBy"
-              optionLabel="name"
-              optionValue="id"
-              [options]="workers"
-              formControlName="createdBy"
-              placeholder="-- Seleccione --"
-            ></p-dropdown>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="createdBy-help"
-              class="p-error col pt-0 ml-2"
-              *ngIf="validate('createdBy')"
-              >{{ createdByErrorMsg }}</small
-            >
-          </div>
-          <!-- fin creator -->
+          <!-- fin meeting -->
 
           <!-- fecha de cumplimiento -->
           <div class="grid">
@@ -191,171 +128,68 @@
 
         <!-- derecha -->
         <div class="col">
-          <!-- meeting -->
+          <!-- creator -->
+          <!-- FIXME: sustituir x inputtext del usuario logeado -->
           <div class="grid">
             <label
-              for="meeting"
+              for="createdBy"
               class="col-4 flex align-items-center justify-content-end"
-              >Reunión:
+              >Creado por:
             </label>
 
             <p-dropdown
-              class="col mr-3"
-              inputId="meeting"
-              [options]="meetings"
-              optionLabel="name"
-              optionValue="id"
-              formControlName="meeting"
-              placeholder="-- Seleccione --"
-            ></p-dropdown>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="meeting-help"
-              class="p-error col pt-0 ml-2 mr-3"
-              *ngIf="validate('meeting')"
-              >{{ meetingErrorMsg }}</small
-            >
-          </div>
-          <!-- fin meeting -->
-
-          <!-- session -->
-          <div class="grid">
-            <label
-              for="session"
-              class="col-4 flex align-items-center justify-content-end"
-              >Sesión:
-            </label>
-
-            <p-dropdown
-              class="col mr-3"
-              id="session"
-              [options]="sessions"
-              optionLabel="name"
-              optionValue="id"
-              formControlName="session"
-              placeholder="-- Seleccione --"
-            ></p-dropdown>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="session-help"
-              class="p-error col pt-0 ml-2 mr-3"
-              *ngIf="validate('session')"
-              >{{ sessionErrorMsg }}</small
-            >
-          </div>
-          <!-- fin session -->
-
-          <!-- meeting date -->
-          <div class="grid">
-            <label
-              for="meetingDate"
-              class="col-4 flex align-items-center justify-content-end"
-              >Fecha de la reunión:
-            </label>
-
-            <p-calendar
               class="col"
-              [iconDisplay]="'input'"
-              [showIcon]="true"
-              inputId="meetingDate"
-              dateFormat="mm/dd/yy"
-              formControlName="meetingDate"
-            ></p-calendar>
-            <div class="col-4"></div>
+              id="createdBy"
+              [options]="secretaries"
+              optionLabel="name"
+              optionValue="id"
+              formControlName="createdBy"
+              placeholder="-- Seleccione --"
+            ></p-dropdown>
           </div>
 
           <div class="grid">
             <div class="col-4"></div>
 
             <small
-              id="meetingDate-help"
-              class="p-error col pt-0 ml-2 mr-3"
-              *ngIf="validate('meetingDate')"
-              >{{ meetingDateErrorMsg }}</small
+              id="createdBy-help"
+              class="p-error col pt-0 ml-2"
+              *ngIf="validate('createdBy')"
+              >{{ createdByErrorMsg }}</small
             >
           </div>
-          <!-- fin meeting date -->
+          <!-- fin creator -->
 
-          <!-- start -->
+          <!-- responsible -->
           <div class="grid">
             <label
-              for="startTime"
+              for="responsible"
               class="col-4 flex align-items-center justify-content-end"
-              >Hora de inicio:
+              >Responsable:
             </label>
 
-            <p-calendar
-              class="col flex align-items-center align-self-center"
-              inputId="startTime"
-              [iconDisplay]="'input'"
-              [showIcon]="true"
-              [timeOnly]="true"
-              formControlName="meetingStartTime"
-            >
-              <ng-template pTemplate="inputicon">
-                <i
-                  class="pi pi-clock pointer-events-none pointer-events-none"
-                ></i> </ng-template
-            ></p-calendar>
-            <div class="col-4"></div>
+            <p-dropdown
+              class="col"
+              id="responsible"
+              [options]="workers"
+              optionLabel="name"
+              optionValue="id"
+              formControlName="responsible"
+              placeholder="-- Seleccione --"
+            ></p-dropdown>
           </div>
 
           <div class="grid">
             <div class="col-4"></div>
 
             <small
-              id="startTime-help"
+              id="responsible-help"
               class="p-error col pt-0 ml-2"
-              *ngIf="validate('meetingStartTime')"
-              >{{ meetingStartTimeErrorMsg }}</small
+              *ngIf="validate('responsible')"
+              >{{ responsibleErrorMsg }}</small
             >
           </div>
-          <!-- fin start -->
-
-          <!-- end -->
-          <div class="grid">
-            <label
-              for="endTime"
-              class="col-4 flex align-items-center justify-content-end"
-              >Hora de fin:
-            </label>
-
-            <p-calendar
-              class="col flex align-items-center align-self-center"
-              inputId="endTime"
-              [iconDisplay]="'input'"
-              [showIcon]="true"
-              [timeOnly]="true"
-              formControlName="meetingEndTime"
-            >
-              <ng-template pTemplate="inputicon">
-                <i
-                  class="pi pi-clock pointer-events-none pointer-events-none"
-                ></i>
-              </ng-template>
-            </p-calendar>
-            <div class="col-4"></div>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="endTime-help"
-              class="p-error col pt-0 ml-2"
-              *ngIf="validate('meetingEndTime')"
-              >{{ meetingEndTimeErrorMsg }}</small
-            >
-          </div>
-          <!-- fin end -->
+          <!-- fin responsible -->
         </div>
         <!-- fin derecha -->
       </div>
@@ -421,3 +255,7 @@
     </form>
   </p-card>
 </div>
+
+<pre>
+  {{ agreementForm.controls["createdBy"].value }}
+</pre>

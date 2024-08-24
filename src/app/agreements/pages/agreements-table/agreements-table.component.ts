@@ -22,9 +22,7 @@ import { getSeverity } from 'src/app/shared/severity-status';
 })
 export class AgreementsTableComponent implements OnInit {
   agreements: AgreementWithStatus[] = [];
-  areas: Area[] = [];
   meetings: Meeting[] = [];
-  sessions: Session[] = [];
   status: Status[] = [
     Status.canceled,
     Status.fulfilled,
@@ -36,17 +34,11 @@ export class AgreementsTableComponent implements OnInit {
 
   constructor(
     private agreementsService: AgreementsService,
-    private areasService: AreasService,
     private workersService: WorkersService,
-    private meetingsService: MeetingsService,
-    private sessionsService: SessionsService
+    private meetingsService: MeetingsService
   ) {}
 
   ngOnInit(): void {
-    this.areasService.getAll().subscribe((resp) => {
-      this.areas = resp;
-      this.areas.sort((a, b) => a.name.localeCompare(b.name));
-    });
     this.workersService.getAll().subscribe((resp) => {
       this.workers = resp;
       this.workers.sort((a, b) => a.name.localeCompare(b.name));
@@ -55,10 +47,6 @@ export class AgreementsTableComponent implements OnInit {
       this.meetings = resp;
       this.meetings.sort((a, b) => a.name.localeCompare(b.name));
     });
-    this.sessionsService.getAll().subscribe((resp) => {
-      this.sessions = resp;
-      this.sessions.sort((a, b) => a.name.localeCompare(b.name));
-    });
 
     this.agreementsService.getAll().subscribe((resp) => {
       resp.forEach((value) => {
@@ -66,17 +54,12 @@ export class AgreementsTableComponent implements OnInit {
           id: value.id,
           number: value.number,
           content: value.content,
-          area: this.areas.find((area) => area.id === value.FK_idArea)?.name!,
           responsible: this.workers.find(
             (worker) => worker.id === value.FK_idResponsible
           )?.name!,
           meeting: this.meetings.find(
             (meeting) => meeting.id === value.FK_idMeeting
           )?.name!,
-          session: this.sessions.find(
-            (session) => session.id === value.FK_idSession
-          )?.name!,
-          meetingDate: value.meetingDate,
           status: this.getStatus(value),
         };
 

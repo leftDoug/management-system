@@ -4,15 +4,7 @@
       <p-table
         #tAgreements
         [value]="agreements"
-        [globalFilterFields]="[
-          'content',
-          'area',
-          'responsible',
-          'meeting',
-          'session',
-          'meetingDate',
-          'status'
-        ]"
+        [globalFilterFields]="['content', 'responsible', 'meeting', 'status']"
         [tableStyle]="{ 'min-width': '60rem' }"
       >
         <ng-template pTemplate="caption">
@@ -51,11 +43,6 @@
                 Contenido <p-sortIcon field="content"></p-sortIcon>
               </div>
             </th>
-            <th pSortableColumn="area">
-              <div class="flex align-items-center justify-content-center">
-                Área <p-sortIcon field="area"></p-sortIcon>
-              </div>
-            </th>
             <th pSortableColumn="responsible">
               <div class="flex align-items-center justify-content-center">
                 Responsable <p-sortIcon field="responsible"></p-sortIcon>
@@ -64,16 +51,6 @@
             <th pSortableColumn="meeting">
               <div class="flex align-items-center justify-content-center">
                 Reunión <p-sortIcon field="meeting"></p-sortIcon>
-              </div>
-            </th>
-            <th pSortableColumn="session">
-              <div class="flex align-items-center justify-content-center">
-                Sesión <p-sortIcon field="session"></p-sortIcon>
-              </div>
-            </th>
-            <th pSortableColumn="meetingDate">
-              <div class="flex align-items-center justify-content-center">
-                Creado <p-sortIcon field="meetingDate"></p-sortIcon>
               </div>
             </th>
             <th pSortableColumn="status">
@@ -86,31 +63,6 @@
           <tr>
             <th></th>
             <th></th>
-            <th>
-              <p-columnFilter
-                field="area"
-                matchMode="equals"
-                [showMenu]="false"
-              >
-                <ng-template
-                  pTemplate="filter"
-                  let-value
-                  let-filter="filterCallback"
-                >
-                  <div class="w-100">
-                    <p-dropdown
-                      [ngModel]="value"
-                      [options]="areas"
-                      optionLabel="name"
-                      optionValue="name"
-                      (onChange)="filter($event.value)"
-                      placeholder="Todas"
-                    >
-                    </p-dropdown>
-                  </div>
-                </ng-template>
-              </p-columnFilter>
-            </th>
             <th></th>
             <th>
               <p-columnFilter
@@ -134,37 +86,6 @@
                   </p-dropdown>
                 </ng-template>
               </p-columnFilter>
-            </th>
-            <th>
-              <p-columnFilter
-                field="session"
-                matchMode="equals"
-                [showMenu]="false"
-              >
-                <ng-template
-                  pTemplate="filter"
-                  let-value
-                  let-filter="filterCallback"
-                >
-                  <p-dropdown
-                    [ngModel]="value"
-                    [options]="sessions"
-                    optionLabel="name"
-                    optionValue="name"
-                    (onChange)="filter($event.value)"
-                    placeholder="Todas"
-                  >
-                  </p-dropdown>
-                </ng-template>
-              </p-columnFilter>
-            </th>
-            <th>
-              <!-- FIXME: mostrar el texto en español -->
-              <!-- <p-columnFilter
-                  type="date"
-                  field="meetingDate"
-                  display="menu"
-                ></p-columnFilter> -->
             </th>
             <th>
               <p-columnFilter
@@ -213,27 +134,12 @@
             </td>
             <td>
               <div class="flex align-items-center justify-content-center">
-                {{ agreement.area }}
-              </div>
-            </td>
-            <td>
-              <div class="flex align-items-center justify-content-center">
                 {{ agreement.responsible }}
               </div>
             </td>
             <td>
               <div class="flex align-items-center justify-content-center">
                 {{ agreement.meeting }}
-              </div>
-            </td>
-            <td>
-              <div class="flex align-items-center justify-content-center">
-                {{ agreement.session }}
-              </div>
-            </td>
-            <td>
-              <div class="flex align-items-center justify-content-center">
-                {{ agreement.meetingDate | date : "MM/dd/yyyy" }}
               </div>
             </td>
             <td>

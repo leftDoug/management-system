@@ -81,12 +81,6 @@ export class AgreementsService {
     );
   }
 
-  cancel(agreement: Agreement): Observable<Agreement> {
-    // this.getById(id).status = Status.anulado;
-    agreement.canceled = true;
-    return this.update(agreement);
-  }
-
   // get agreements(): Agreement[] {
   //   return [...this._agreements];
   // }
@@ -98,4 +92,10 @@ export class AgreementsService {
   // insert(agreement: Agreement): void {
   //   this._agreements.push(agreement);
   // }
+
+  cancel(agreement: Agreement): Observable<Agreement> {
+    // this.getById(id).status = Status.anulado;
+    agreement.canceled = true;
+    return this.update(agreement);
+  }
 }

@@ -19,16 +19,9 @@
       <div class="grid">
         <div class="col">
           <p-divider align="left" type="solid">
-            <strong>Área</strong>
+            <strong>Reunión</strong>
           </p-divider>
-          <p class="ml-5">{{ area }}</p>
-        </div>
-
-        <div class="col">
-          <p-divider align="left" type="solid">
-            <strong>Responsable</strong>
-          </p-divider>
-          <p class="ml-5">{{ responsible }}</p>
+          <p class="ml-5">{{ meeting }}</p>
         </div>
 
         <div class="col">
@@ -37,7 +30,9 @@
           </p-divider>
           <p class="ml-5">{{ createdBy }}</p>
         </div>
+      </div>
 
+      <div class="grid">
         <div class="col">
           <p-divider align="left" type="solid">
             <strong>Fecha de cumplimiento</strong>
@@ -46,42 +41,12 @@
             {{ agreement.compilanceDate | date : "MM/dd/yyyy" }}
           </p>
         </div>
-      </div>
-
-      <div class="grid">
-        <div class="col">
-          <p-divider align="left" type="solid">
-            <strong>Reunión</strong>
-          </p-divider>
-          <p class="ml-5">{{ meeting }}</p>
-        </div>
 
         <div class="col">
           <p-divider align="left" type="solid">
-            <strong>Sesión</strong>
+            <strong>Responsable</strong>
           </p-divider>
-          <p class="ml-5">{{ session }}</p>
-        </div>
-
-        <div class="col">
-          <p-divider align="left" type="solid">
-            <strong>Fecha de la reunión</strong>
-          </p-divider>
-          <p class="ml-5">{{ agreement.meetingDate | date : "MM/dd/yyyy" }}</p>
-        </div>
-
-        <div class="col">
-          <p-divider align="left" type="solid">
-            <strong>Hora de inicio</strong>
-          </p-divider>
-          <p class="ml-5">{{ agreement.meetingStartTime | date : "H:mm" }}</p>
-        </div>
-
-        <div class="col">
-          <p-divider align="left" type="solid">
-            <strong>Hora de fin</strong>
-          </p-divider>
-          <p class="ml-5">{{ agreement.meetingEndTime | date : "H:mm" }}</p>
+          <p class="ml-5">{{ responsible }}</p>
         </div>
       </div>
 

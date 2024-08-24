@@ -120,6 +120,7 @@ export class WorkerFormComponent implements OnInit {
     this.newWorker.name = this.workerForm.get('name')?.value;
     this.newWorker.occupation = this.workerForm.get('occupation')?.value;
     this.newWorker.email = this.workerForm.get('email')?.value;
+    this.newWorker.secretary = this.workerForm.get('secretary')?.value;
 
     if (!this.newWorker.id) {
       this.newWorker.id = this.workerForm.get('name')?.value.trim().slice(0, 2);
