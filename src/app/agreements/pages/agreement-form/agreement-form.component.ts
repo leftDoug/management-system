@@ -29,11 +29,12 @@ export class AgreementFormComponent implements OnInit {
   agreementForm: FormGroup = this.fb.group(
     {
       answer: [''],
-      compilanceDate: [{ value: '', disabled: true }, Validators.required],
       completed: [false],
       content: ['', [Validators.required, Validators.minLength(10)]],
-      createdBy: [{ value: '', disabled: true }, Validators.required],
       meeting: ['', Validators.required],
+      meetingDate: [new Date(), Validators.required],
+      compilanceDate: [{ value: '', disabled: true }, Validators.required],
+      createdBy: [{ value: '', disabled: true }, Validators.required],
       responsible: [{ value: '', disabled: true }, Validators.required],
     },
     {
@@ -59,7 +60,6 @@ export class AgreementFormComponent implements OnInit {
     content: '',
     number: 0,
   };
-  today: Date = new Date();
   workers: WorkerX[] = [];
   secretaries: WorkerX[] = [];
   workersArea: WorkerArea[] = [];
@@ -84,28 +84,6 @@ export class AgreementFormComponent implements OnInit {
     // this.messages = [
     //   { severity: 'success', detail: 'Agreement created successfully' },
     // ];
-    if (this.router.url.includes('editar')) {
-      this.activatedRoute.params
-        .pipe(switchMap(({ id }) => this.agreementsService.getById(id)))
-        .subscribe((resp) => {
-          this.newAgreement = resp;
-          this.agreementForm.reset({
-            answer: this.newAgreement.answer,
-            compilanceDate: new Date(this.newAgreement.compilanceDate),
-            completed: this.newAgreement.completed,
-            content: this.newAgreement.content,
-            createdBy: this.newAgreement.FK_idCreatedBy,
-            meeting: this.newAgreement.FK_idMeeting,
-            responsible: this.newAgreement.FK_idResponsible,
-          });
-        });
-    } else {
-      this.agreementsService
-        .getAll()
-        .subscribe(
-          (resp) => (this.newAgreement.number = resp.at(-1)?.number! + 1)
-        );
-    }
 
     this.meetingsService.getAll().subscribe((resp) => (this.meetings = resp));
 
@@ -125,6 +103,13 @@ export class AgreementFormComponent implements OnInit {
         // switchMap((im) => this.meetingsService.getById(im)),
         switchMap((im) => {
           const m = this.meetings.find((m) => im === m.id)!;
+          console.log(m);
+          const date = new Date(m.date);
+
+          date.setDate(date.getDate() + 7);
+
+          this.agreementForm.get('meetingDate')?.setValue(new Date(m.date));
+          this.agreementForm.get('compilanceDate')?.setValue(new Date(date));
 
           return this.typesOfMeetingsService.getById(m.FK_idTypeOfMeeting);
         })
@@ -154,6 +139,29 @@ export class AgreementFormComponent implements OnInit {
           this.secretaries = s;
         });
       });
+
+    if (this.router.url.includes('editar')) {
+      this.activatedRoute.params
+        .pipe(switchMap(({ id }) => this.agreementsService.getById(id)))
+        .subscribe((resp) => {
+          this.newAgreement = resp;
+          this.agreementForm.patchValue({
+            answer: this.newAgreement.answer,
+            completed: this.newAgreement.completed,
+            content: this.newAgreement.content,
+            meeting: this.newAgreement.FK_idMeeting,
+            compilanceDate: new Date(this.newAgreement.compilanceDate),
+            createdBy: this.newAgreement.FK_idCreatedBy,
+            responsible: this.newAgreement.FK_idResponsible,
+          });
+        });
+    } else {
+      this.agreementsService
+        .getAll()
+        .subscribe(
+          (resp) => (this.newAgreement.number = resp.at(-1)?.number! + 1)
+        );
+    }
   }
 
   get compilanceDateErrorMsg(): string {
@@ -238,9 +246,12 @@ export class AgreementFormComponent implements OnInit {
 
       // FIXME: esta dando palo aqui xk no se vuelven a crear las fechas en el reset
       this.agreementForm.reset({
-        responsible: { value: '', disabled: true },
-        createdBy: { value: '', disabled: true },
-        compilanceDate: { value: '', disabled: true },
+        answer: '',
+        completed: false,
+        compilanceDate: this.newAgreement.compilanceDate,
+        createdBy: this.newAgreement.FK_idCreatedBy,
+        meeting: this.newAgreement.FK_idMeeting,
+        responsible: this.newAgreement.FK_idResponsible,
       });
 
       this.messageService.add({
