@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Meeting, Session } from '../../interfaces/meeting.interface';
-import { Worker } from '../../../workers/interfaces/worker.interface';
+import { Worker, WorkerX } from '../../../workers/interfaces/worker.interface';
 import { ValidatorService } from 'src/app/validator/validator.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MeetingsService } from '../../services/meetings.service';
@@ -11,6 +11,7 @@ import { TypesOfMeetingsService } from 'src/app/types-of-meetings/services/types
 import { WorkersService } from 'src/app/workers/services/workers.service';
 import { TypeOfMeeting } from 'src/app/types-of-meetings/interfaces/type-of-meeting.interface';
 import { AreasService } from 'src/app/areas/services/areas.service';
+import { WorkersAreasService } from 'src/app/shared/services/workers-areas.service';
 
 @Component({
   selector: 'app-meeting-form',
@@ -57,7 +58,7 @@ export class MeetingFormComponent implements OnInit {
   };
   sessions: Session[] = [Session.ordinary, Session.extraordinary];
   today: Date = new Date();
-  workers: Worker[] = [];
+  workers: WorkerX[] = [];
   typesOfMeetings: TypeOfMeeting[] = [];
   area: string = '';
 
@@ -69,6 +70,7 @@ export class MeetingFormComponent implements OnInit {
     private meetingsService: MeetingsService,
     private typesOfMeetingsService: TypesOfMeetingsService,
     private workersService: WorkersService,
+    private workersAreasService: WorkersAreasService,
     private areasService: AreasService,
     private messageService: MessageService
   ) {}
@@ -105,10 +107,20 @@ export class MeetingFormComponent implements OnInit {
         }),
         switchMap((id) => this.typesOfMeetingsService.getById(id)),
         switchMap((typeOfMeeting) =>
-          this.workersService.getByArea(typeOfMeeting.FK_idWorkArea)
+          this.workersAreasService.getByIdArea(typeOfMeeting.FK_idWorkArea)
         )
       )
-      .subscribe((resp) => (this.workers = resp));
+      .subscribe((wa) => {
+        this.workersService.xgetAll().subscribe((w) => {
+          let responsibles: WorkerX[] = [];
+
+          wa.forEach((value) => {
+            responsibles.push(w.find((item) => item.id === value.FK_idWorker)!);
+          });
+
+          this.workers = responsibles;
+        });
+      });
 
     // FIXME: buscar la manere de resetear sin haacer request
     this.meetingForm

@@ -88,9 +88,8 @@
             <p-multiSelect
               class="col"
               [options]="areas"
+              formControlName="wAreas"
               optionLabel="name"
-              optionValue="id"
-              formControlName="areas"
               placeholder="-- Seleccione --"
             ></p-multiSelect>
           </div>
@@ -200,6 +199,23 @@
   </p-card>
 </div>
 
-<pre>
-  {{ workerForm.controls["secretary"].value }}
-</pre>
+<div class="grid">
+  <div class="col">
+    <pre>
+    {{ workerForm.value | json }}
+  </pre
+    >
+  </div>
+  <div class="col">
+    <pre>
+    {{ workerAreas | json }}
+  </pre
+    >
+  </div>
+  <div class="col">
+    <pre>
+    {{ wa | json }}
+  </pre
+    >
+  </div>
+</div>

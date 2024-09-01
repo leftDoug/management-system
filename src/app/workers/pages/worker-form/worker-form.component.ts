@@ -25,16 +25,18 @@ export class WorkerFormComponent implements OnInit {
   emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
   namePattern: RegExp = /^[a-zA-Z]+([\s]?[a-zA-Z]+[\s]?)*$/;
 
+  areas: Area[] = [];
+  workerAreas: WorkerArea[] = [];
+  wa: WorkerArea[] = [];
+
   workerForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(10)]],
     occupation: ['', [Validators.required, Validators.minLength(5)]],
-    areas: [[], Validators.required],
     email: ['', [Validators.required, Validators.pattern(this.emailPattern)]],
     secretary: [false],
+    wAreas: [[], Validators.required],
   });
 
-  areas: Area[] = [];
-  workersAreas: WorkerArea[] = [];
   newWorker: WorkerX = {
     id: '',
     name: '',
@@ -54,28 +56,51 @@ export class WorkerFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.router.url.includes('editar')) {
-      this.activatedRoute.params
-        .pipe(switchMap(({ id }) => this.workersService.xgetById(id)))
-        .subscribe((resp) => {
-          this.newWorker = resp;
-          this.workersAreasService
-            .getByIdWorker(this.newWorker.id)
-            .subscribe((resp) => (this.workersAreas = resp));
-          this.workerForm.reset({
-            name: this.newWorker.name,
-            occupation: this.newWorker.occupation,
-            area: this.workersAreas,
-            email: this.newWorker.email,
-            secretary: this.newWorker.secretary,
-          });
-        });
-    }
-
     this.areasService.getAll().subscribe((resp) => {
       this.areas = resp;
       this.areas.sort((a, b) => a.name.localeCompare(b.name));
     });
+
+    if (this.router.url.includes('editar')) {
+      // this.workersAreasService
+      //   .getAll()
+      //   .subscribe((resp) => (this.workerAreas = resp));
+
+      // console.log(this.workerAreas);
+
+      this.activatedRoute.params
+        .pipe(switchMap(({ id }) => this.workersService.xgetById(id)))
+        .subscribe((resp) => {
+          this.newWorker = resp;
+
+          let workerAreas: string[] = [];
+
+          this.workersAreasService
+            .getByIdWorker(this.newWorker.id)
+            .subscribe((resp) => {
+              this.workerAreas = resp;
+              let areas: Area[] = [];
+
+              resp.forEach((wa) => {
+                areas.push(this.areas.find((a) => a.id === wa.FK_idWorkArea)!);
+              });
+
+              this.workerForm.get('wAreas')?.setValue(areas);
+            });
+
+          // console.log(workerAreas);
+
+          this.workerForm.patchValue({
+            name: this.newWorker.name,
+            occupation: this.newWorker.occupation,
+            email: this.newWorker.email,
+            secretary: this.newWorker.secretary,
+            wAreas: this.workerAreas,
+          });
+        });
+
+      this.workerForm.get('wAreas')?.setValue(this.workerAreas);
+    }
   }
 
   get areasErrorMsg(): string {
@@ -127,19 +152,17 @@ export class WorkerFormComponent implements OnInit {
 
       this.workersService.add(this.newWorker).subscribe(console.log);
 
-      this.workerForm.get('areas')?.value.forEach((area: string) => {
-        const workerArea: WorkerArea = {
-          id: this.newWorker.id + area,
-          FK_idWorker: this.newWorker.id,
-          FK_idWorkArea: area,
-        };
-
-        this.workersAreasService.add(workerArea).subscribe(console.log);
-      });
+      this.createWorkerArea();
 
       this.newWorker.id = '';
 
-      this.workerForm.reset();
+      this.workerForm.reset({
+        name: '',
+        occupation: '',
+        email: '',
+        secretary: false,
+        wAreas: [],
+      });
 
       this.messageService.add({
         severity: 'success',
@@ -149,20 +172,63 @@ export class WorkerFormComponent implements OnInit {
     } else {
       this.workersService.update(this.newWorker).subscribe(console.log);
 
+      this.checkWorkerAreas();
+
       this.messageService.add({
         severity: 'success',
         summary: 'Trabajador Actualizado',
         detail: 'El trabajador ha sido actualizado.',
       });
 
-      this.workerForm.reset({
-        name: this.newWorker.name,
-        occupation: this.newWorker.occupation,
-        email: this.newWorker.email,
-        secretary: this.newWorker.secretary,
-        areas: this.areas,
+      // this.workerForm.reset({
+      //   name: this.newWorker.name,
+      //   occupation: this.newWorker.occupation,
+      //   email: this.newWorker.email,
+      //   secretary: this.newWorker.secretary,
+      //   areas: this.areas,
+      // });
+    }
+  }
+
+  checkWorkerAreas(): void {
+    const workerWa: Area[] = this.workerForm.get('wAreas')?.value;
+    this.workerAreas.forEach((wa) => {
+      if (!workerWa.find((area) => area.id === wa.FK_idWorkArea)) {
+        this.workersAreasService.remove(wa.id).subscribe(console.log);
+      }
+    });
+
+    workerWa.forEach((area) => {
+      if (!this.workerAreas.find((wa) => wa.FK_idWorkArea === area.id)) {
+        this.createWorkerArea(area.id);
+      }
+    });
+  }
+
+  createWorkerArea(idWorkArea?: string): void {
+    if (idWorkArea) {
+      const workerArea: WorkerArea = {
+        id: this.newWorker.id + idWorkArea,
+        FK_idWorker: this.newWorker.id,
+        FK_idWorkArea: idWorkArea,
+      };
+
+      this.workersAreasService.add(workerArea).subscribe(console.log);
+    } else {
+      this.workerForm.get('wAreas')?.value.forEach((area: Area) => {
+        const workerArea: WorkerArea = {
+          id: this.newWorker.id + area.id,
+          FK_idWorker: this.newWorker.id,
+          FK_idWorkArea: area.id,
+        };
+
+        this.workersAreasService.add(workerArea).subscribe(console.log);
       });
     }
+
+    this.workersAreasService
+      .getByIdWorker(this.newWorker.id)
+      .subscribe((wa) => (this.workerAreas = wa));
   }
 
   validate(control: string): boolean {
