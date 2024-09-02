@@ -158,8 +158,10 @@ export class AgreementFormComponent implements OnInit {
     } else {
       this.agreementsService
         .getAll()
-        .subscribe(
-          (resp) => (this.newAgreement.number = resp.at(-1)?.number! + 1)
+        .subscribe((resp) =>
+          resp.length > 0
+            ? (this.newAgreement.number = resp.at(-1)?.number! + 1)
+            : (this.newAgreement.number = 1)
         );
     }
   }
@@ -248,9 +250,11 @@ export class AgreementFormComponent implements OnInit {
       this.agreementForm.reset({
         answer: '',
         completed: false,
+        content: '',
         compilanceDate: this.newAgreement.compilanceDate,
         createdBy: this.newAgreement.FK_idCreatedBy,
         meeting: this.newAgreement.FK_idMeeting,
+        meetingDate: this.agreementForm.get('meetingDate')?.value,
         responsible: this.newAgreement.FK_idResponsible,
       });
 
