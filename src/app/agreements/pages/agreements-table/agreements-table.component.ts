@@ -49,6 +49,8 @@ export class AgreementsTableComponent implements OnInit {
     });
 
     this.agreementsService.getAll().subscribe((resp) => {
+      let a: AgreementWithStatus[] = [];
+
       resp.forEach((value) => {
         const agreement: AgreementWithStatus = {
           id: value.id,
@@ -63,8 +65,10 @@ export class AgreementsTableComponent implements OnInit {
           status: this.getStatus(value),
         };
 
-        this.agreements.push(agreement);
+        a.push(agreement);
       });
+
+      this.agreements = a;
     });
   }
 
