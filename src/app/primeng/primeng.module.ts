@@ -18,6 +18,9 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { DividerModule } from 'primeng/divider';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { KeyFilterModule } from 'primeng/keyfilter';
+import { ToolbarModule } from 'primeng/toolbar';
+import { DialogModule } from 'primeng/dialog';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 @NgModule({
   exports: [
@@ -39,6 +42,9 @@ import { KeyFilterModule } from 'primeng/keyfilter';
     DividerModule,
     MultiSelectModule,
     KeyFilterModule,
+    ToolbarModule,
+    DialogModule,
+    AutoCompleteModule,
   ],
 })
 export class PrimengModule {}

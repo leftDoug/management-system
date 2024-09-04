@@ -6,6 +6,9 @@
         [value]="agreements"
         [globalFilterFields]="['content', 'responsible', 'meeting', 'status']"
         [tableStyle]="{ 'min-width': '60rem' }"
+        [paginator]="true"
+        [rows]="5"
+        dataKey="id"
       >
         <ng-template pTemplate="caption">
           <div class="flex justify-content-between">

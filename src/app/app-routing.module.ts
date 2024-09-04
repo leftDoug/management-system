@@ -14,6 +14,9 @@ import { MeetingInfoComponent } from './meetings/pages/meeting-info/meeting-info
 import { WorkersTableComponent } from './workers/pages/workers-table/workers-table.component';
 import { WorkerFormComponent } from './workers/pages/worker-form/worker-form.component';
 import { WorkerInfoComponent } from './workers/pages/worker-info/worker-info.component';
+import { AgendasTableComponent } from './agenda/agendas-table/agendas-table.component';
+import { AgendaFormComponent } from './agenda/agenda-form/agenda-form.component';
+import { AgendaInfoComponent } from './agenda/agenda-info/agenda-info.component';
 
 const routes: Routes = [
   // {
@@ -50,6 +53,10 @@ const routes: Routes = [
   { path: 'trabajadores/agregar', component: WorkerFormComponent },
   { path: 'trabajadores/detalles/:id', component: WorkerInfoComponent },
   { path: 'trabajadores/editar/:id', component: WorkerFormComponent },
+  { path: 'agendas', component: AgendasTableComponent },
+  { path: 'agendas/agregar', component: AgendaFormComponent },
+  { path: 'agendas/detalles/:id', component: AgendaInfoComponent },
+  { path: 'agendas/editar/:id', component: AgendaFormComponent },
   {
     path: 'tipos-de-reuniones/editar/:id',
     component: TypeOfMeetingFormComponent,

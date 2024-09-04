@@ -9,7 +9,7 @@ import { MenuItem } from 'primeng/api';
 export class NavbarComponent {
   items: MenuItem[] = [
     { label: 'Acuerdos', route: 'acuerdos' },
-    { label: 'Agendas', route: '' },
+    { label: 'Agendas', route: 'agendas' },
     { label: 'Áreas', route: 'areas' },
     { label: 'Reuniones', route: 'reuniones' },
     { label: 'Tipos de Reuniones', route: 'tipos-de-reuniones' },
