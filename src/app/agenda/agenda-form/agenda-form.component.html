@@ -1,197 +1,26 @@
-<!-- <div class="flex align-items-center justify-content-center">
-  <p-card class="p-5 w-full" header="Crear Agenda">
-    <div class="flex justify-content-between" *ngIf="typeOfMeeting">
-      <h5 class="m-0 p-text-secondary">Tipo de Reunion: {{ typeOfMeeting }}</h5>
-      <h5 class="m-0 p-text-secondary">Area: {{ area }}</h5>
-      <h5 class="m-0 p-text-secondary">
-        Ano: {{ agendaForm.controls["year"].value }}
-      </h5>
-    </div>
-
-    <p-toolbar>
-      <ng-template pTemplate="start">
-        <p-button
-          severity="success"
-          label="Agregar Tema"
-          icon="pi pi-plus"
-          (onClick)="showTopicDialog()"
-        ></p-button>
-      </ng-template>
-    </p-toolbar>
-
-    <p-table
-      #tTopics
-      [value]="topics"
-      [globalFilterFields]="['name', 'month']"
-      [rows]="10"
-      [paginator]="true"
-      currentPageReportTemplate="Mostrando desde {first} hasta {last} de {totalRecords}"
-      [showCurrentPageReport]="true"
-    >
-      <ng-template pTemplate="caption">
-        <div class="flex align-content-center justify-content-between">
-          <h3 class="m-0 align-self-center">Temas</h3>
-          <span class="p-input-icon-left">
-            <i class="pi pi-search"></i>
-            <input
-              pInputText
-              type="text"
-              (input)="
-                tTopics.filterGlobal($any($event.target).value, 'contains')
-              "
-              placeholder="Buscar..."
-            />
-          </span>
-        </div>
-      </ng-template>
-
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="month">Mes <p-sortIcon field="month" /></th>
-          <th pSortableColumn="name">Tema</th>
-          <th></th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-topic>
-        <tr>
-          <td>{{ topic.month }}</td>
-          <td>{{ topic.name }}</td>
-          <td class="flex gap-2">
-            <p-button
-              icon="pi pi-pencil"
-              [rounded]="true"
-              [text]="true"
-              (onClick)="editTopic(topic)"
-            ></p-button>
-
-            <p-button
-              icon="pi pi-trash"
-              severity="danger"
-              [rounded]="true"
-              [text]="true"
-            ></p-button>
-          </td>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="3" class="text-danger">No se encontró ningún tema.</td>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="summary">
-        <div class="row">
-          <span class="col text-center"
-            >Temas: {{ topics ? topics.length : 0 }}</span
-          >
-        </div>
-      </ng-template>
-    </p-table>
-
-    <form
-      action="POST"
-      class="form"
-      (ngSubmit)="addTopic()"
-      [formGroup]="topicForm"
-      autocomplete="off"
-    >
-      <p-dialog
-        [(visible)]="topicDialog"
-        [style]="{ width: '450px' }"
-        header="Agregar Tema"
-        [modal]="true"
-      >
-        <ng-template pTemplate="content">
-          <div class="grid mt-1">
-            <label
-              for="month"
-              class="col-2 flex align-items-center justify-content-end"
-              >Mes:</label
-            >
-
-            <p-autoComplete
-              class="col mr-3"
-              inputId="month"
-              [forceSelection]="true"
-              formControlName="month"
-              [suggestions]="filteredMonths"
-              (completeMethod)="filterMonth($event)"
-            />
-          </div>
-
-          <div class="mt-2 grid">
-            <label
-              for="name"
-              class="col-2 flex align-items-center justify-content-end"
-              >Tema:</label
-            >
-
-            <input
-              class="col ml-2 mr-3"
-              type="text"
-              pInputText
-              id="name"
-              formControlName="name"
-              placeholder="Tema..."
-            />
-          </div>
-        </ng-template>
-
-        <ng-template pTemplate="footer">
-          <p-button
-            label="Cancelar"
-            icon="pi pi-times"
-            [text]="true"
-            (onClick)="hideTopicDialog()"
-          />
-
-          <p-button
-            type="submit"
-            label="Agregar"
-            icon="pi pi-check"
-            [text]="true"
-            [disabled]="topicForm.invalid"
-            *ngIf="!topicForm.controls['id'].value; else update"
-          />
-
-          <ng-template #update>
-            <p-button
-              type="submit"
-              label="Actualizar"
-              icon="pi pi-check"
-              [text]="true"
-              [disabled]="topicForm.invalid"
-            />
-          </ng-template>
-        </ng-template>
-      </p-dialog>
-    </form>
-  </p-card>
-</div> -->
-
 <div class="flex align-items-center justify-content-center">
-  <p-card
-    class="p-5 w-full"
-    [header]="!newAgenda.id ? 'Crear Agenda' : 'Actualizar Agenda'"
-  >
+  <p-card class="p-5 w-full" [header]="title">
+    <p-messages
+      [(value)]="msgErrorNoData"
+      [enableService]="false"
+      [closable]="false"
+      [showTransitionOptions]="'500ms'"
+      [hideTransitionOptions]="'500ms'"
+      *ngIf="canceledData"
+    />
+
     <div class="mb-3" *ngIf="agendaCreated">
       <p class="m-0 p-text-secondary">
         <span class="font-bold">Tipo de Reunion:</span>
         {{ typeOfMeeting }}
       </p>
 
-      <!-- <p class="m-0 p-text-secondary">
-        <span class="font-bold">Area:</span>
-        {{ area }}
-      </p> -->
-
       <p class="m-0 p-text-secondary">
         <span class="font-bold">Año:</span>
         {{ newAgenda.year }}
       </p>
     </div>
+
     <div class="mb-3">
       <p-toolbar>
         <ng-template pTemplate="start">
@@ -224,17 +53,34 @@
             [label]="!newAgenda.id ? 'Crear' : 'Actualizar'"
             icon="pi pi-check"
             (onClick)="create()"
-            *ngIf="
-              agendaCreated && topics.length && newAgenda !== previousAgenda
-            "
+            *ngIf="agendaCreated && newAgenda.topics.length && changed"
           ></p-button>
+
+          <p-button
+            [text]="true"
+            label="Atrás"
+            icon="pi pi-angle-left"
+            [routerLink]="
+              newAgenda.id ? ['/agendas/detalles/', newAgenda.id] : ['/agendas']
+            "
+            *ngIf="!changed; else cancel"
+          />
+
+          <ng-template #cancel>
+            <p-button
+              [text]="true"
+              label="Cancelar"
+              icon="pi pi-times"
+              (onClick)="cancelChanges($event)"
+            />
+          </ng-template>
         </ng-template>
       </p-toolbar>
     </div>
 
     <p-table
       #tTopics
-      [value]="topics"
+      [value]="newAgenda.topics"
       sortField="month.id"
       sortMode="single"
       dataKey="id"
@@ -248,6 +94,7 @@
       <ng-template pTemplate="caption">
         <div class="flex align-content-center justify-content-between">
           <h3 class="m-0 align-self-center">Temas</h3>
+
           <span class="p-input-icon-left">
             <i class="pi pi-search"></i>
             <input
@@ -265,6 +112,7 @@
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 90%">Tema</th>
+
           <th style="width: 10%"></th>
         </tr>
       </ng-template>
@@ -302,6 +150,7 @@
           <td>
             {{ topic.name }}
           </td>
+
           <td class="flex gap-2">
             <p-button
               icon="pi pi-pencil"
@@ -321,28 +170,6 @@
         </tr>
       </ng-template>
 
-      <!-- <ng-template pTemplate="body" let-topic>
-        <tr>
-          <td>{{ topic.month }}</td>
-          <td>{{ topic.name }}</td>
-          <td class="flex gap-2">
-            <p-button
-              icon="pi pi-pencil"
-              [rounded]="true"
-              [text]="true"
-              (onClick)="editTopic(topic)"
-            ></p-button>
-
-            <p-button
-              icon="pi pi-trash"
-              severity="danger"
-              [rounded]="true"
-              [text]="true"
-            ></p-button>
-          </td>
-        </tr>
-      </ng-template> -->
-
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="3" class="text-danger">No se encontró ningún tema.</td>
@@ -352,57 +179,24 @@
       <ng-template pTemplate="summary">
         <div class="row">
           <span class="col text-center"
-            >Temas: {{ topics ? topics.length : 0 }}</span
+            >Temas: {{ newAgenda.topics ? newAgenda.topics.length : 0 }}</span
           >
         </div>
       </ng-template>
     </p-table>
 
-    <!-- FIXME: crear nuevo componente -->
+    <!-- FIXME: crear nuevo componente para k el layout salga correctamente-->
     <form class="form" [formGroup]="topicForm" autocomplete="off">
       <p-dialog
         [closable]="false"
         [(visible)]="topicDialog"
         [style]="{ width: '500px' }"
-        header="Agregar Tema"
+        [header]="
+          !topicForm.controls['id'].value ? 'Agregar Tema' : 'Editar Tema'
+        "
         [modal]="true"
       >
         <ng-template pTemplate="content">
-          <!-- <div class="grid mt-1">
-            <label
-              for="month"
-              class="col-2 flex align-items-center justify-content-end"
-              >Mes:</label
-            >
-
-            <p-autoComplete
-              class="col mr-3"
-              inputId="month"
-              [forceSelection]="true"
-              formControlName="month"
-              [suggestions]="filteredMonths"
-              field="name"
-              (completeMethod)="filterMonth($event)"
-            />
-          </div>
-
-          <div class="mt-2 grid">
-            <label
-              for="name"
-              class="col-2 flex align-items-center justify-content-end"
-              >Tema:</label
-            >
-
-            <input
-              class="col ml-2 mr-3"
-              type="text"
-              pInputText
-              id="name"
-              formControlName="name"
-              placeholder="Tema..."
-            />
-          </div> -->
-
           <div class="my-1">
             <label for="month">Mes:</label>
           </div>
@@ -418,6 +212,15 @@
             />
           </div>
 
+          <div>
+            <small
+              id="month-help"
+              class="p-error pt-0 ml-2 mr-3"
+              *ngIf="validate('month', 'topic')"
+              >{{ monthErrorMsg }}</small
+            >
+          </div>
+
           <div class="mt-3 mb-1">
             <label for="name">Tema:</label>
           </div>
@@ -431,6 +234,15 @@
               formControlName="name"
               placeholder="Tema..."
             ></textarea>
+          </div>
+
+          <div>
+            <small
+              id="topic-help"
+              class="p-error pt-0 ml-2 mr-3"
+              *ngIf="validate('name', 'topic')"
+              >{{ topicErrorMsg }}</small
+            >
           </div>
         </ng-template>
 
@@ -473,7 +285,16 @@
         [modal]="true"
         [style]="{ width: '500px' }"
         header="Definir datos de la Agenda"
+        [focusOnShow]="false"
       >
+        <p-messages
+          [(value)]="msgErrorExistentAgenda"
+          [enableService]="false"
+          [showTransitionOptions]="'500ms'"
+          [hideTransitionOptions]="'500ms'"
+          *ngIf="existentAgenda"
+        />
+
         <ng-template pTemplate="content">
           <div class="mt-1 mb-1">
             <label for="typeOfMeeting">Tipo de Reunión:</label>
@@ -492,6 +313,15 @@
             ></p-dropdown>
           </div>
 
+          <div>
+            <small
+              id="typeOfMeeting-help"
+              class="p-error pt-0 ml-2 mr-3"
+              *ngIf="validate('typeOfMeeting', 'agenda')"
+              >{{ typeOfMeetingErrorMsg }}</small
+            >
+          </div>
+
           <div class="mt-3 mb-1">
             <label for="year">Año:</label>
           </div>
@@ -503,20 +333,14 @@
             [useGrouping]="false"
           />
 
-          <!-- <div>
-            <div class="mt-3 mb-1">
-              <label for="area">Área:</label>
-            </div>
-            <div>
-              <input
-                type="text"
-                pInputText
-                id="area"
-                formControlName="area"
-                placeholder="Área..."
-              />
-            </div>
-          </div> -->
+          <div>
+            <small
+              id="year-help"
+              class="p-error pt-0 ml-2 mr-3"
+              *ngIf="validate('year', 'agenda')"
+              >{{ yearErrorMsg }}</small
+            >
+          </div>
         </ng-template>
 
         <ng-template pTemplate="footer">
@@ -539,4 +363,5 @@
       </p-dialog>
     </form>
   </p-card>
+  <p-confirmDialog></p-confirmDialog>
 </div>

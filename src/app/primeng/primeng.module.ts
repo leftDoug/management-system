@@ -14,13 +14,14 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CardModule } from 'primeng/card';
 import { MessagesModule } from 'primeng/messages';
-import { TabMenuModule } from 'primeng/tabmenu';
+import { MenubarModule } from 'primeng/menubar';
 import { DividerModule } from 'primeng/divider';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { ToolbarModule } from 'primeng/toolbar';
 import { DialogModule } from 'primeng/dialog';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { FieldsetModule } from 'primeng/fieldset';
 
 @NgModule({
   exports: [
@@ -38,13 +39,14 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     ConfirmDialogModule,
     CardModule,
     MessagesModule,
-    TabMenuModule,
+    MenubarModule,
     DividerModule,
     MultiSelectModule,
     KeyFilterModule,
     ToolbarModule,
     DialogModule,
     AutoCompleteModule,
+    FieldsetModule,
   ],
 })
 export class PrimengModule {}

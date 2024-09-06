@@ -1,1 +1,100 @@
-<p>agendas-table works!</p>
+<div class="flex flex-wrap align-items-center justify-content-center">
+  <div class="p-5 w-full">
+    <p-card class="min-w-700" header="Listado de Agendas">
+      <!-- <p-toast /> -->
+
+      <p-table
+        #tAgendas
+        [paginator]="true"
+        [rows]="10"
+        [rowHover]="true"
+        [value]="agendas"
+        [tableStyle]="{ 'min-width': '60rem' }"
+        [globalFilterFields]="['FK_idTypeOfMeeting', 'year']"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex justify-content-between">
+            <p-button
+              [text]="true"
+              label="Crear Agenda"
+              icon="pi pi-plus"
+              severity="success"
+              routerLink="/agendas/agregar"
+            />
+
+            <span class="p-input-icon-left ml-5">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                placeholder="Buscar..."
+                ngClass="search"
+                (input)="
+                  tAgendas.filterGlobal($any($event.target).value, 'contains')
+                "
+              />
+            </span>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="FK_idTypeOfMeeting">
+              Tipo de Reunión
+              <p-sortIcon field="FK_idTypeOfMeeting"></p-sortIcon>
+            </th>
+
+            <th pSortableColumn="year">
+              Año <p-sortIcon field="year"></p-sortIcon>
+            </th>
+
+            <th style="width: 5%"></th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-agenda>
+          <tr>
+            <td>{{ agenda.FK_idTypeOfMeeting }}</td>
+
+            <td>{{ agenda.year }}</td>
+
+            <td class="flex align-items-center justify-content-center">
+              <p-button
+                [text]="true"
+                [rounded]="true"
+                icon="pi pi-info-circle"
+                [routerLink]="['/agendas/detalles/', agenda.id]"
+              />
+
+              <!-- <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                label="Eliminar"
+                [text]="true"
+                (onClick)="remove($event, typeOfMeeting.id)"
+              ></p-button> -->
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-danger">
+              No se encontró ninguna agenda.
+            </td>
+          </tr>
+        </ng-template>
+
+        <!-- <ng-template pTemplate="summary">
+          <div class="row">
+            <span class="col text-center"
+              >Tipos de Reunión:
+              {{ typesOfMeetings ? typesOfMeetings.length : 0 }}</span
+            >
+          </div>
+        </ng-template> -->
+      </p-table>
+      <!-- <p-confirmDialog></p-confirmDialog> -->
+    </p-card>
+  </div>
+</div>

@@ -16,6 +16,11 @@ export interface MonthWithId {
   name: MonthName;
 }
 
+export interface MonthWithTopics {
+  name: MonthName;
+  topics: string[];
+}
+
 export enum MonthName {
   january = 'Enero',
   february = 'Febrero',

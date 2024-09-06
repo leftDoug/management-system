@@ -80,7 +80,7 @@ export class AgreementFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.primengConfig.ripple = true;
+    // this.primengConfig.ripple = true;
     // this.messages = [
     //   { severity: 'success', detail: 'Agreement created successfully' },
     // ];

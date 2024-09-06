@@ -1,1 +1,64 @@
-<p>agenda-info works!</p>
+<div class="flex align-items-center justify-content-center">
+  <p-card class="p-5 w-full" header="Agenda">
+    <p-toast />
+
+    <div class="grid">
+      <div class="col">
+        <p-divider align="left" type="solid">
+          <strong>Tipo de Reunión</strong>
+        </p-divider>
+        <p class="ml-5">{{ typeOfMeeting }}</p>
+      </div>
+
+      <div class="col">
+        <p-divider align="left" type="solid">
+          <strong>Año</strong>
+        </p-divider>
+        <p class="ml-5">{{ agenda.year }}</p>
+      </div>
+    </div>
+
+    <p-divider align="left" type="solid">
+      <strong>Temas</strong>
+    </p-divider>
+    <div class="mx-5" *ngFor="let month of months">
+      <p-divider align="left" type="dashed">
+        <strong class="p-text-secondary">{{ month.name }}</strong>
+      </p-divider>
+      <p class="ml-5" *ngFor="let topic of month.topics">
+        <strong>- </strong>{{ topic }}
+      </p>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="flex gap-3 justify-content-center">
+        <p-button
+          [text]="true"
+          icon="pi pi-pencil"
+          label="Editar"
+          severity="success"
+          type="button"
+          [routerLink]="['/agendas/editar/', agenda.id]"
+        />
+
+        <p-button
+          [text]="true"
+          icon="pi pi-angle-left"
+          label="Atrás"
+          type="button"
+          routerLink="/agendas"
+        />
+
+        <p-button
+          [text]="true"
+          icon="pi pi-trash"
+          label="Eliminar"
+          severity="danger"
+          type="button"
+          (onClick)="remove($event)"
+        />
+      </div>
+    </ng-template>
+    <p-confirmDialog></p-confirmDialog>
+  </p-card>
+</div>
