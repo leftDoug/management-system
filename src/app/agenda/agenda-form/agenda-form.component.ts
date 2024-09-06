@@ -59,28 +59,14 @@ export class AgendaFormComponent implements OnInit {
     { id: 12, name: MonthName.december },
   ];
 
-  msgErrorNoData: Message[] = [
-    {
-      severity: 'error',
-      detail: 'La Agenda debe los datos para poder añadirle Temas',
-    },
-  ];
-
-  msgErrorExistentAgenda: Message[] = [
-    {
-      severity: 'error',
-      detail: 'Ya existe una Agenda para este Tipo de Reunion este Año',
-    },
-  ];
-
   agendaCreated: boolean = false;
   agendaDialog: boolean = true;
   agendas: Agenda[] = [];
   areas: Area[] = [];
-  canceledData: boolean = false;
   changed: boolean = false;
-  existentAgenda: boolean = false;
   filteredMonths: MonthWithId[] = [];
+  inner: boolean = false;
+  messages: Message[] = [];
   title: string = '';
   topicDialog: boolean = false;
   typeOfMeeting: string = '';
@@ -205,6 +191,12 @@ export class AgendaFormComponent implements OnInit {
       tempTopics.push(tempTopic);
     }
 
+    this.messageService.add({
+      severity: 'success',
+      detail: 'El tema ha sido agregado',
+      summary: 'Tema Agregado',
+    });
+
     this.newAgenda.topics = tempTopics;
     this.changed = true;
 
@@ -224,9 +216,11 @@ export class AgendaFormComponent implements OnInit {
         typeOfMeeting: '',
       });
 
+      this.inner = false;
+
       this.hideAgendaDialog();
 
-      this.canceledData = true;
+      this.showNoDataMsg();
     } else {
       this.topicForm.reset({
         id: '',
@@ -320,6 +314,10 @@ export class AgendaFormComponent implements OnInit {
     this.agendaDialog = false;
   }
 
+  hideMessages(): void {
+    this.messages = [];
+  }
+
   hideTopicDialog() {
     this.topicDialog = false;
   }
@@ -367,7 +365,7 @@ export class AgendaFormComponent implements OnInit {
           a.year === this.agendaForm.get('year')?.value
       )
     ) {
-      this.existentAgenda = true;
+      this.showExistentAgendaMsg();
     } else {
       this.newAgenda.FK_idTypeOfMeeting =
         this.agendaForm.get('typeOfMeeting')?.value;
@@ -379,15 +377,31 @@ export class AgendaFormComponent implements OnInit {
 
       this.agendaCreated = true;
       this.changed = true;
-      this.canceledData = false;
-      this.existentAgenda = false;
 
       this.hideAgendaDialog();
+      this.hideMessages();
     }
   }
 
   showAgendaDialog() {
     this.agendaDialog = true;
+  }
+
+  showExistentAgendaMsg(): void {
+    this.messages = [];
+    this.inner = true;
+    this.messages.push({
+      severity: 'error',
+      detail: 'Ya existe una Agenda para este Tipo de Reunion este Año',
+    });
+  }
+
+  showNoDataMsg(): void {
+    this.messages = [];
+    this.messages.push({
+      severity: 'error',
+      detail: 'La Agenda debe tener los datos para poder añadirle Temas',
+    });
   }
 
   showTopicDialog() {

@@ -1,5 +1,7 @@
 export interface User {
-  id: number;
+  id: string;
+  FK_idWorker: string;
   username: string;
-  email: string;
+  password: string;
+  admin: boolean;
 }

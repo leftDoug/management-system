@@ -17,6 +17,7 @@ import { WorkerInfoComponent } from './workers/pages/worker-info/worker-info.com
 import { AgendasTableComponent } from './agenda/agendas-table/agendas-table.component';
 import { AgendaFormComponent } from './agenda/agenda-form/agenda-form.component';
 import { AgendaInfoComponent } from './agenda/agenda-info/agenda-info.component';
+import { RegisterComponent } from './auth/pages/register/register.component';
 
 const routes: Routes = [
   // {
@@ -32,6 +33,10 @@ const routes: Routes = [
   {
     path: 'iniciar-sesion',
     component: LoginComponent,
+  },
+  {
+    path: 'registrarse',
+    component: RegisterComponent,
   },
   {
     path: 'acuerdos',

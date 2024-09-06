@@ -22,6 +22,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { DialogModule } from 'primeng/dialog';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { FieldsetModule } from 'primeng/fieldset';
+import { PasswordModule } from 'primeng/password';
 
 @NgModule({
   exports: [
@@ -47,6 +48,7 @@ import { FieldsetModule } from 'primeng/fieldset';
     DialogModule,
     AutoCompleteModule,
     FieldsetModule,
+    PasswordModule,
   ],
 })
 export class PrimengModule {}

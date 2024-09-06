@@ -14,6 +14,8 @@ import { Meeting } from 'src/app/meetings/interfaces/meeting.interface';
 import { Session } from 'src/app/sessions/interfaces/session.interface';
 import { Worker } from 'src/app/workers/interfaces/worker.interface';
 import { getSeverity } from 'src/app/shared/severity-status';
+import { MessageService } from 'primeng/api';
+import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
   selector: 'app-agreements-table',
@@ -35,7 +37,8 @@ export class AgreementsTableComponent implements OnInit {
   constructor(
     private agreementsService: AgreementsService,
     private workersService: WorkersService,
-    private meetingsService: MeetingsService
+    private meetingsService: MeetingsService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -70,6 +73,10 @@ export class AgreementsTableComponent implements OnInit {
 
       this.agreements = a;
     });
+  }
+
+  get user() {
+    return this.authService.user;
   }
 
   get fulfilledAgreements(): number {

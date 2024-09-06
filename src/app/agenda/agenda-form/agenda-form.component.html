@@ -1,12 +1,13 @@
 <div class="flex align-items-center justify-content-center">
   <p-card class="p-5 w-full" [header]="title">
+    <p-toast />
     <p-messages
-      [(value)]="msgErrorNoData"
+      [value]="messages"
       [enableService]="false"
       [closable]="false"
       [showTransitionOptions]="'500ms'"
       [hideTransitionOptions]="'500ms'"
-      *ngIf="canceledData"
+      *ngIf="!inner"
     />
 
     <div class="mb-3" *ngIf="agendaCreated">
@@ -288,11 +289,11 @@
         [focusOnShow]="false"
       >
         <p-messages
-          [(value)]="msgErrorExistentAgenda"
+          [value]="messages"
           [enableService]="false"
           [showTransitionOptions]="'500ms'"
           [hideTransitionOptions]="'500ms'"
-          *ngIf="existentAgenda"
+          *ngIf="inner"
         />
 
         <ng-template pTemplate="content">

@@ -80,11 +80,6 @@ export class AgreementFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // this.primengConfig.ripple = true;
-    // this.messages = [
-    //   { severity: 'success', detail: 'Agreement created successfully' },
-    // ];
-
     this.meetingsService.getAll().subscribe((resp) => (this.meetings = resp));
 
     this.agreementForm
@@ -100,7 +95,6 @@ export class AgreementFormComponent implements OnInit {
           this.agreementForm.get('responsible')?.reset('');
           this.agreementForm.get('responsible')?.enable();
         }),
-        // switchMap((im) => this.meetingsService.getById(im)),
         switchMap((im) => {
           const m = this.meetings.find((m) => im === m.id)!;
           console.log(m);

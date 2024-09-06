@@ -28,8 +28,6 @@ export class AreaFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.primengConfig.ripple = true;
-
     if (this.router.url.includes('editar')) {
       this.activatedRoute.params
         .pipe(switchMap(({ id }) => this.areasService.getById(id)))

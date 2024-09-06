@@ -1,4 +1,4 @@
-<p-card class="m-3 p-5" header="Login">
+<!-- <p-card class="m-3 p-5" header="Login">
   <div class="row justify-content-center">
     <p-button
       label="Entrar"
@@ -11,4 +11,96 @@
   </div>
 </p-card>
 
-<p>login works!</p>
+<p>login works!</p> -->
+
+<p-dialog
+  [visible]="true"
+  [closable]="false"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  header="Iniciar sesión"
+>
+  <p-messages [(value)]="msgsLogin" [enableService]="false" />
+  <!-- <div class="card"> -->
+  <form class="form" [autocomplete]="false" [formGroup]="userForm">
+    <div class="flex flex-column md:flex-row">
+      <div
+        class="w-full md:w-5 flex flex-column align-items-center justify-content-center gap-3 py-5"
+      >
+        <div
+          class="flex flex-wrap justify-content-start align-items-center gap-2"
+        >
+          <label class="w-6rem" for="username">Usuario</label>
+          <input
+            pInputText
+            id="username"
+            formControlName="username"
+            type="text"
+            class="w-12rem"
+          />
+          <p-messages
+            [closable]="false"
+            [value]="showUsernameErrorMsg()"
+            [enableService]="false"
+            *ngIf="username.touched"
+          />
+        </div>
+        <div
+          class="flex flex-wrap justify-content-start align-items-center gap-2"
+        >
+          <label class="w-6rem" for="password">Contraseña</label>
+          <!-- <input
+            pInputText
+            id="password"
+            formControlName="password"
+            type="password"
+            class="w-12rem"
+          /> -->
+          <p-password
+            inputId="password"
+            formControlName="password"
+            class="w-12rem"
+            [feedback]="false"
+            [toggleMask]="true"
+          />
+          <p-messages
+            [closable]="false"
+            [value]="showPasswordErrorMsg()"
+            [enableService]="false"
+            *ngIf="password.touched"
+          />
+        </div>
+        <p-button
+          label="Entrar"
+          icon="pi pi-sign-in"
+          styleClass="w-10rem mx-auto"
+          [disabled]="userForm.invalid"
+          (onClick)="login()"
+        />
+      </div>
+      <div class="w-full md:w-2">
+        <p-divider layout="vertical" styleClass="hidden md:flex">
+          <b>O</b>
+        </p-divider>
+        <p-divider
+          layout="horizontal"
+          styleClass="flex md:hidden"
+          [align]="'center'"
+        >
+          <b>O</b>
+        </p-divider>
+      </div>
+      <div
+        class="w-full md:w-5 flex align-items-center justify-content-center py-5"
+      >
+        <p-button
+          label="Registrarse"
+          icon="pi pi-user-plus"
+          styleClass="p-button-success w-10rem"
+          routerLink="/registrarse"
+        />
+      </div>
+    </div>
+  </form>
+  <!-- </div> -->
+</p-dialog>

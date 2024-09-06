@@ -75,4 +75,21 @@ export class ValidatorService {
 
     return null;
   }
+
+  differentPasswords(pass: string, check: string) {
+    return (formGroup: AbstractControl): ValidationErrors | null => {
+      const password: string = formGroup.get(pass)?.value;
+      const checkPassword: string = formGroup.get(check)?.value;
+
+      if (password !== checkPassword) {
+        formGroup.get(check)?.setErrors({ differentPasswords: true });
+
+        return {
+          meetingCompilanceError: true,
+        };
+      }
+
+      return null;
+    };
+  }
 }
