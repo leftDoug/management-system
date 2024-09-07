@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
+import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,5 +16,20 @@ export class NavbarComponent {
     { label: 'Reuniones', route: 'reuniones' },
     { label: 'Tipos de Reuniones', route: 'tipos-de-reuniones' },
     { label: 'Trabajadores', route: 'trabajadores' },
+    {
+      label: 'Perfil',
+      items: [
+        { label: 'Cambiar Contraseña' },
+        {
+          label: 'Cerrar Sesión',
+          command: () => {
+            this.authService.logout();
+            this.router.navigateByUrl('/');
+          },
+        },
+      ],
+    },
   ];
+
+  constructor(private router: Router, private authService: AuthService) {}
 }

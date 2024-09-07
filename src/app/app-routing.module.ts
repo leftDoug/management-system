@@ -18,6 +18,7 @@ import { AgendasTableComponent } from './agenda/agendas-table/agendas-table.comp
 import { AgendaFormComponent } from './agenda/agenda-form/agenda-form.component';
 import { AgendaInfoComponent } from './agenda/agenda-info/agenda-info.component';
 import { RegisterComponent } from './auth/pages/register/register.component';
+import { authGuard } from './auth/guards/auth.guard';
 
 const routes: Routes = [
   // {
@@ -31,6 +32,11 @@ const routes: Routes = [
   // },
 
   {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'iniciar-sesion',
+  },
+  {
     path: 'iniciar-sesion',
     component: LoginComponent,
   },
@@ -40,6 +46,7 @@ const routes: Routes = [
   },
   {
     path: 'acuerdos',
+    canActivate: [authGuard],
     component: AgreementsTableComponent,
   },
   { path: 'acuerdos/detalles/:id', component: AgreementInfoComponent },
@@ -66,7 +73,7 @@ const routes: Routes = [
     path: 'tipos-de-reuniones/editar/:id',
     component: TypeOfMeetingFormComponent,
   },
-  { path: '**', redirectTo: 'acuerdos' },
+  { path: '**', redirectTo: 'iniciar-sesion' },
 ];
 
 @NgModule({

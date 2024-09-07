@@ -13,8 +13,8 @@ import { User } from '../../interfaces/user.interface';
 })
 export class LoginComponent implements OnInit {
   userForm: FormGroup = this.fb.group({
-    username: ['', Validators.required],
-    password: ['', Validators.required],
+    username: ['test1', Validators.required],
+    password: ['12345678', Validators.required],
   });
 
   msgsLogin: Message[] = [];
@@ -84,23 +84,33 @@ export class LoginComponent implements OnInit {
 
   // FIXME: este es una MIERDA
   login() {
-    let tempUser: User | undefined = this.users.find(
-      (u) =>
-        u.username === this.username.value && u.password === this.password.value
-    );
+    this.authService
+      .testLogin(this.username.value, this.password.value)
+      .subscribe((ok) => {
+        if (ok) {
+          this.router.navigateByUrl('/acuerdos');
+        } else {
+          this.showLoginErrorMsg();
+        }
+      });
+
+    // let tempUser: User | undefined = this.users.find(
+    //   (u) =>
+    //     u.username === this.username.value && u.password === this.password.value
+    // );
 
     // this.authService.getByUsername(this.username.value).subscribe((u) => {
     //   this.user = u[0];
     // });
     // console.log(this.user);
 
-    if (tempUser) {
-      this.authService
-        .login(this.username.value, this.password.value)
-        .subscribe(console.log);
-      this.router.navigate(['/acuerdos']);
-    } else {
-      this.showLoginErrorMsg();
-    }
+    // if (tempUser) {
+    //   this.authService
+    //     .login(this.username.value, this.password.value)
+    //     .subscribe(console.log);
+    //   this.router.navigate(['/acuerdos']);
+    // } else {
+    //   this.showLoginErrorMsg();
+    // }
   }
 }
