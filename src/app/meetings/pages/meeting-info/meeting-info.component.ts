@@ -16,13 +16,14 @@ import { switchMap, tap } from 'rxjs';
 export class MeetingInfoComponent implements OnInit {
   meeting: Meeting = {
     id: '',
-    FK_idResponsible: '',
-    FK_idTypeOfMeeting: '',
+    type_of_meeting_id: '',
+    secretary_id: '',
     name: '',
     date: new Date(),
     endTime: new Date(),
     startTime: new Date(),
     session: Session.ordinary,
+    state: true,
   };
   responsible: string = '';
   typeOfMeeting: string = '';
@@ -41,13 +42,8 @@ export class MeetingInfoComponent implements OnInit {
       .pipe(
         switchMap(({ id }) => this.meetingsService.getById(id)),
         tap((m) => {
-          this.workersService
-            .getById(m.FK_idResponsible)
-            .subscribe((w) => (this.responsible = w.name));
-        }),
-        tap((m) => {
           this.typesOfMeetingsService
-            .getById(m.FK_idTypeOfMeeting)
+            .getById(m.type_of_meeting_id)
             .subscribe((t) => (this.typeOfMeeting = t.name));
         })
       )

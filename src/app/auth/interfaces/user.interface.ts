@@ -1,17 +1,30 @@
 export interface User {
   id: string;
-  FK_idWorker: string;
+  idWorker: string;
+  idRole: string;
   username: string;
   password: string;
-  admin: boolean;
+  state: boolean;
 }
 
-export interface TestUser {
-  id: number;
+export interface UserResponse {
   username: string;
+  worker: string;
+  role: string;
+}
+
+export interface UserLogged {
+  id: string;
+  idWorker: string;
 }
 
 export interface UserLogin {
   username: string;
   password: string;
 }
+
+// export interface testUser {
+//   username: string;
+//   idWorker: number;
+//   password: string;
+// }

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
+import { AuthService } from './auth/services/auth.service';
+import { UserLogged } from './auth/interfaces/user.interface';
 
 @Component({
   selector: 'app-root',

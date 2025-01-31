@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { WorkerX } from '../../interfaces/worker.interface';
+import { Worker } from '../../interfaces/worker.interface';
 import { Area } from 'src/app/areas/interfaces/area.interface';
 import { WorkersService } from '../../services/workers.service';
 import { AreasService } from 'src/app/areas/services/areas.service';
@@ -16,47 +16,37 @@ import { switchMap, tap } from 'rxjs';
   providers: [ConfirmationService, MessageService],
 })
 export class WorkerInfoComponent implements OnInit {
-  worker: WorkerX = {
+  worker: Worker = {
     id: '',
     name: '',
     occupation: '',
     email: '',
-    secretary: false,
+    state: true,
   };
-  workersAreas: WorkerArea[] = [];
   areas: Area[] = [];
-  wAreas: Area[] = [];
 
   constructor(
     private workersService: WorkersService,
-    private areasService: AreasService,
     private activatedRoute: ActivatedRoute,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private workersAreasService: WorkersAreasService
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
     this.activatedRoute.params
       .pipe(
         tap(({ id }) =>
-          this.workersAreasService
-            .getByIdWorker(id)
-            .subscribe((wa) => (this.workersAreas = wa))
+          this.workersService.getAreas(id).subscribe((resp) => {
+            this.areas = resp;
+            this.areas.sort((a, b) => a.name.localeCompare(b.name));
+          })
         ),
-        switchMap(({ id }) => this.workersService.xgetById(id))
+        switchMap(({ id }) => this.workersService.getById(id))
       )
-      .subscribe((w) => (this.worker = w));
-
-    this.areasService.getAll().subscribe((a) => {
-      a.forEach((area) => {
-        if (this.workersAreas.find((wa) => area.id === wa.FK_idWorkArea)) {
-          this.areas.push(area);
-        }
+      .subscribe((w) => {
+        console.log(w);
+        this.worker = w;
       });
-
-      this.areas.sort((a, b) => a.name.localeCompare(b.name));
-    });
   }
 
   remove(event: Event): void {

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Agreement } from '../interfaces/agreement.interface';
 import { HttpClient } from '@angular/common/http';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, map, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
+import { AgreementResponse } from '../interfaces/agreement-response.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -58,25 +59,35 @@ export class AgreementsService {
   //     content: 'test 3',
   //   },
   // ];
-  private _apiUrl: string = environment.apiUrl;
+  private _serverUrl: string = `${environment.serverUrl}/agreements`;
 
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<Agreement[]> {
-    return this.http.get<Agreement[]>(`${this._apiUrl}/acuerdos`);
+    return this.http
+      .get<AgreementResponse>(`${this._serverUrl}`)
+      .pipe(map((res) => res.arg!));
   }
 
   getById(id: string): Observable<Agreement> {
-    return this.http.get<Agreement>(`${this._apiUrl}/acuerdos/${id}`);
+    return this.http
+      .get<AgreementResponse>(`${this._serverUrl}/${id}`)
+      .pipe(map((res) => res.arg as unknown as Agreement));
   }
 
-  add(agreement: Agreement): Observable<Agreement> {
-    return this.http.post<Agreement>(`${this._apiUrl}/acuerdos`, agreement);
+  getInfo(id: string): Observable<Agreement> {
+    return this.http
+      .get<AgreementResponse>(`${this._serverUrl}/info/${id}`)
+      .pipe(map((res) => res.arg as unknown as Agreement));
   }
 
-  update(agreement: Agreement): Observable<Agreement> {
-    return this.http.put<Agreement>(
-      `${this._apiUrl}/acuerdos/${agreement.id}`,
+  add(agreement: Agreement): Observable<AgreementResponse> {
+    return this.http.post<AgreementResponse>(`${this._serverUrl}`, agreement);
+  }
+
+  update(agreement: Agreement): Observable<AgreementResponse> {
+    return this.http.put<AgreementResponse>(
+      `${this._serverUrl}/${agreement.id}`,
       agreement
     );
   }
@@ -93,9 +104,9 @@ export class AgreementsService {
   //   this._agreements.push(agreement);
   // }
 
-  cancel(agreement: Agreement): Observable<Agreement> {
+  cancel(agreement: Agreement): Observable<AgreementResponse> {
     // this.getById(id).status = Status.anulado;
-    agreement.canceled = true;
+    agreement.state = true;
     return this.update(agreement);
   }
 }

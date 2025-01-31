@@ -10,7 +10,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   providers: [ConfirmationService, MessageService],
 })
 export class AreasTableComponent implements OnInit {
-  areas: Area[] = [];
+  areas!: Area[];
 
   constructor(
     private areasService: AreasService,
@@ -19,6 +19,7 @@ export class AreasTableComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.areasService.getAll().subscribe((resp) => (this.areas = resp));
     this.areasService.getAll().subscribe((resp) => (this.areas = resp));
   }
 

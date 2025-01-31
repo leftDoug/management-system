@@ -3,10 +3,14 @@
     <p-card class="min-w-700" header="Listado de Trabajadores">
       <p-toast></p-toast>
       <p-table
-        [value]="workers"
-        [tableStyle]="{ 'min-width': '60rem' }"
         #tWorkers
+        [value]="workers"
         [globalFilterFields]="['name', 'occupation', 'email']"
+        [tableStyle]="{ 'min-width': '60rem' }"
+        [paginator]="true"
+        [rows]="5"
+        [rowsPerPageOptions]="[5, 10, 15]"
+        dataKey="id"
       >
         <ng-template pTemplate="caption">
           <div class="flex justify-content-between">
@@ -15,6 +19,7 @@
               icon="pi pi-plus"
               severity="success"
               routerLink="/trabajadores/agregar"
+              [outlined]="true"
             ></p-button>
             <span class="p-input-icon-left ml-5">
               <i class="pi pi-search"></i>
@@ -105,9 +110,9 @@
               <div class="flex align-items-center justify-content-center">
                 <p-button
                   icon="pi pi-info-circle"
-                  label="Info"
                   [text]="true"
                   [routerLink]="['/trabajadores/detalles/', worker.id]"
+                  [rounded]="true"
                 ></p-button>
               </div>
             </td>

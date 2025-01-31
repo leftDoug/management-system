@@ -16,7 +16,7 @@ export class AreaFormComponent implements OnInit {
   areaForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(5)]],
   });
-  newArea: Area = { id: '', name: '' };
+  newArea!: Area;
 
   constructor(
     private fb: FormBuilder,
@@ -25,7 +25,13 @@ export class AreaFormComponent implements OnInit {
     private areasService: AreasService,
     private router: Router,
     private activatedRoute: ActivatedRoute
-  ) {}
+  ) {
+    this.newArea = {
+      id: '',
+      name: '',
+      state: true,
+    };
+  }
 
   ngOnInit(): void {
     if (this.router.url.includes('editar')) {

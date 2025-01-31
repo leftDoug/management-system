@@ -1,54 +1,58 @@
 import { NgModule } from '@angular/core';
 
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
+import { CardModule } from 'primeng/card';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { DividerModule } from 'primeng/divider';
+import { DropdownModule } from 'primeng/dropdown';
+import { FieldsetModule } from 'primeng/fieldset';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
-import { CalendarModule } from 'primeng/calendar';
+import { KeyFilterModule } from 'primeng/keyfilter';
+import { MenubarModule } from 'primeng/menubar';
+import { MessageModule } from 'primeng/message';
+import { MessagesModule } from 'primeng/messages';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { PasswordModule } from 'primeng/password';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RippleModule } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { CardModule } from 'primeng/card';
-import { MessagesModule } from 'primeng/messages';
-import { MenubarModule } from 'primeng/menubar';
-import { DividerModule } from 'primeng/divider';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { KeyFilterModule } from 'primeng/keyfilter';
 import { ToolbarModule } from 'primeng/toolbar';
-import { DialogModule } from 'primeng/dialog';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-import { FieldsetModule } from 'primeng/fieldset';
-import { PasswordModule } from 'primeng/password';
 
 @NgModule({
   exports: [
-    ButtonModule,
+    AutoCompleteModule,
     BrowserAnimationsModule,
-    InputNumberModule,
-    DropdownModule,
-    CheckboxModule,
-    InputTextareaModule,
+    ButtonModule,
     CalendarModule,
+    CardModule,
+    CheckboxModule,
+    ConfirmDialogModule,
+    DialogModule,
+    DividerModule,
+    DropdownModule,
+    FieldsetModule,
+    InputNumberModule,
+    InputTextModule,
+    InputTextareaModule,
+    KeyFilterModule,
+    MenubarModule,
+    MessageModule,
+    MessagesModule,
+    MultiSelectModule,
+    PasswordModule,
+    RippleModule,
     TableModule,
     TagModule,
-    InputTextModule,
     ToastModule,
-    ConfirmDialogModule,
-    CardModule,
-    MessagesModule,
-    MenubarModule,
-    DividerModule,
-    MultiSelectModule,
-    KeyFilterModule,
     ToolbarModule,
-    DialogModule,
-    AutoCompleteModule,
-    FieldsetModule,
-    PasswordModule,
   ],
 })
 export class PrimengModule {}

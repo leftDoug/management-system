@@ -1,8 +1,10 @@
 export interface TypeOfMeeting {
   id: string;
-  FK_idWorkArea: string;
+  area_id?: string;
+  area?: string;
   name: string;
   frequency: Frequency;
+  state: boolean;
 }
 
 export enum Frequency {

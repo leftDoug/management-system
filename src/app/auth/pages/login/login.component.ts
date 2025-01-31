@@ -1,8 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Message, MessageService } from 'primeng/api';
+
+import { AuthService } from '../../services/auth.service';
 import { User } from '../../interfaces/user.interface';
 
 @Component({
@@ -13,14 +19,11 @@ import { User } from '../../interfaces/user.interface';
 })
 export class LoginComponent implements OnInit {
   userForm: FormGroup = this.fb.group({
-    username: ['test1', Validators.required],
+    username: ['dleft', Validators.required],
     password: ['12345678', Validators.required],
   });
 
   msgsLogin: Message[] = [];
-  msgsUsername: Message[] = [];
-  msgsPassword: Message[] = [];
-  users: User[] = [];
 
   constructor(
     private router: Router,
@@ -28,9 +31,7 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder
   ) {}
 
-  ngOnInit(): void {
-    this.authService.getAll().subscribe((u) => (this.users = u));
-  }
+  ngOnInit(): void {}
 
   get username() {
     return this.userForm.get('username')!;
@@ -41,58 +42,25 @@ export class LoginComponent implements OnInit {
   }
 
   showLoginErrorMsg(): void {
-    this.msgsLogin = [];
-
-    this.msgsLogin.push({
-      severity: 'error',
-      detail: 'Usuario o contraseña incorrecta',
-    });
-  }
-
-  showUsernameErrorMsg(): Message[] {
-    if (this.username.errors?.['required']) {
-      if (this.msgsUsername.length === 0) {
-        this.msgsUsername.push({
+    if (this.msgsLogin?.length == 0) {
+      this.msgsLogin = [
+        {
           severity: 'error',
-          detail: 'El usuario es requerido',
-        });
-      }
-
-      this.username.markAsDirty();
-    } else {
-      this.msgsUsername = [];
+          detail: 'Usuario o contraseña incorrecta',
+        },
+      ];
     }
-
-    return this.msgsUsername;
   }
 
-  showPasswordErrorMsg(): Message[] {
-    if (this.password.errors?.['required']) {
-      if (this.msgsPassword.length === 0) {
-        this.msgsPassword.push({
-          severity: 'error',
-          detail: 'La contraseña es requerida',
-        });
-      }
-      this.password.markAsDirty();
-    } else {
-      this.msgsPassword = [];
-    }
-
-    return this.msgsPassword;
-  }
-
-  // FIXME: este es una MIERDA
   login() {
-    this.authService
-      .testLogin(this.username.value, this.password.value)
-      .subscribe((ok) => {
-        if (ok) {
-          this.router.navigateByUrl('/acuerdos');
-        } else {
-          this.showLoginErrorMsg();
-        }
-      });
+    this.authService.login(this.userForm.value).subscribe((ok) => {
+      if (ok) {
+        this.router.navigateByUrl('/acuerdos');
+      } else {
+        this.userForm.reset();
+        this.showLoginErrorMsg();
+      }
+    });
 
     // let tempUser: User | undefined = this.users.find(
     //   (u) =>
@@ -112,5 +80,15 @@ export class LoginComponent implements OnInit {
     // } else {
     //   this.showLoginErrorMsg();
     // }
+  }
+
+  validate(control: AbstractControl): boolean {
+    if (control.errors?.['required'] && control.touched) {
+      control.markAsDirty();
+
+      return true;
+    }
+
+    return false;
   }
 }

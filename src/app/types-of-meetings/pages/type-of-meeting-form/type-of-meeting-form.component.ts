@@ -28,8 +28,9 @@ export class TypeOfMeetingFormComponent implements OnInit {
   newTypeOfMeeting: TypeOfMeeting = {
     id: '',
     name: '',
-    FK_idWorkArea: '',
+    area_id: '',
     frequency: Frequency.daily,
+    state: true,
   };
   frequencies: Frequency[] = [
     Frequency.daily,
@@ -56,7 +57,7 @@ export class TypeOfMeetingFormComponent implements OnInit {
           this.newTypeOfMeeting = resp;
           this.typeOfMeetingForm.reset({
             name: this.newTypeOfMeeting.name,
-            area: this.newTypeOfMeeting.FK_idWorkArea,
+            area: this.newTypeOfMeeting.area_id,
             frequency: this.newTypeOfMeeting.frequency,
           });
         });
@@ -95,8 +96,7 @@ export class TypeOfMeetingFormComponent implements OnInit {
   }
 
   create(): void {
-    this.newTypeOfMeeting.FK_idWorkArea =
-      this.typeOfMeetingForm.get('area')?.value;
+    this.newTypeOfMeeting.area_id = this.typeOfMeetingForm.get('area')?.value;
     this.newTypeOfMeeting.name = this.typeOfMeetingForm
       .get('name')
       ?.value.trim();

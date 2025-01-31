@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../interfaces/user.interface';
@@ -17,22 +17,8 @@ import { AuthResponse } from '../../interfaces/auth-response.interface';
   providers: [MessageService],
 })
 export class RegisterComponent implements OnInit {
-  userForm: FormGroup = this.fb.group(
-    {
-      username: ['', [Validators.required, Validators.minLength(5)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      checkPassword: '',
-    },
-    {
-      validators: [
-        this.validatorService.differentPasswords('password', 'checkPassword'),
-      ],
-    }
-  );
-
   // userForm: FormGroup = this.fb.group(
   //   {
-  //     worker: ['', Validators.required],
   //     username: ['', [Validators.required, Validators.minLength(5)]],
   //     password: ['', [Validators.required, Validators.minLength(8)]],
   //     checkPassword: '',
@@ -44,21 +30,39 @@ export class RegisterComponent implements OnInit {
   //   }
   // );
 
+  userForm: FormGroup = this.fb.group(
+    {
+      idWorker: ['', Validators.required],
+      username: ['', [Validators.required, Validators.minLength(5)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      idRole: [''],
+      checkPassword: '',
+    },
+    {
+      validators: [
+        this.validatorService.differentPasswords('password', 'checkPassword'),
+      ],
+    }
+  );
+
   newUser: User = {
     id: '',
-    FK_idWorker: '',
+    idWorker: '',
+    idRole: '',
     username: '',
     password: '',
-    admin: false,
+    state: true,
   };
 
   checkPasswordTouched: boolean = false;
-  // dropdownTouched: boolean = false;
+  dropdownTouched: boolean = false;
   msgRegister: Message[] = [];
   passwordTouched: boolean = false;
   registerDialog: boolean = true;
   // users: User[] = [];
-  // workers: Worker[] = [];
+  workers: Worker[] = [];
+  @Input() visible: boolean = false;
+  @Output() onHideDialog = new EventEmitter<EventTarget>();
 
   constructor(
     private fb: FormBuilder,
@@ -70,7 +74,7 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     // this.authService.getAll().subscribe((u) => (this.users = u));
-    // this.workersService.getAll().subscribe((w) => (this.workers = w));
+    this.workersService.getAll().subscribe((w) => (this.workers = w));
   }
 
   get checkPassword() {
@@ -85,21 +89,25 @@ export class RegisterComponent implements OnInit {
     return this.userForm.get('username')!;
   }
 
-  // get worker() {
-  //   return this.userForm.get('worker')!;
-  // }
-
-  createId(): string {
-    let id: string = '';
-    var chars: string =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-    for (let i = 0; i < 5; i++) {
-      id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-
-    return id;
+  get worker() {
+    return this.userForm.get('idWorker')!;
   }
+
+  get role() {
+    return this.userForm.get('idRole')!;
+  }
+
+  // createId(): string {
+  //   let id: string = '';
+  //   var chars: string =
+  //     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  //   for (let i = 0; i < 5; i++) {
+  //     id += chars.charAt(Math.floor(Math.random() * chars.length));
+  //   }
+
+  //   return id;
+  // }
 
   hideRegisterDialog(): void {
     this.registerDialog = false;
@@ -229,16 +237,27 @@ export class RegisterComponent implements OnInit {
   //   }
   // }
 
-  testRegister() {
-    this.authService
-      .testRegister(this.username.value, this.password.value)
-      .subscribe((ok) => {
-        if (ok === true) {
-          this.router.navigateByUrl('/acuerdos');
-        } else {
-          this.showRegistrationErrorMsg(ok);
-        }
-      });
+  register() {
+    this.newUser = {
+      id: '',
+      idWorker: this.worker.value,
+      idRole: this.role.value,
+      username: this.username.value,
+      password: this.password.value,
+      state: true,
+    };
+    this.authService.register(this.newUser).subscribe((ok) => {
+      if (ok === true) {
+        this.onHideDialog.emit();
+      } else {
+        this.showRegistrationErrorMsg(ok);
+      }
+    });
+  }
+
+  hideDialog() {
+    this.visible = false;
+    this.onHideDialog.emit();
   }
 
   showRegistrationErrorMsg(error: any): void {
@@ -250,13 +269,13 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  // touchDropdown(): void {
-  //   this.dropdownTouched = true;
+  touchDropdown(): void {
+    this.dropdownTouched = true;
 
-  //   if (this.worker.errors) {
-  //     this.worker.markAsDirty();
-  //   }
-  // }
+    if (this.worker.errors) {
+      this.worker.markAsDirty();
+    }
+  }
 
   touchPassword(): void {
     this.passwordTouched = true;

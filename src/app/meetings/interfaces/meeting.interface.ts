@@ -1,12 +1,13 @@
 export interface Meeting {
   id: string;
-  FK_idTypeOfMeeting: string;
-  FK_idResponsible: string;
+  type_of_meeting_id: string;
+  secretary_id: string;
   name: string;
   session: Session;
   date: Date;
   endTime: Date;
   startTime: Date;
+  state: boolean;
 }
 
 export interface MeetingWithArea {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { WorkerX } from '../../interfaces/worker.interface';
+import { Worker } from '../../interfaces/worker.interface';
 import { WorkersService } from '../../services/workers.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
@@ -10,11 +10,11 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   providers: [MessageService, ConfirmationService],
 })
 export class WorkersTableComponent implements OnInit {
-  workers: WorkerX[] = [];
+  workers: Worker[] = [];
 
   constructor(private workersService: WorkersService) {}
 
   ngOnInit(): void {
-    this.workersService.xgetAll().subscribe((w) => (this.workers = w));
+    this.workersService.getAll().subscribe((w) => (this.workers = w));
   }
 }

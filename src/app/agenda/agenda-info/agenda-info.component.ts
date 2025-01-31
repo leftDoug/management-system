@@ -64,7 +64,7 @@ export class AgendaInfoComponent implements OnInit {
         switchMap((tom) => {
           this.typeOfMeeting = tom.name;
 
-          return this.areasService.getById(tom.FK_idWorkArea);
+          return this.areasService.getById(tom.area_id!);
         })
       )
       .subscribe(

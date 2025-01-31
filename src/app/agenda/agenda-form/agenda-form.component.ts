@@ -95,7 +95,7 @@ export class AgendaFormComponent implements OnInit {
         t.name =
           t.name +
           ' (' +
-          this.areas.find((a) => a.id === t.FK_idWorkArea)?.name +
+          this.areas.find((a) => a.id === t.area_id)?.name +
           ')';
       });
 
@@ -124,7 +124,7 @@ export class AgendaFormComponent implements OnInit {
           switchMap((tom) => {
             this.typeOfMeeting = tom.name;
 
-            return this.areasService.getById(tom.FK_idWorkArea);
+            return this.areasService.getById(tom.area_id!);
           })
         )
         .subscribe(

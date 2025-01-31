@@ -39,18 +39,19 @@ export class TypesOfMeetingsTableComponent implements OnInit {
     });
 
     this.typesOfMeetingsService.getAll().subscribe((resp) => {
-      resp.forEach((value) => {
-        const typeOfMeeting: TypeOfMeeting = {
-          id: value.id,
-          name: value.name,
-          FK_idWorkArea: this.areas.find(
-            (area) => area.id === value.FK_idWorkArea
-          )?.name!,
-          frequency: value.frequency,
-        };
+      // resp.forEach((value) => {
+      //   const typeOfMeeting: TypeOfMeeting = {
+      //     id: value.id,
+      //     name: value.name,
+      //     area_id: this.areas.find((area) => area.id === value.area_id)?.name!,
+      //     frequency: value.frequency,
+      //     state: true,
+      //   };
 
-        this.typesOfMeetings.push(typeOfMeeting);
-      });
+      //   this.typesOfMeetings.push(typeOfMeeting);
+      // });
+
+      this.typesOfMeetings = resp;
     });
   }
 

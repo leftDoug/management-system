@@ -1,14 +1,16 @@
+<!-- <app-navbar></app-navbar> -->
 <div class="flex flex-wrap align-items-center justify-content-center">
   <div class="p-5 w-full">
     <p-card class="min-w-700" header="Listado de Acuerdos">
-      <pre>{{ user.username }}</pre>
+      <!-- <pre>{{ worker | json }}</pre> -->
       <p-table
         #tAgreements
-        [value]="agreements"
+        [value]="agreementsWS"
         [globalFilterFields]="['content', 'responsible', 'meeting', 'status']"
         [tableStyle]="{ 'min-width': '60rem' }"
         [paginator]="true"
         [rows]="5"
+        [rowsPerPageOptions]="[5, 10, 15]"
         dataKey="id"
       >
         <ng-template pTemplate="caption">
@@ -18,6 +20,7 @@
               icon="pi pi-plus"
               severity="success"
               routerLink="/acuerdos/agregar"
+              [outlined]="true"
             ></p-button>
             <span class="p-input-icon-left">
               <i class="pi pi-search"></i>
@@ -37,32 +40,30 @@
         </ng-template>
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="number" class="md:min-w-min">
-              <div class="flex align-items-center justify-content-center">
+            <th pSortableColumn="number" style="width: 5%">
+              <div class="flex align-items-center">
                 No. <p-sortIcon field="number"></p-sortIcon>
               </div>
             </th>
-            <th pSortableColumn="content">
-              <div class="flex align-items-center justify-content-center">
+            <th pSortableColumn="content" style="width: 50%">
+              <div class="flex align-items-center">
                 Contenido <p-sortIcon field="content"></p-sortIcon>
               </div>
             </th>
-            <th pSortableColumn="responsible">
-              <div class="flex align-items-center justify-content-center">
+            <th pSortableColumn="responsible" style="width: 20%">
+              <div class="flex align-items-center">
                 Responsable <p-sortIcon field="responsible"></p-sortIcon>
               </div>
             </th>
-            <th pSortableColumn="meeting">
-              <div class="flex align-items-center justify-content-center">
+            <th pSortableColumn="meeting" style="width: 15%">
+              <div class="flex align-items-center">
                 Reunión <p-sortIcon field="meeting"></p-sortIcon>
               </div>
             </th>
-            <th pSortableColumn="status">
-              <div class="flex align-items-center justify-content-center">
-                Estado <p-sortIcon field="status"></p-sortIcon>
-              </div>
+            <th pSortableColumn="status" style="width: 5%">
+              <div>Estado <p-sortIcon field="status"></p-sortIcon></div>
             </th>
-            <th></th>
+            <th style="width: 5%"></th>
           </tr>
           <tr>
             <th></th>
@@ -91,6 +92,33 @@
                 </ng-template>
               </p-columnFilter>
             </th>
+            <!-- <th>
+              <p-columnFilter
+                field="status"
+                matchMode="equals"
+                [showMenu]="false"
+              >
+                <ng-template
+                  pTemplate="filter"
+                  let-value
+                  let-filter="filterCallback"
+                >
+                  <p-dropdown
+                    [ngModel]="value"
+                    [options]="statuses"
+                    (onChange)="filter($event.value)"
+                    placeholder="Todos"
+                  >
+                    <ng-template let-option pTemplate="item">
+                      <p-tag
+                        [severity]="getSeverityX(option.value)"
+                        [value]="option.label"
+                      />
+                    </ng-template>
+                  </p-dropdown>
+                </ng-template>
+              </p-columnFilter>
+            </th> -->
             <th>
               <p-columnFilter
                 field="status"
@@ -106,16 +134,14 @@
                     [ngModel]="value"
                     [options]="status"
                     (onChange)="filter($event.value)"
-                    placeholder="Todos"
+                    placeholder="Seleccione"
+                    [showClear]="true"
                   >
                     <ng-template let-option pTemplate="item">
                       <p-tag
-                        [severity]="setSeverity(option)"
                         [value]="option"
+                        [severity]="setSeverity(option)"
                       />
-                      <!-- <span class="badge" [class]="setSeverity(option)">{{
-                      option
-                    }}</span> -->
                     </ng-template>
                   </p-dropdown>
                 </ng-template>
@@ -127,42 +153,30 @@
         <ng-template pTemplate="body" let-agreement>
           <tr row-cfg [status]="agreement.status">
             <td>
-              <div class="flex align-items-center justify-content-center">
-                <strong>{{ agreement.number }}</strong>
-              </div>
+              <strong>{{ agreement.number }}</strong>
             </td>
             <td>
-              <div class="flex align-items-center justify-content-center">
-                {{ agreement.content }}
-              </div>
+              {{ agreement.content }}
             </td>
             <td>
-              <div class="flex align-items-center justify-content-center">
-                {{ agreement.responsible }}
-              </div>
+              {{ agreement.responsible }}
             </td>
             <td>
-              <div class="flex align-items-center justify-content-center">
-                {{ agreement.meeting }}
-              </div>
+              {{ agreement.meeting }}
             </td>
             <td>
-              <div class="flex align-items-center justify-content-center">
-                <p-tag
-                  [severity]="setSeverity(agreement.status)"
-                  [value]="agreement.status"
-                />
-              </div>
+              <p-tag
+                [severity]="setSeverity(agreement.status)"
+                [value]="agreement.status"
+              />
             </td>
             <td>
-              <div class="flex align-items-center justify-content-center">
-                <p-button
-                  icon="pi pi-info-circle"
-                  label="Info"
-                  [text]="true"
-                  [routerLink]="['/acuerdos/detalles/', agreement.id]"
-                ></p-button>
-              </div>
+              <p-button
+                icon="pi pi-info-circle"
+                [text]="true"
+                [rounded]="true"
+                [routerLink]="['/acuerdos/detalles/', agreement.id]"
+              />
             </td>
           </tr>
         </ng-template>
@@ -195,3 +209,5 @@
     </p-card>
   </div>
 </div>
+
+<pre>{{ agreements | json }}</pre>

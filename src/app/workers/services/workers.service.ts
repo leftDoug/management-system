@@ -1,59 +1,79 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment.development';
-import { Observable } from 'rxjs';
-import { Worker, WorkerX } from '../interfaces/worker.interface';
+import { Observable, map } from 'rxjs';
+import { Worker } from '../interfaces/worker.interface';
+import { WorkerResponse } from '../interfaces/worker-response.interface';
+import { Agreement } from 'src/app/agreements/interfaces/agreement.interface';
+import { Area } from 'src/app/areas/interfaces/area.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WorkersService {
-  private _apiUrl: string = environment.apiUrl;
+  private _serverUrl: string = `${environment.serverUrl}/workers`;
 
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<Worker[]> {
-    return this.http.get<Worker[]>(`${this._apiUrl}/trabajadores`);
-  }
-
-  getByArea(area: string): Observable<Worker[]> {
-    return this.http.get<Worker[]>(
-      `${this._apiUrl}/trabajadores?FK_idArea=${area}`
-    );
+    return this.http
+      .get<WorkerResponse>(`${this._serverUrl}`)
+      .pipe(map((res) => res.arg as unknown as Worker[]));
   }
 
   getById(id: string): Observable<Worker> {
-    return this.http.get<Worker>(`${this._apiUrl}/trabajadores/${id}`);
+    console.log(`${this._serverUrl}/${id}`);
+    return this.http
+      .get<WorkerResponse>(`${this._serverUrl}/${id}`)
+      .pipe(map((res) => res.arg as unknown as Worker));
   }
 
-  xgetAll(): Observable<WorkerX[]> {
-    return this.http.get<WorkerX[]>(`${this._apiUrl}/trabajadores`);
-  }
-
-  xgetByArea(area: string): Observable<WorkerX[]> {
-    return this.http.get<WorkerX[]>(
-      `${this._apiUrl}/trabajadores?FK_idArea=${area}`
+  create(worker: Worker, areas: string[]): Observable<WorkerResponse> {
+    const workerwithAreas = {
+      name: worker.name,
+      occupation: worker.occupation,
+      email: worker.email,
+      idAreas: areas,
+    };
+    return this.http.post<WorkerResponse>(
+      `${this._serverUrl}`,
+      workerwithAreas
     );
   }
 
-  xgetById(id: string): Observable<WorkerX> {
-    return this.http.get<WorkerX>(`${this._apiUrl}/trabajadores/${id}`);
-  }
-
-  add(worker: WorkerX): Observable<WorkerX> {
-    return this.http.post<WorkerX>(`${this._apiUrl}/trabajadores`, worker);
-  }
-
-  update(worker: WorkerX): Observable<WorkerX> {
-    return this.http.put<WorkerX>(
-      `${this._apiUrl}/trabajadores/${worker.id}`,
+  update(worker: Worker): Observable<WorkerResponse> {
+    return this.http.put<WorkerResponse>(
+      `${this._serverUrl}/${worker.id}`,
       worker
     );
   }
 
-  remove(worker: WorkerX): Observable<WorkerX> {
-    return this.http.delete<WorkerX>(
-      `${this._apiUrl}/trabajadores/${worker.id}`
-    );
+  remove(worker: Worker): Observable<WorkerResponse> {
+    return this.http.delete<WorkerResponse>(`${this._serverUrl}/${worker.id}`);
+  }
+
+  getAgreements(id: string): Observable<Agreement[]> {
+    return this.http
+      .get<WorkerResponse>(`${this._serverUrl}/${id}`)
+      .pipe(map((res) => res.arg as unknown as Agreement[]));
+  }
+
+  getAreas(id: string): Observable<Area[]> {
+    return this.http
+      .get<WorkerResponse>(`${this._serverUrl}/${id}/areas`)
+      .pipe(map((res) => res.arg as unknown as Area[]));
+  }
+
+  addArea(id: string, idArea: string): Observable<string> {
+    const area = { idArea: idArea };
+    return this.http
+      .post<WorkerResponse>(`${this._serverUrl}/${id}/areas`, area)
+      .pipe(map((resp) => resp.msg as string));
+  }
+
+  removeArea(id: string, area_id: string): Observable<string> {
+    return this.http
+      .delete<WorkerResponse>(`${this._serverUrl}/${id}/areas/${area_id}`)
+      .pipe(map((resp) => resp.msg as string));
   }
 }

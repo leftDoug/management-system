@@ -3,130 +3,109 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, map, of, tap } from 'rxjs';
 
 import { environment } from 'src/environments/environment.development';
-import { TestUser, User, UserLogin } from '../interfaces/user.interface';
+import {
+  UserLogged,
+  User,
+  UserLogin,
+  UserResponse,
+} from '../interfaces/user.interface';
 import { AuthResponse } from '../interfaces/auth-response.interface';
+import { Role } from '../interfaces/role.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private pathUrl: string = environment.apiUrl;
-  private _user: User | undefined;
-
-  private serverUrl: string = environment.serverUrl;
-  private _testUser!: TestUser;
+  private _serverUrl: string = `${environment.serverUrl}/auth`;
+  private _userLogged!: UserLogged;
 
   constructor(private http: HttpClient) {}
 
   get user() {
-    return { ...this._user };
+    return { ...this._userLogged };
   }
 
-  get testUser() {
-    return { ...this._testUser };
+  getAll(): Observable<UserResponse[]> {
+    return this.http
+      .get<AuthResponse>(`${this._serverUrl}/users`)
+      .pipe(map((res) => res.arg as unknown as UserResponse[]));
   }
 
-  getByUsername(username: string): Observable<User[]> {
-    return this.http.get<User[]>(
-      `${this.pathUrl}/usuarios?username=${username}`
-    );
+  getRoles(): Observable<Role[]> {
+    return this.http
+      .get<AuthResponse>(`${this._serverUrl}/roles`)
+      .pipe(map((resp) => resp.arg as unknown as Role[]));
   }
 
-  getByIdWorker(id: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.pathUrl}/usuarios?FK_idWorker=${id}`);
+  getRole(id: string): Observable<string> {
+    return this.http
+      .get<AuthResponse>(`${this._serverUrl}/users/${id}/role`)
+      .pipe(map((resp) => (resp.arg as unknown as Role).role));
   }
 
-  getAll(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.pathUrl}/usuarios`);
-  }
-
-  registerUser(user: User): Observable<User> {
-    return this.http.post<User>(`${this.pathUrl}/usuarios`, user);
-  }
-
-  login(usr: string, pwd: string): Observable<User[]> {
-    return this.getByUsername(usr).pipe(
-      tap((u) => {
-        if (u[0].password === pwd) {
-          this._user = u[0];
-        }
-      }),
-      tap((u) => localStorage.setItem('token', u[0].id))
-    );
-  }
-
-  checkAuthentication(): Observable<boolean> {
-    // if (!localStorage.getItem('token')) {
-    //   return of(false);
-    // }
-
-    if (this.testUser.id) {
-      return of(true);
-    }
-
-    return of(false);
-  }
-
-  testLogin(
-    username: string,
-    password: string
-  ): Observable<AuthResponse | boolean> {
-    const url: string = `${this.serverUrl}/auth`;
-    const body: UserLogin = { username, password };
-
-    return this.http.post<AuthResponse>(url, body).pipe(
+  login(user: UserLogin): Observable<AuthResponse | boolean> {
+    return this.http.post<AuthResponse>(this._serverUrl, user).pipe(
       tap((resp) => {
         if (resp.ok) {
           this.setUserInfo(resp);
         }
       }),
       map((resp) => resp.ok),
-      catchError((err) => of(false))
+      catchError(() => of(false))
     );
   }
 
   validateToken(): Observable<boolean> {
-    const url: string = `${this.serverUrl}/auth/renovar`;
     const headers: HttpHeaders = new HttpHeaders().set(
       'x-token',
       localStorage.getItem('token') || ''
     );
 
-    return this.http.get<AuthResponse>(url, { headers }).pipe(
-      map((resp) => {
-        this.setUserInfo(resp);
+    return this.http
+      .get<AuthResponse>(`${this._serverUrl}/renew`, { headers })
+      .pipe(
+        map((resp) => {
+          this.setUserInfo(resp);
 
-        return resp.ok;
-      }),
-      catchError((err) => of(false))
-    );
+          if (!resp.ok) {
+            this.logout();
+          }
+
+          return resp.ok;
+        }),
+        catchError(() => of(false))
+      );
   }
 
   setUserInfo(response: AuthResponse): void {
     localStorage.setItem('token', response.token!);
 
-    this._testUser = {
+    this._userLogged = {
       id: response.id!,
-      username: response.username!,
+      idWorker: response.idWorker!,
     };
   }
 
   logout(): void {
+    this._userLogged = {
+      id: '',
+      idWorker: '',
+    };
+
     localStorage.clear();
   }
 
-  testRegister(username: string, password: string) {
-    const url: string = `${this.serverUrl}/auth/registrarse`;
-    const body: UserLogin = { username, password };
-
-    return this.http.post<AuthResponse>(url, body).pipe(
-      tap((resp) => {
-        if (resp.ok) {
-          this.setUserInfo(resp);
-        }
-      }),
-      map((resp) => resp.ok),
-      catchError((err) => of(err.error.msg))
-    );
+  register(user: User) {
+    return this.http
+      .post<AuthResponse>(`${this._serverUrl}/register`, user)
+      .pipe(
+        tap((resp) => {
+          if (resp.ok) {
+            this.setUserInfo(resp);
+          }
+        }),
+        map((resp) => resp.ok),
+        catchError((err) => of(err.error.msg))
+      );
   }
 }

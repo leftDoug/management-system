@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 })
 export class NavbarComponent {
   items: MenuItem[] = [
+    { label: 'Ususarios', route: 'usuarios' },
     { label: 'Acuerdos', route: 'acuerdos' },
     { label: 'Agendas', route: 'agendas' },
     { label: 'Áreas', route: 'areas' },
@@ -32,4 +33,8 @@ export class NavbarComponent {
   ];
 
   constructor(private router: Router, private authService: AuthService) {}
+
+  get route(): Router {
+    return this.router;
+  }
 }

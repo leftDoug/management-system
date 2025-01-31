@@ -1,11 +1,11 @@
 export interface Agreement {
   id: string;
-  FK_idCreatedBy: string;
-  FK_idMeeting: string;
-  FK_idResponsible: string;
-  answer: string;
-  canceled: boolean;
-  compilanceDate: Date;
+  meeting?: string;
+  responsible?: string;
+  meeting_id?: string;
+  responsible_id?: string;
+  state: boolean;
+  compilance_date: Date;
   completed: boolean;
   content: string;
   number: number;

@@ -3,10 +3,14 @@
     <p-card class="min-w-700" header="Listado de Tipos de Reuniones">
       <p-toast></p-toast>
       <p-table
-        [value]="typesOfMeetings"
-        [tableStyle]="{ 'min-width': '60rem' }"
         #tTypesOfMeetings
+        [value]="typesOfMeetings"
         [globalFilterFields]="['name', 'area', 'frequency']"
+        [tableStyle]="{ 'min-width': '60rem' }"
+        [paginator]="true"
+        [rows]="5"
+        [rowsPerPageOptions]="[5, 10, 15]"
+        dataKey="id"
       >
         <ng-template pTemplate="caption">
           <div class="flex justify-content-between">
@@ -15,6 +19,7 @@
               icon="pi pi-plus"
               severity="success"
               routerLink="/tipos-de-reuniones/agregar"
+              [outlined]="true"
             ></p-button>
             <span class="p-input-icon-left ml-5">
               <i class="pi pi-search"></i>
@@ -102,22 +107,22 @@
         <ng-template pTemplate="body" let-typeOfMeeting>
           <tr>
             <td>{{ typeOfMeeting.name }}</td>
-            <td>{{ typeOfMeeting.FK_idWorkArea }}</td>
+            <td>{{ typeOfMeeting.area }}</td>
             <td>{{ typeOfMeeting.frequency }}</td>
             <td class="flex align-items-center justify-content-center">
               <p-button
                 icon="pi pi-pencil"
-                label="Editar"
                 [text]="true"
                 [routerLink]="['/tipos-de-reuniones/editar/', typeOfMeeting.id]"
+                [rounded]="true"
               ></p-button>
 
               <p-button
                 icon="pi pi-trash"
                 severity="danger"
-                label="Eliminar"
                 [text]="true"
                 (onClick)="remove($event, typeOfMeeting.id)"
+                [rounded]="true"
               ></p-button>
             </td>
           </tr>

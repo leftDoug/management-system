@@ -4,16 +4,19 @@ import { AgreementsService } from '../../services/agreements.service';
 import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap, tap } from 'rxjs';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ValidatorService } from 'src/app/validator/validator.service';
 import { Area } from 'src/app/areas/interfaces/area.interface';
-import { Worker, WorkerX } from 'src/app/workers/interfaces/worker.interface';
+import { Worker } from 'src/app/workers/interfaces/worker.interface';
 import { AreasService } from 'src/app/areas/services/areas.service';
 import { WorkersService } from 'src/app/workers/services/workers.service';
 import { Meeting } from 'src/app/meetings/interfaces/meeting.interface';
 import { MeetingsService } from 'src/app/meetings/services/meetings.service';
-import { Session } from 'src/app/sessions/interfaces/session.interface';
-import { SessionsService } from 'src/app/sessions/services/sessions.service';
 import { WorkersAreasService } from 'src/app/shared/services/workers-areas.service';
 import { TypesOfMeetingsService } from 'src/app/types-of-meetings/services/types-of-meetings.service';
 import { WorkerArea } from 'src/app/shared/navbar/worker-area.interface';
@@ -32,9 +35,7 @@ export class AgreementFormComponent implements OnInit {
       completed: [false],
       content: ['', [Validators.required, Validators.minLength(10)]],
       meeting: ['', Validators.required],
-      meetingDate: [new Date(), Validators.required],
       compilanceDate: [{ value: '', disabled: true }, Validators.required],
-      createdBy: [{ value: '', disabled: true }, Validators.required],
       responsible: [{ value: '', disabled: true }, Validators.required],
     },
     {
@@ -50,20 +51,20 @@ export class AgreementFormComponent implements OnInit {
   meetings: Meeting[] = [];
   newAgreement: Agreement = {
     id: '',
-    FK_idCreatedBy: '',
-    FK_idMeeting: '',
-    FK_idResponsible: '',
-    answer: '',
-    canceled: false,
-    compilanceDate: new Date(),
+    meeting_id: '',
+    state: false,
+    compilance_date: new Date(),
     completed: false,
     content: '',
     number: 0,
+    responsible_id: '',
   };
-  workers: WorkerX[] = [];
-  secretaries: WorkerX[] = [];
+  workers: Worker[] = [];
+  secretaries: Worker[] = [];
   workersArea: WorkerArea[] = [];
   typeOfMeeting: TypeOfMeeting | undefined;
+  showAnswer: boolean = false;
+  showCheck: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -76,80 +77,14 @@ export class AgreementFormComponent implements OnInit {
     private validatorService: ValidatorService,
     private workersService: WorkersService,
     private workersAreasService: WorkersAreasService,
-    private typesOfMeetingsService: TypesOfMeetingsService
+    private typesOfMeetingsService: TypesOfMeetingsService,
+    private areasService: AreasService
   ) {}
 
   ngOnInit(): void {
     this.meetingsService.getAll().subscribe((resp) => (this.meetings = resp));
 
-    this.agreementForm
-      .get('meeting')
-      ?.valueChanges.pipe(
-        tap(() => {
-          this.agreementForm.get('createdBy')?.reset('');
-          this.agreementForm.get('createdBy')?.enable();
-
-          this.agreementForm.get('compilanceDate')?.reset('');
-          this.agreementForm.get('compilanceDate')?.enable();
-
-          this.agreementForm.get('responsible')?.reset('');
-          this.agreementForm.get('responsible')?.enable();
-        }),
-        switchMap((im) => {
-          const m = this.meetings.find((m) => im === m.id)!;
-          console.log(m);
-          const date = new Date(m.date);
-
-          date.setDate(date.getDate() + 7);
-
-          this.agreementForm.get('meetingDate')?.setValue(new Date(m.date));
-          this.agreementForm.get('compilanceDate')?.setValue(new Date(date));
-
-          return this.typesOfMeetingsService.getById(m.FK_idTypeOfMeeting);
-        })
-      )
-      .subscribe((t) => {
-        this.typeOfMeeting = t;
-
-        this.workersAreasService
-          .getByIdArea(this.typeOfMeeting.FK_idWorkArea)
-          .subscribe((wa) => (this.workersArea = wa));
-
-        this.workersService.xgetAll().subscribe((w) => {
-          const responsibles: WorkerX[] = [];
-          const s: WorkerX[] = [];
-
-          w.forEach((worker) => {
-            if (this.workersArea.find((wa) => worker.id === wa.FK_idWorker)) {
-              responsibles.push(worker);
-
-              if (worker.secretary) {
-                s.push(worker);
-              }
-            }
-          });
-
-          this.workers = responsibles;
-          this.secretaries = s;
-        });
-      });
-
-    if (this.router.url.includes('editar')) {
-      this.activatedRoute.params
-        .pipe(switchMap(({ id }) => this.agreementsService.getById(id)))
-        .subscribe((resp) => {
-          this.newAgreement = resp;
-          this.agreementForm.patchValue({
-            answer: this.newAgreement.answer,
-            completed: this.newAgreement.completed,
-            content: this.newAgreement.content,
-            meeting: this.newAgreement.FK_idMeeting,
-            compilanceDate: new Date(this.newAgreement.compilanceDate),
-            createdBy: this.newAgreement.FK_idCreatedBy,
-            responsible: this.newAgreement.FK_idResponsible,
-          });
-        });
-    } else {
+    if (!this.router.url.includes('editar')) {
       this.agreementsService
         .getAll()
         .subscribe((resp) =>
@@ -157,7 +92,95 @@ export class AgreementFormComponent implements OnInit {
             ? (this.newAgreement.number = resp.at(-1)?.number! + 1)
             : (this.newAgreement.number = 1)
         );
+
+      this.agreementForm
+        .get('meeting')
+        ?.valueChanges.pipe(
+          tap(() => {
+            this.agreementForm.get('createdBy')?.reset('');
+            this.agreementForm.get('createdBy')?.enable();
+
+            this.agreementForm.get('compilanceDate')?.reset('');
+            this.agreementForm.get('compilanceDate')?.enable();
+
+            this.agreementForm.get('responsible')?.reset('');
+            this.agreementForm.get('responsible')?.enable();
+          }),
+          switchMap((im) => {
+            const m = this.meetings.find((m) => im === m.id)!;
+            console.log(m);
+            console.log(m.type_of_meeting_id);
+            const date = new Date(m.date);
+
+            date.setDate(date.getDate() + 7);
+
+            this.agreementForm.get('meetingDate')?.setValue(new Date(m.date));
+            this.agreementForm.get('compilanceDate')?.setValue(new Date(date));
+
+            return this.typesOfMeetingsService.getById(m.type_of_meeting_id);
+          })
+        )
+        .subscribe((t) => {
+          this.typeOfMeeting = t;
+
+          console.log(this.typeOfMeeting);
+
+          // this.workersAreasService
+          //   .getByIdArea(this.typeOfMeeting.idArea)
+          //   .subscribe((wa) => (this.workersArea = wa));
+
+          this.areasService
+            .getWorkers(t.area_id!)
+            .subscribe((resp) => (this.workers = resp));
+
+          console.log(this.workers);
+
+          // this.workersService.getAll().subscribe((w) => {
+          //   const responsibles: Worker[] = [];
+          //   const s: Worker[] = [];
+
+          //   w.forEach((worker) => {
+          //     if (this.workersArea.find((wa) => worker.id === wa.FK_idWorker)) {
+          //       responsibles.push(worker);
+          //       s.push(worker);
+          //     }
+          //   });
+
+          //   this.workers = responsibles;
+          //   this.secretaries = s;
+          // });
+        });
+    } else {
+      this.showAnswer = true;
+      this.showCheck = true;
+      this.agreementForm.get('compilanceDate')?.enable();
+      this.agreementForm.get('meeting')?.disable();
+      // this.agreementForm.get('responsible')?.disable();
+      this.agreementForm.get('content')?.disable();
+      // this.responsible.enable();
+      this.activatedRoute.params
+        .pipe(switchMap(({ id }) => this.agreementsService.getById(id)))
+        .subscribe((resp) => {
+          this.newAgreement = resp;
+          this.agreementForm.patchValue({
+            responsible: this.newAgreement.responsible_id,
+            completed: this.newAgreement.completed,
+            content: this.newAgreement.content,
+            meeting: this.newAgreement.meeting_id,
+            compilanceDate: new Date(this.newAgreement.compilance_date),
+          });
+          this.workersService
+            .getById(resp.responsible_id!)
+            .subscribe((worker) => {
+              console.log(worker);
+              this.workers = [worker];
+            });
+        });
     }
+  }
+
+  get responsible(): AbstractControl {
+    return this.agreementForm.get('responsible')!;
   }
 
   get compilanceDateErrorMsg(): string {
@@ -221,16 +244,13 @@ export class AgreementFormComponent implements OnInit {
   }
 
   create(): void {
-    this.newAgreement.FK_idCreatedBy =
-      this.agreementForm.get('createdBy')?.value;
-    this.newAgreement.FK_idMeeting = this.agreementForm.get('meeting')?.value;
-    this.newAgreement.FK_idResponsible =
+    this.newAgreement.meeting_id = this.agreementForm.get('meeting')?.value;
+    this.newAgreement.responsible_id =
       this.agreementForm.get('responsible')?.value;
-    this.newAgreement.answer = this.agreementForm.get('answer')?.value;
     this.newAgreement.completed = this.agreementForm.get('completed')?.value;
     this.newAgreement.content = this.agreementForm.get('content')?.value;
-    this.newAgreement.compilanceDate =
-      this.agreementForm.get('compilanceDate')?.value;
+    this.newAgreement.compilance_date =
+      this.agreementForm.get('compilance_date')?.value;
 
     if (!this.newAgreement.id) {
       this.generateId();
@@ -245,11 +265,10 @@ export class AgreementFormComponent implements OnInit {
         answer: '',
         completed: false,
         content: '',
-        compilanceDate: this.newAgreement.compilanceDate,
-        createdBy: this.newAgreement.FK_idCreatedBy,
-        meeting: this.newAgreement.FK_idMeeting,
-        meetingDate: this.agreementForm.get('meetingDate')?.value,
-        responsible: this.newAgreement.FK_idResponsible,
+        compilanceDate: this.newAgreement.compilance_date,
+        meeting: this.newAgreement.meeting_id,
+        // meetingDate: this.agreementForm.get('meetingDate')?.value,
+        responsible: this.newAgreement.responsible_id,
       });
 
       this.messageService.add({
@@ -272,7 +291,7 @@ export class AgreementFormComponent implements OnInit {
 
   generateId(): void {
     this.newAgreement.id =
-      this.newAgreement.FK_idMeeting + this.newAgreement.number;
+      this.newAgreement.meeting_id! + this.newAgreement.number;
   }
 
   validate(control: string): boolean {

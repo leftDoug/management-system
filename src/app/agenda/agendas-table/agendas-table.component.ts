@@ -32,7 +32,7 @@ export class AgendasTableComponent implements OnInit {
             switchMap((tom) => {
               tempAgenda.FK_idTypeOfMeeting = tom.name;
 
-              return this.areasService.getById(tom.FK_idWorkArea);
+              return this.areasService.getById(tom.area_id!);
             })
           )
           .subscribe(

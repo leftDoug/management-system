@@ -8,6 +8,7 @@ import { SearchComponent } from './components/search/search.component';
 import { RouterModule } from '@angular/router';
 import { PrimengModule } from '../primeng/primeng.module';
 import { RowCfgDirective } from './directives/row-cfg.directive';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { RowCfgDirective } from './directives/row-cfg.directive';
     PrimengModule,
     ReactiveFormsModule,
     FormsModule,
+    SharedModule,
   ],
 })
 export class AgreementsModule {}

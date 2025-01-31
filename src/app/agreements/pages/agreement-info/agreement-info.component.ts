@@ -7,7 +7,6 @@ import { ConfirmationService, Message, MessageService } from 'primeng/api';
 import { AreasService } from 'src/app/areas/services/areas.service';
 import { WorkersService } from 'src/app/workers/services/workers.service';
 import { MeetingsService } from 'src/app/meetings/services/meetings.service';
-import { SessionsService } from 'src/app/sessions/services/sessions.service';
 import { getSeverity, getStatus } from 'src/app/shared/severity-status';
 
 @Component({
@@ -19,12 +18,10 @@ import { getSeverity, getStatus } from 'src/app/shared/severity-status';
 export class AgreementInfoComponent implements OnInit {
   agreement: Agreement = {
     id: '',
-    FK_idCreatedBy: '',
-    FK_idMeeting: '',
-    FK_idResponsible: '',
-    answer: '',
-    canceled: false,
-    compilanceDate: new Date(),
+    meeting: '',
+    responsible: '',
+    state: false,
+    compilance_date: new Date(),
     completed: false,
     content: '',
     number: 0,
@@ -46,24 +43,7 @@ export class AgreementInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.params
-      .pipe(
-        switchMap(({ id }) => this.agreementsService.getById(id)),
-        tap((resp) => {
-          this.workersService
-            .getById(resp.FK_idCreatedBy)
-            .subscribe((resp) => (this.createdBy = resp.name));
-        }),
-        tap((resp) => {
-          this.meetingsService
-            .getById(resp.FK_idMeeting)
-            .subscribe((resp) => (this.meeting = resp.name));
-        }),
-        tap((resp) => {
-          this.workersService
-            .getById(resp.FK_idResponsible)
-            .subscribe((resp) => (this.responsible = resp.name));
-        })
-      )
+      .pipe(switchMap(({ id }) => this.agreementsService.getInfo(id)))
       .subscribe((resp) => (this.agreement = resp));
   }
 
@@ -91,9 +71,8 @@ export class AgreementInfoComponent implements OnInit {
           detail: 'El acuerdo ha sido anulado',
           summary: 'Acuerdo Anulado',
         });
-        this.agreementsService
-          .cancel(this.agreement)
-          .subscribe((resp) => (this.agreement = resp));
+        this.agreement.state = false;
+        this.agreementsService.update(this.agreement).subscribe();
       },
       reject: () => {},
       rejectButtonStyleClass: 'mx-3',

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Meeting, Session } from '../../interfaces/meeting.interface';
-import { Worker, WorkerX } from '../../../workers/interfaces/worker.interface';
+import { Worker } from '../../../workers/interfaces/worker.interface';
 import { ValidatorService } from 'src/app/validator/validator.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MeetingsService } from '../../services/meetings.service';
@@ -48,17 +48,18 @@ export class MeetingFormComponent implements OnInit {
 
   newMeeting: Meeting = {
     id: '',
-    FK_idResponsible: '',
-    FK_idTypeOfMeeting: '',
+    type_of_meeting_id: '',
+    secretary_id: '',
     name: '',
     date: new Date(),
     endTime: new Date(),
     startTime: new Date(),
     session: Session.ordinary,
+    state: true,
   };
   sessions: Session[] = [Session.ordinary, Session.extraordinary];
   today: Date = new Date();
-  workers: WorkerX[] = [];
+  workers: Worker[] = [];
   typesOfMeetings: TypeOfMeeting[] = [];
   area: string = '';
 
@@ -83,8 +84,7 @@ export class MeetingFormComponent implements OnInit {
           this.newMeeting = resp;
           this.meetingForm.reset({
             name: this.newMeeting.name,
-            responsible: this.newMeeting.FK_idResponsible,
-            typeOfMeeting: this.newMeeting.FK_idTypeOfMeeting,
+            typeOfMeeting: this.newMeeting.type_of_meeting_id,
             date: new Date(this.newMeeting.date),
             endTime: new Date(this.newMeeting.endTime),
             startTime: new Date(this.newMeeting.startTime),
@@ -107,12 +107,12 @@ export class MeetingFormComponent implements OnInit {
         }),
         switchMap((id) => this.typesOfMeetingsService.getById(id)),
         switchMap((typeOfMeeting) =>
-          this.workersAreasService.getByIdArea(typeOfMeeting.FK_idWorkArea)
+          this.workersAreasService.getByIdArea(typeOfMeeting.area_id!)
         )
       )
       .subscribe((wa) => {
-        this.workersService.xgetAll().subscribe((w) => {
-          let responsibles: WorkerX[] = [];
+        this.workersService.getAll().subscribe((w) => {
+          let responsibles: Worker[] = [];
 
           wa.forEach((value) => {
             responsibles.push(w.find((item) => item.id === value.FK_idWorker)!);
@@ -127,7 +127,7 @@ export class MeetingFormComponent implements OnInit {
       .get('typeOfMeeting')
       ?.valueChanges.pipe(
         switchMap((value) => this.typesOfMeetingsService.getById(value)),
-        switchMap((value) => this.areasService.getById(value.FK_idWorkArea))
+        switchMap((value) => this.areasService.getById(value.area_id!))
       )
       .subscribe((resp) => (this.area = resp.name));
 
@@ -203,9 +203,7 @@ export class MeetingFormComponent implements OnInit {
   }
 
   create(): void {
-    this.newMeeting.FK_idResponsible =
-      this.meetingForm.get('responsible')?.value;
-    this.newMeeting.FK_idTypeOfMeeting =
+    this.newMeeting.type_of_meeting_id =
       this.meetingForm.get('typeOfMeeting')?.value;
     switch (this.meetingForm.get('session')?.value) {
       case 'Ordinaria':
@@ -237,8 +235,7 @@ export class MeetingFormComponent implements OnInit {
         date: new Date(this.newMeeting.date),
         endTime: new Date(),
         startTime: new Date(),
-        responsible: this.newMeeting.FK_idResponsible,
-        typeOfMeeting: this.newMeeting.FK_idTypeOfMeeting,
+        typeOfMeeting: this.newMeeting.type_of_meeting_id,
       });
 
       this.area = '';

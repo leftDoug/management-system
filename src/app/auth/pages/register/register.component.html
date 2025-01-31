@@ -3,7 +3,6 @@
 
   <form [formGroup]="userForm" class="form">
     <p-dialog
-      [(visible)]="registerDialog"
       [style]="{ width: '450px' }"
       header="Registrar Usuario"
       [modal]="true"
@@ -12,12 +11,12 @@
     >
       <p-messages [(value)]="msgRegister" [enableService]="false"></p-messages>
       <ng-template pTemplate="content">
-        <!-- <div class="field">
+        <div class="field">
           <label for="worker">Trabajador</label>
 
           <p-dropdown
             inputId="worker"
-            formControlName="worker"
+            formControlName="idWorker"
             [options]="workers"
             optionLabel="name"
             (onHide)="touchDropdown()"
@@ -28,7 +27,7 @@
           <small class="p-error" *ngIf="worker.errors && dropdownTouched">
             El trabajador es requerido.
           </small>
-        </div> -->
+        </div>
 
         <div class="field">
           <label for="username">Usuario</label>
@@ -80,7 +79,7 @@
       </ng-template>
 
       <ng-template pTemplate="footer">
-        <p-button label="Atrás" [text]="true" routerLink="/iniciar-sesion" />
+        <p-button label="Atrás" [text]="true" (onClick)="hideDialog()" />
 
         <p-button
           label="Registrarse"
@@ -88,7 +87,7 @@
           icon="pi pi-user-plus"
           [text]="true"
           [disabled]="userForm.invalid"
-          (onClick)="testRegister()"
+          (onClick)="register()"
         />
       </ng-template>
     </p-dialog>
