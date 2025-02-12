@@ -21,7 +21,7 @@ export class AgreementInfoComponent implements OnInit {
     meeting: '',
     responsible: '',
     state: false,
-    compilance_date: new Date(),
+    compilanceDate: new Date(),
     completed: false,
     content: '',
     number: 0,

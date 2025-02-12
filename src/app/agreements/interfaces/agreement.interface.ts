@@ -2,10 +2,10 @@ export interface Agreement {
   id: string;
   meeting?: string;
   responsible?: string;
-  meeting_id?: string;
-  responsible_id?: string;
+  idMeeting?: string;
+  idResponsible?: string;
   state: boolean;
-  compilance_date: Date;
+  compilanceDate: Date;
   completed: boolean;
   content: string;
   number: number;

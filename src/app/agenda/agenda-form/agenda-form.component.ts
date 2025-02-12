@@ -39,7 +39,7 @@ export class AgendaFormComponent implements OnInit {
 
   newAgenda: Agenda = {
     id: '',
-    FK_idTypeOfMeeting: '',
+    idTypeOfMeeting: '',
     topics: [],
     year: new Date().getFullYear(),
   };
@@ -93,10 +93,7 @@ export class AgendaFormComponent implements OnInit {
 
       tempTOM.map((t) => {
         t.name =
-          t.name +
-          ' (' +
-          this.areas.find((a) => a.id === t.area_id)?.name +
-          ')';
+          t.name + ' (' + this.areas.find((a) => a.id === t.idArea)?.name + ')';
       });
 
       this.typesOfMeetings = tempTOM;
@@ -115,16 +112,16 @@ export class AgendaFormComponent implements OnInit {
             this.newAgenda = a;
 
             this.agendaForm.setValue({
-              typeOfMeeting: a.FK_idTypeOfMeeting,
+              typeOfMeeting: a.idTypeOfMeeting,
               year: a.year,
             });
 
-            return this.typesOfMeetingsService.getById(a.FK_idTypeOfMeeting);
+            return this.typesOfMeetingsService.getById(a.idTypeOfMeeting);
           }),
           switchMap((tom) => {
             this.typeOfMeeting = tom.name;
 
-            return this.areasService.getById(tom.area_id!);
+            return this.areasService.getById(tom.idArea!);
           })
         )
         .subscribe(
@@ -360,19 +357,18 @@ export class AgendaFormComponent implements OnInit {
     if (
       this.agendas.find(
         (a) =>
-          a.FK_idTypeOfMeeting ===
-            this.agendaForm.get('typeOfMeeting')?.value &&
+          a.idTypeOfMeeting === this.agendaForm.get('typeOfMeeting')?.value &&
           a.year === this.agendaForm.get('year')?.value
       )
     ) {
       this.showExistentAgendaMsg();
     } else {
-      this.newAgenda.FK_idTypeOfMeeting =
+      this.newAgenda.idTypeOfMeeting =
         this.agendaForm.get('typeOfMeeting')?.value;
       this.newAgenda.year = this.agendaForm.get('year')?.value;
 
       this.typeOfMeeting = this.typesOfMeetings.find(
-        (tom) => tom.id === this.newAgenda.FK_idTypeOfMeeting
+        (tom) => tom.id === this.newAgenda.idTypeOfMeeting
       )?.name!;
 
       this.agendaCreated = true;

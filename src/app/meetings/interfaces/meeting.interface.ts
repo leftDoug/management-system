@@ -1,7 +1,7 @@
 export interface Meeting {
   id: string;
-  type_of_meeting_id: string;
-  secretary_id: string;
+  idTypeOfMeeting: string;
+  idSecretary: string;
   name: string;
   session: Session;
   date: Date;

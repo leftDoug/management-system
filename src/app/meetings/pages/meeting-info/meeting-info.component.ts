@@ -16,8 +16,8 @@ import { switchMap, tap } from 'rxjs';
 export class MeetingInfoComponent implements OnInit {
   meeting: Meeting = {
     id: '',
-    type_of_meeting_id: '',
-    secretary_id: '',
+    idTypeOfMeeting: '',
+    idSecretary: '',
     name: '',
     date: new Date(),
     endTime: new Date(),
@@ -43,7 +43,7 @@ export class MeetingInfoComponent implements OnInit {
         switchMap(({ id }) => this.meetingsService.getById(id)),
         tap((m) => {
           this.typesOfMeetingsService
-            .getById(m.type_of_meeting_id)
+            .getById(m.idTypeOfMeeting)
             .subscribe((t) => (this.typeOfMeeting = t.name));
         })
       )

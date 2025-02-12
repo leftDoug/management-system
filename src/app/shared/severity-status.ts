@@ -5,7 +5,7 @@ import {
 
 export function getStatus(agreement: Agreement): Status {
   const today: Date = new Date();
-  const date: Date = new Date(agreement.compilance_date);
+  const date: Date = new Date(agreement.compilanceDate);
 
   if (!agreement.state) return Status.canceled;
 

@@ -51,13 +51,13 @@ export class AgreementFormComponent implements OnInit {
   meetings: Meeting[] = [];
   newAgreement: Agreement = {
     id: '',
-    meeting_id: '',
+    idMeeting: '',
     state: false,
-    compilance_date: new Date(),
+    compilanceDate: new Date(),
     completed: false,
     content: '',
     number: 0,
-    responsible_id: '',
+    idResponsible: '',
   };
   workers: Worker[] = [];
   secretaries: Worker[] = [];
@@ -109,7 +109,7 @@ export class AgreementFormComponent implements OnInit {
           switchMap((im) => {
             const m = this.meetings.find((m) => im === m.id)!;
             console.log(m);
-            console.log(m.type_of_meeting_id);
+            console.log(m.idTypeOfMeeting);
             const date = new Date(m.date);
 
             date.setDate(date.getDate() + 7);
@@ -117,7 +117,7 @@ export class AgreementFormComponent implements OnInit {
             this.agreementForm.get('meetingDate')?.setValue(new Date(m.date));
             this.agreementForm.get('compilanceDate')?.setValue(new Date(date));
 
-            return this.typesOfMeetingsService.getById(m.type_of_meeting_id);
+            return this.typesOfMeetingsService.getById(m.idTypeOfMeeting);
           })
         )
         .subscribe((t) => {
@@ -130,7 +130,7 @@ export class AgreementFormComponent implements OnInit {
           //   .subscribe((wa) => (this.workersArea = wa));
 
           this.areasService
-            .getWorkers(t.area_id!)
+            .getWorkers(t.idArea!)
             .subscribe((resp) => (this.workers = resp));
 
           console.log(this.workers);
@@ -163,14 +163,14 @@ export class AgreementFormComponent implements OnInit {
         .subscribe((resp) => {
           this.newAgreement = resp;
           this.agreementForm.patchValue({
-            responsible: this.newAgreement.responsible_id,
+            responsible: this.newAgreement.idResponsible,
             completed: this.newAgreement.completed,
             content: this.newAgreement.content,
-            meeting: this.newAgreement.meeting_id,
-            compilanceDate: new Date(this.newAgreement.compilance_date),
+            meeting: this.newAgreement.idMeeting,
+            compilanceDate: new Date(this.newAgreement.compilanceDate),
           });
           this.workersService
-            .getById(resp.responsible_id!)
+            .getById(resp.idResponsible!)
             .subscribe((worker) => {
               console.log(worker);
               this.workers = [worker];
@@ -244,13 +244,13 @@ export class AgreementFormComponent implements OnInit {
   }
 
   create(): void {
-    this.newAgreement.meeting_id = this.agreementForm.get('meeting')?.value;
-    this.newAgreement.responsible_id =
+    this.newAgreement.idMeeting = this.agreementForm.get('meeting')?.value;
+    this.newAgreement.idResponsible =
       this.agreementForm.get('responsible')?.value;
     this.newAgreement.completed = this.agreementForm.get('completed')?.value;
     this.newAgreement.content = this.agreementForm.get('content')?.value;
-    this.newAgreement.compilance_date =
-      this.agreementForm.get('compilance_date')?.value;
+    this.newAgreement.compilanceDate =
+      this.agreementForm.get('compilanceDate')?.value;
 
     if (!this.newAgreement.id) {
       this.generateId();
@@ -265,10 +265,10 @@ export class AgreementFormComponent implements OnInit {
         answer: '',
         completed: false,
         content: '',
-        compilanceDate: this.newAgreement.compilance_date,
-        meeting: this.newAgreement.meeting_id,
+        compilanceDate: this.newAgreement.compilanceDate,
+        meeting: this.newAgreement.idMeeting,
         // meetingDate: this.agreementForm.get('meetingDate')?.value,
-        responsible: this.newAgreement.responsible_id,
+        responsible: this.newAgreement.idResponsible,
       });
 
       this.messageService.add({
@@ -291,7 +291,7 @@ export class AgreementFormComponent implements OnInit {
 
   generateId(): void {
     this.newAgreement.id =
-      this.newAgreement.meeting_id! + this.newAgreement.number;
+      this.newAgreement.idMeeting! + this.newAgreement.number;
   }
 
   validate(control: string): boolean {

@@ -252,7 +252,7 @@ export class AgreementsTableComponent implements OnInit {
   }
 
   getStatus(agreement: Agreement): Status {
-    const date: Date = new Date(agreement.compilance_date);
+    const date: Date = new Date(agreement.compilanceDate);
     const today: Date = new Date();
 
     if (agreement.completed) {

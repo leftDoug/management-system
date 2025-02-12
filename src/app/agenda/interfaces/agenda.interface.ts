@@ -1,6 +1,6 @@
 export interface Agenda {
   id: string;
-  FK_idTypeOfMeeting: string;
+  idTypeOfMeeting: string;
   year: number;
   topics: Topic[];
 }

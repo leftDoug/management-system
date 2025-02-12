@@ -27,18 +27,18 @@ export class AgendasTableComponent implements OnInit {
         let tempAgenda: Agenda = item;
 
         this.typesOfMeetingsService
-          .getById(item.FK_idTypeOfMeeting)
+          .getById(item.idTypeOfMeeting)
           .pipe(
             switchMap((tom) => {
-              tempAgenda.FK_idTypeOfMeeting = tom.name;
+              tempAgenda.idTypeOfMeeting = tom.name;
 
-              return this.areasService.getById(tom.area_id!);
+              return this.areasService.getById(tom.idArea!);
             })
           )
           .subscribe(
             (rArea) =>
-              (tempAgenda.FK_idTypeOfMeeting =
-                tempAgenda.FK_idTypeOfMeeting + ' (' + rArea.name + ')')
+              (tempAgenda.idTypeOfMeeting =
+                tempAgenda.idTypeOfMeeting + ' (' + rArea.name + ')')
           );
 
         tempAgendas.push(tempAgenda);

@@ -16,7 +16,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 export class AgendaInfoComponent implements OnInit {
   agenda: Agenda = {
     id: '',
-    FK_idTypeOfMeeting: '',
+    idTypeOfMeeting: '',
     year: new Date().getFullYear(),
     topics: [],
   };
@@ -59,12 +59,12 @@ export class AgendaInfoComponent implements OnInit {
 
           this.months = tempMonths;
 
-          return this.typesOfMeetingsService.getById(a.FK_idTypeOfMeeting);
+          return this.typesOfMeetingsService.getById(a.idTypeOfMeeting);
         }),
         switchMap((tom) => {
           this.typeOfMeeting = tom.name;
 
-          return this.areasService.getById(tom.area_id!);
+          return this.areasService.getById(tom.idArea!);
         })
       )
       .subscribe(

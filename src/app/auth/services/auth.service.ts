@@ -44,7 +44,7 @@ export class AuthService {
   }
 
   login(user: UserLogin): Observable<AuthResponse | boolean> {
-    return this.http.post<AuthResponse>(this._serverUrl, user).pipe(
+    return this.http.post<AuthResponse>(`${this._serverUrl}/login`, user).pipe(
       tap((resp) => {
         if (resp.ok) {
           this.setUserInfo(resp);

@@ -38,14 +38,14 @@ export class MeetingsTableComponent implements OnInit {
         const meeting: MeetingWithArea = {
           id: value.id,
           typeOfMeeting: this.typesOfMeetings.find(
-            (typeOfMeeting) => typeOfMeeting.id === value.type_of_meeting_id
+            (typeOfMeeting) => typeOfMeeting.id === value.idTypeOfMeeting
           )?.name!,
           area: this.areas.find(
             (area) =>
               area.id ===
               this.typesOfMeetings.find(
-                (typeOfMeeting) => typeOfMeeting.id === value.type_of_meeting_id
-              )?.area_id!
+                (typeOfMeeting) => typeOfMeeting.id === value.idTypeOfMeeting
+              )?.idArea!
           )?.name!,
           name: value.name,
           session: value.session,

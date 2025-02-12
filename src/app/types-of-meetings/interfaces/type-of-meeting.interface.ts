@@ -1,6 +1,6 @@
 export interface TypeOfMeeting {
   id: string;
-  area_id?: string;
+  idArea?: string;
   area?: string;
   name: string;
   frequency: Frequency;

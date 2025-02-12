@@ -48,8 +48,8 @@ export class MeetingFormComponent implements OnInit {
 
   newMeeting: Meeting = {
     id: '',
-    type_of_meeting_id: '',
-    secretary_id: '',
+    idTypeOfMeeting: '',
+    idSecretary: '',
     name: '',
     date: new Date(),
     endTime: new Date(),
@@ -84,7 +84,7 @@ export class MeetingFormComponent implements OnInit {
           this.newMeeting = resp;
           this.meetingForm.reset({
             name: this.newMeeting.name,
-            typeOfMeeting: this.newMeeting.type_of_meeting_id,
+            typeOfMeeting: this.newMeeting.idTypeOfMeeting,
             date: new Date(this.newMeeting.date),
             endTime: new Date(this.newMeeting.endTime),
             startTime: new Date(this.newMeeting.startTime),
@@ -107,7 +107,7 @@ export class MeetingFormComponent implements OnInit {
         }),
         switchMap((id) => this.typesOfMeetingsService.getById(id)),
         switchMap((typeOfMeeting) =>
-          this.workersAreasService.getByIdArea(typeOfMeeting.area_id!)
+          this.workersAreasService.getByIdArea(typeOfMeeting.idArea!)
         )
       )
       .subscribe((wa) => {
@@ -115,7 +115,7 @@ export class MeetingFormComponent implements OnInit {
           let responsibles: Worker[] = [];
 
           wa.forEach((value) => {
-            responsibles.push(w.find((item) => item.id === value.FK_idWorker)!);
+            responsibles.push(w.find((item) => item.id === value.idWorker)!);
           });
 
           this.workers = responsibles;
@@ -127,7 +127,7 @@ export class MeetingFormComponent implements OnInit {
       .get('typeOfMeeting')
       ?.valueChanges.pipe(
         switchMap((value) => this.typesOfMeetingsService.getById(value)),
-        switchMap((value) => this.areasService.getById(value.area_id!))
+        switchMap((value) => this.areasService.getById(value.idArea!))
       )
       .subscribe((resp) => (this.area = resp.name));
 
@@ -203,7 +203,7 @@ export class MeetingFormComponent implements OnInit {
   }
 
   create(): void {
-    this.newMeeting.type_of_meeting_id =
+    this.newMeeting.idTypeOfMeeting =
       this.meetingForm.get('typeOfMeeting')?.value;
     switch (this.meetingForm.get('session')?.value) {
       case 'Ordinaria':
@@ -235,7 +235,7 @@ export class MeetingFormComponent implements OnInit {
         date: new Date(this.newMeeting.date),
         endTime: new Date(),
         startTime: new Date(),
-        typeOfMeeting: this.newMeeting.type_of_meeting_id,
+        typeOfMeeting: this.newMeeting.idTypeOfMeeting,
       });
 
       this.area = '';
