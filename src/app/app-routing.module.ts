@@ -20,6 +20,8 @@ import { AgendaInfoComponent } from './agenda/agenda-info/agenda-info.component'
 import { RegisterComponent } from './auth/pages/register/register.component';
 import { authGuard } from './auth/guards/auth.guard';
 import { AdminTableComponent } from './auth/pages/admin-table/admin-table.component';
+import { OrganizationsTableComponent } from './organizations/pages/organizations-table/organizations-table.component';
+import { OrganizationFormComponent } from './organizations/pages/organization-form/organization-form.component';
 
 const routes: Routes = [
   // {
@@ -43,7 +45,7 @@ const routes: Routes = [
   },
   {
     path: 'usuarios',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: AdminTableComponent,
   },
   {
@@ -53,17 +55,17 @@ const routes: Routes = [
   },
   {
     path: 'acuerdos/detalles/:id',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: AgreementInfoComponent,
   },
   {
     path: 'acuerdos/agregar',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: AgreementFormComponent,
   },
   {
     path: 'acuerdos/editar/:id',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: AgreementFormComponent,
   },
   {
@@ -73,87 +75,102 @@ const routes: Routes = [
   },
   {
     path: 'areas/agregar',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: AreaFormComponent,
   },
   {
     path: 'areas/editar/:id',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: AreaFormComponent,
   },
   {
+    path: 'organizaciones',
+    //  canActivate: [authGuard],
+    component: OrganizationsTableComponent,
+  },
+  {
+    path: 'organizaciones/agregar',
+    // canActivate: [authGuard],
+    component: OrganizationFormComponent,
+  },
+  {
+    path: 'organizaciones/editar/:id',
+    // canActivate: [authGuard],
+    component: OrganizationFormComponent,
+  },
+  {
     path: 'reuniones',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: MeetingsTableComponent,
   },
   {
     path: 'reuniones/agregar',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: MeetingFormComponent,
   },
   {
     path: 'reuniones/detalles/:id',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: MeetingInfoComponent,
   },
   {
     path: 'reuniones/editar/:id',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: MeetingFormComponent,
   },
   {
     path: 'tipos-de-reuniones',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: TypesOfMeetingsTableComponent,
   },
   {
     path: 'tipos-de-reuniones/agregar',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: TypeOfMeetingFormComponent,
   },
   {
     path: 'trabajadores',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: WorkersTableComponent,
   },
   {
     path: 'trabajadores/agregar',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: WorkerFormComponent,
   },
   {
     path: 'trabajadores/detalles/:id',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: WorkerInfoComponent,
   },
   {
     path: 'trabajadores/editar/:id',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: WorkerFormComponent,
   },
   {
     path: 'agendas',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: AgendasTableComponent,
   },
   {
     path: 'agendas/agregar',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: AgendaFormComponent,
   },
   {
     path: 'agendas/detalles/:id',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: AgendaInfoComponent,
   },
   {
     path: 'agendas/editar/:id',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: AgendaFormComponent,
   },
   {
     path: 'tipos-de-reuniones/editar/:id',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     component: TypeOfMeetingFormComponent,
   },
   { path: '**', redirectTo: 'iniciar-sesion' },

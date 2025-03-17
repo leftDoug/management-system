@@ -59,7 +59,7 @@ export class AdminTableComponent implements OnInit {
   ngOnInit(): void {
     this.workersService.getAll().subscribe((resp) => (this.workers = resp));
     this.authService.getRoles().subscribe((resp) => (this.roles = resp));
-    this.authService.getAll().subscribe((resp) => (this.users = resp));
+    this.authService.getUsers().subscribe((resp) => (this.users = resp));
   }
 
   showDialog(): void {
@@ -138,7 +138,7 @@ export class AdminTableComponent implements OnInit {
           summary: 'Acuerdo Creado',
           detail: 'El acuerdo ha sido creado.',
         });
-        this.authService.getAll().subscribe((resp) => (this.users = resp));
+        this.authService.getUsers().subscribe((resp) => (this.users = resp));
       } else {
         this.showRegistrationErrorMsg(ok);
       }

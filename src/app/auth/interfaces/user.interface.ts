@@ -13,6 +13,12 @@ export interface UserResponse {
   role: string;
 }
 
+// FIXME cambiar el id a number
+export interface WorkerResponse {
+  id: string;
+  name: string;
+}
+
 export interface UserLogged {
   id: string;
   idWorker: string;

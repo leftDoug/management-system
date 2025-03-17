@@ -14,6 +14,7 @@ import { MeetingsModule } from './meetings/meetings.module';
 import { TypesOfMeetingsModule } from './types-of-meetings/types-of-meetings.module';
 import { WorkersModule } from './workers/workers.module';
 import { AgendaModule } from './agenda/agenda.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -31,6 +32,7 @@ import { AgendaModule } from './agenda/agenda.module';
     AppRoutingModule,
     SharedModule,
     AgendaModule,
+    OrganizationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

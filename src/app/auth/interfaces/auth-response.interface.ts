@@ -1,5 +1,5 @@
 import { Role } from './role.interface';
-import { User, UserResponse } from './user.interface';
+import { User, UserResponse, WorkerResponse } from './user.interface';
 
 export interface AuthResponse {
   ok: boolean;
@@ -8,5 +8,5 @@ export interface AuthResponse {
   idArea?: string;
   token?: string;
   msg?: string;
-  arg?: User[] | Role[] | Role | UserResponse[];
+  arg?: User[] | Role[] | Role | UserResponse[] | WorkerResponse[];
 }

@@ -8,6 +8,7 @@ import {
   User,
   UserLogin,
   UserResponse,
+  WorkerResponse,
 } from '../interfaces/user.interface';
 import { AuthResponse } from '../interfaces/auth-response.interface';
 import { Role } from '../interfaces/role.interface';
@@ -25,10 +26,16 @@ export class AuthService {
     return { ...this._userLogged };
   }
 
-  getAll(): Observable<UserResponse[]> {
+  getUsers(): Observable<UserResponse[]> {
     return this.http
       .get<AuthResponse>(`${this._serverUrl}/users`)
       .pipe(map((res) => res.arg as unknown as UserResponse[]));
+  }
+
+  getWorkers(): Observable<WorkerResponse[]> {
+    return this.http
+      .get<AuthResponse>(`${this._serverUrl}/workers`)
+      .pipe(map((res) => res.arg as unknown as WorkerResponse[]));
   }
 
   getRoles(): Observable<Role[]> {

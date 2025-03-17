@@ -19,8 +19,10 @@ import { MessageModule } from 'primeng/message';
 import { MessagesModule } from 'primeng/messages';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { PasswordModule } from 'primeng/password';
+import { PickListModule } from 'primeng/picklist';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RippleModule } from 'primeng/ripple';
+import { StepperModule } from 'primeng/stepper';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
@@ -48,7 +50,9 @@ import { ToolbarModule } from 'primeng/toolbar';
     MessagesModule,
     MultiSelectModule,
     PasswordModule,
+    PickListModule,
     RippleModule,
+    StepperModule,
     TableModule,
     TagModule,
     ToastModule,
