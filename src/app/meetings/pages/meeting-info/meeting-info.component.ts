@@ -1,74 +1,158 @@
 import { Component, OnInit } from '@angular/core';
-import { Meeting, Session } from '../../interfaces/meeting.interface';
-import { MeetingsService } from '../../services/meetings.service';
-import { WorkersService } from 'src/app/workers/services/workers.service';
-import { TypesOfMeetingsService } from 'src/app/types-of-meetings/services/types-of-meetings.service';
 import { ActivatedRoute } from '@angular/router';
+
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { switchMap, tap } from 'rxjs';
+import { switchMap } from 'rxjs';
+
+import { Worker } from 'src/app/auth/interfaces/user.interface';
+import { getNotification } from 'src/app/shared/notifications';
+import { Meeting } from '../../interfaces/meeting.interface';
+import { MeetingsService } from '../../services/meetings.service';
 
 @Component({
   selector: 'app-meeting-info',
   templateUrl: './meeting-info.component.html',
   styleUrls: ['./meeting-info.component.css'],
-  providers: [ConfirmationService, MessageService],
+  providers: [MessageService, ConfirmationService],
 })
 export class MeetingInfoComponent implements OnInit {
-  meeting: Meeting = {
-    id: '',
-    idTypeOfMeeting: '',
-    idSecretary: '',
-    name: '',
-    date: new Date(),
-    endTime: new Date(),
-    startTime: new Date(),
-    session: Session.ordinary,
-    state: true,
-  };
-  responsible: string = '';
-  typeOfMeeting: string = '';
+  meeting!: Meeting;
+
+  members: Worker[] = [];
+  guests: Worker[] = [];
+  participants: Worker[] = [];
+  attendants: Worker[] = [];
+  missing: Worker[] = [];
+
+  formVisible: boolean = false;
+  attendanceVisible: boolean = false;
 
   constructor(
     private meetingsService: MeetingsService,
-    private workersService: WorkersService,
-    private typesOfMeetingsService: TypesOfMeetingsService,
     private activatedRoute: ActivatedRoute,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
     this.activatedRoute.params
-      .pipe(
-        switchMap(({ id }) => this.meetingsService.getById(id)),
-        tap((m) => {
-          this.typesOfMeetingsService
-            .getById(m.idTypeOfMeeting)
-            .subscribe((t) => (this.typeOfMeeting = t.name));
-        })
-      )
-      .subscribe((m) => (this.meeting = m));
+      .pipe(switchMap(({ id }) => this.meetingsService.getInfo(id)))
+      .subscribe((resp3) => {
+        if (resp3.ok) {
+          this.meeting = resp3.arg as Meeting;
+
+          const workers = [...(this.meeting.participants as Worker[])];
+
+          this.members = [...workers].filter(
+            (worker) => (worker as Worker).member!
+          );
+
+          this.guests = [...workers].filter(
+            (worker) => !(worker as Worker).member!
+          );
+
+          this.missing = [...workers].filter(
+            (worker) => (worker as Worker).status === 'ausente'
+          );
+
+          this.participants = [...workers].filter(
+            (worker) => (worker as Worker).status !== 'presente'
+          );
+
+          this.attendants = [...workers].filter(
+            (worker) => (worker as Worker).status === 'presente'
+          );
+        }
+      });
   }
 
-  remove(event: Event): void {
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: 'Está seguro de que desea eliminar esta reunión?',
-      header: 'Eliminar Reunión',
-      icon: 'pi pi-exclamation-triangle',
-      acceptButtonStyleClass: 'p-button-danger p-button-text',
-      acceptLabel: 'Sí',
-      rejectButtonStyleClass: 'p-button-text p-button-text',
-      accept: () => {
-        this.messageService.add({
-          severity: 'info',
-          detail: 'La reunión ha sido eliminada',
-          summary: 'Reunión Eliminada',
+  showAttendanceDialog() {
+    this.attendanceVisible = true;
+  }
+
+  showFormDialog() {
+    this.formVisible = true;
+  }
+
+  hideDialog() {
+    this.formVisible = false;
+    this.attendanceVisible = false;
+  }
+
+  hideFormDialog() {
+    this.formVisible = false;
+  }
+
+  hideAttendanceDialog() {
+    this.attendanceVisible = false;
+  }
+
+  reloadInfo(ok: boolean) {
+    if (ok) {
+      this.activatedRoute.params
+        .pipe(switchMap(({ id }) => this.meetingsService.getInfo(id)))
+        .subscribe((resp3) => {
+          if (resp3.ok) {
+            this.meeting = resp3.arg as Meeting;
+            this.members = (this.meeting.participants as Worker[]).filter(
+              (worker) => worker.member
+            );
+            this.guests = (this.meeting.participants as Worker[]).filter(
+              (worker) => !worker.member
+            );
+            this.missing = (this.meeting.participants as Worker[]).filter(
+              (worker) => worker.status === 'ausente'
+            );
+          }
         });
-        this.meetingsService.remove(this.meeting.id).subscribe(console.log);
-      },
-      reject: () => {},
+
+      this.hideDialog();
+    }
+  }
+
+  saveAttendance() {
+    this.meetingsService
+      .setAttendance(this.meeting.id, {
+        attendants: [...this.attendants.map((worker) => worker.id)],
+      })
+      .subscribe((resp) => {
+        this.messageService.add(getNotification(resp.msg!, resp.ok));
+
+        if (resp.ok) {
+          this.reloadInfo(true);
+        }
+      });
+  }
+
+  openMeeting() {
+    this.meetingsService.setOpen(this.meeting.id).subscribe((resp) => {
+      this.messageService.add(getNotification(resp.msg!, resp.ok));
+
+      if (resp.ok) {
+        this.showAttendanceDialog();
+      }
     });
-    // this.areasService.remove(id).subscribe(console.log);
+  }
+
+  closeMeeting() {
+    this.meetingsService.setClose(this.meeting.id).subscribe((resp) => {
+      this.messageService.add(getNotification(resp.msg!, resp.ok));
+
+      if (resp.ok) {
+        this.reloadInfo(true);
+      }
+    });
+  }
+
+  getSeverity(status: string) {
+    switch (status) {
+      case 'pendiente':
+        return 'info';
+      case 'en proceso':
+        return 'warning';
+      case 'completada':
+        return 'success';
+      default:
+        return 'danger';
+    }
   }
 }

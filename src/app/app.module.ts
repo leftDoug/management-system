@@ -1,7 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { PrimengModule } from './primeng/primeng.module';
+import localeES from '@angular/common/locales/es-CU';
+import { registerLocaleData } from '@angular/common';
 
 import { AgreementsModule } from './agreements/agreements.module';
 import { AppComponent } from './app.component';
@@ -16,6 +18,7 @@ import { WorkersModule } from './workers/workers.module';
 import { AgendaModule } from './agenda/agenda.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 
+registerLocaleData(localeES);
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -34,7 +37,7 @@ import { OrganizationsModule } from './organizations/organizations.module';
     AgendaModule,
     OrganizationsModule,
   ],
-  providers: [],
+  providers: [{ provide: LOCALE_ID, useValue: 'es-CU' }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -7,10 +7,19 @@ import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PrimengModule } from '../primeng/primeng.module';
 import { TypeOfMeetingFormComponent } from './pages/type-of-meeting-form/type-of-meeting-form.component';
+import { TypeOfMeetingInfoComponent } from './pages/type-of-meeting-info/type-of-meeting-info.component';
+import { AgendaModule } from '../agenda/agenda.module';
+import { MeetingsModule } from '../meetings/meetings.module';
 
 @NgModule({
-  declarations: [TypesOfMeetingsTableComponent, TypeOfMeetingFormComponent],
+  declarations: [
+    TypesOfMeetingsTableComponent,
+    TypeOfMeetingFormComponent,
+    TypeOfMeetingInfoComponent,
+  ],
   imports: [
+    AgendaModule,
+    MeetingsModule,
     CommonModule,
     RouterModule,
     ReactiveFormsModule,
@@ -18,5 +27,6 @@ import { TypeOfMeetingFormComponent } from './pages/type-of-meeting-form/type-of
     FormsModule,
     // TypesOfMeetingsRoutingModule,
   ],
+  exports: [TypesOfMeetingsTableComponent],
 })
 export class TypesOfMeetingsModule {}

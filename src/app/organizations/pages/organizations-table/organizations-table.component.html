@@ -1,14 +1,20 @@
 <div class="flex flex-wrap align-items-center justify-content-center">
-  <div class="p-5 w-full">
-    <p-card class="min-w-700" header="Listado de Organizaciones">
+  <div class="p-3 w-full">
+    <p-card class="min-w-700" header="Organizaciones">
       <p-toast />
+
+      <!-- XXX sortFunction y customSort son para quitar el ordenamiento -->
       <p-table
         #tOrganizations
         [value]="organizations"
         [globalFilterFields]="['name', 'leader']"
         [tableStyle]="{ 'min-width': '60rem' }"
         [paginator]="true"
-        [rows]="10"
+        [rows]="5"
+        [rowHover]="true"
+        [rowsPerPageOptions]="[5, 10, 15]"
+        (sortFunction)="customSort($event)"
+        [customSort]="true"
       >
         <ng-template pTemplate="caption">
           <div class="flex justify-content-between">
@@ -19,9 +25,10 @@
               severity="success"
               (onClick)="openNew(null)"
             />
-            <!-- routerLink="/organizaciones/agregar" -->
+
             <span class="p-input-icon-left ml-5">
               <i class="pi pi-search"></i>
+
               <input
                 pInputText
                 type="text"
@@ -37,37 +44,52 @@
             </span>
           </div>
         </ng-template>
+
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="name">
+            <th pSortableColumn="name" style="width: 70%">
               Organización <p-sortIcon field="name"></p-sortIcon>
             </th>
-            <th pSortableColumn="leader">
+
+            <th pSortableColumn="leader" style="width: 20%">
               Líder <p-sortIcon field="leader"></p-sortIcon>
             </th>
-            <th style="width: 5%"></th>
+
+            <th style="width: 10%"></th>
           </tr>
         </ng-template>
+
         <ng-template pTemplate="body" let-organization>
           <tr>
             <td>{{ organization.name }}</td>
+
             <td>{{ organization.leader }}</td>
+
             <td class="flex gap-2">
               <p-button
-                icon="pi pi-pencil"
-                label="Editar"
+                icon="pi pi-info-circle"
                 [text]="true"
+                [rounded]="true"
+                [routerLink]="['/organizaciones/info/', organization.id]"
+              />
+              <!-- (onClick)="openNew(organization.id)" -->
+
+              <p-button
+                icon="pi pi-pencil"
+                severity="success"
+                [text]="true"
+                [rounded]="true"
                 (onClick)="openNew(organization.id)"
-              ></p-button>
+              />
               <!-- [routerLink]="['/organizaciones/editar/', organization.id]" -->
 
               <p-button
                 icon="pi pi-trash"
                 severity="danger"
-                label="Eliminar"
                 [text]="true"
+                [rounded]="true"
                 (onClick)="remove($event, organization.id)"
-              ></p-button>
+              />
             </td>
           </tr>
         </ng-template>
@@ -90,6 +112,7 @@
       <p-confirmDialog></p-confirmDialog>
     </p-card>
   </div>
+
   <p-dialog
     [(visible)]="organizationDialog"
     [style]="{ width: '50rem' }"

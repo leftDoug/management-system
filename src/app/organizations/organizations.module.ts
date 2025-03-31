@@ -8,14 +8,21 @@ import { PrimengModule } from '../primeng/primeng.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { OrganizationsTableComponent } from './pages/organizations-table/organizations-table.component';
+import { OrganizationInfoComponent } from './pages/organization-info/organization-info.component';
+import { TypesOfMeetingsModule } from '../types-of-meetings/types-of-meetings.module';
 
 @NgModule({
-  declarations: [OrganizationFormComponent, OrganizationsTableComponent],
+  declarations: [
+    OrganizationFormComponent,
+    OrganizationsTableComponent,
+    OrganizationInfoComponent,
+  ],
   imports: [
     CommonModule,
     PrimengModule,
     RouterModule,
     ReactiveFormsModule,
+    TypesOfMeetingsModule,
     // FormsModule,
   ],
 })

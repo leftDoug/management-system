@@ -1,249 +1,176 @@
-<div class="flex align-items-center justify-content-center">
-  <p-card
-    class="p-5 w-full"
-    [header]="
-      newAgreement.id
-        ? 'Actualizar Acuerdo No. ' + newAgreement.number
-        : 'Crear Acuerdo No. ' + newAgreement.number
-    "
+<p-dialog
+  [(visible)]="visible"
+  [style]="{ width: '50rem' }"
+  [header]="
+    agreement ? 'Editar Acuerdo No. ' + agreement.number : 'Crear Acuerdo'
+  "
+  [modal]="true"
+  [focusOnShow]="false"
+  styleClass="p-fluid"
+  [draggable]="false"
+  (onHide)="hideDialog()"
+>
+  <pre>
+  {{ agreementForm.value | json }}
+</pre
   >
-    <form
-      class="form"
-      action="POST"
-      (ngSubmit)="create()"
-      [formGroup]="agreementForm"
-      autocomplete="off"
-    >
-      <!-- contenido -->
-      <div class="flex gap-2">
-        <label
-          for="content"
-          class="flex w-2 align-items-center justify-content-end"
-          >Contenido del acuerdo:
-        </label>
+  <ng-template pTemplate="content">
+    <div class="flex flex-column">
+      <form class="form" [formGroup]="agreementForm" autocomplete="off">
+        <!-- contenido -->
+        <div class="field">
+          <label for="content" class="">Contenido del acuerdo: </label>
 
-        <input
-          class="flex w-10 mr-1"
-          type="text"
-          pInputText
-          id="content"
-          formControlName="content"
-          placeholder="Contenido del acuerdo..."
-        />
-      </div>
+          <input
+            type="text"
+            pInputText
+            id="content"
+            formControlName="content"
+            placeholder="Contenido del acuerdo..."
+          />
 
-      <div class="flex gap-2">
-        <div class="flex w-2"></div>
-
-        <small
-          id="content-help"
-          class="flex p-error"
-          *ngIf="validate('content')"
-          >{{ contentErrorMsg }}</small
-        >
-      </div>
-      <!-- fin contenido -->
-
-      <!-- 2 columnas -->
-      <div class="flex mt-2 gap-2">
-        <!-- izquierda -->
-        <div class="flex flex-column w-6">
-          <!-- meeting -->
-          <div class="flex gap-2">
-            <label
-              for="meeting"
-              class="flex w-6 align-items-center justify-content-end"
-              >Reunión:
-            </label>
-
-            <p-dropdown
-              class="flex w-full"
-              [style]="{ width: '100%' }"
-              [panelStyle]="{ width: '100%' }"
-              inputId="meeting"
-              [options]="meetings"
-              optionLabel="name"
-              optionValue="id"
-              formControlName="meeting"
-              placeholder="-- Seleccione --"
-            ></p-dropdown>
-          </div>
-
-          <div class="flex gap-2">
-            <div class="flex w-4"></div>
-
-            <small
-              id="meeting-help"
-              class="flex p-error mr-5"
-              *ngIf="validate('meeting')"
-              >{{ meetingErrorMsg }}</small
-            >
-          </div>
-          <!-- fin meeting -->
-
-          <!-- fecha de cumplimiento -->
-          <div class="flex gap-2 mt-2">
-            <label
-              for="complianceDate"
-              class="flex w-6 align-items-center justify-content-end"
-              >Fecha de cumplimiento:
-            </label>
-            <p-calendar
-              class="flex w-full"
-              [style]="{ width: '100%' }"
-              [inputStyle]="{ width: '100%' }"
-              [iconDisplay]="'input'"
-              [showIcon]="true"
-              inputId="complianceDate"
-              dateFormat="mm/dd/yy"
-              formControlName="compilanceDate"
-            ></p-calendar>
-          </div>
-
-          <div class="flex gap-2">
-            <div class="flex w-4"></div>
-
-            <small
-              id="compilanceDate-help"
-              class="flex p-error"
-              *ngIf="validate('compilanceDate')"
-              >{{ compilanceDateErrorMsg }}</small
-            >
-          </div>
-          <!-- fin fecha de cumplimiento -->
+          <small
+            id="content-help"
+            class="flex p-error"
+            *ngIf="validate('content')"
+            >{{ contentErrorMsg }}</small
+          >
         </div>
-        <!-- fin izquierda -->
 
-        <!-- derecha -->
-        <div class="flex flex-column w-6 mr-1">
-          <!-- creator -->
-          <!-- FIXME: sustituir x inputtext del usuario logeado -->
-          <!-- <div class="grid">
-            <div class="col-4"></div>
+        <!-- fin contenido -->
 
-            <small
-              id="createdBy-help"
-              class="p-error col pt-0 ml-2"
-              *ngIf="validate('createdBy')"
-              >{{ createdByErrorMsg }}</small
-            >
-          </div> -->
-          <!-- fin creator -->
+        <!-- 2 columnas -->
+        <div class="flex flex-row">
+          <!-- izquierda -->
+          <div class="flex flex-column col">
+            <!-- fecha de cumplimiento -->
+            <div class="field">
+              <label for="complianceDate" class=""
+                >Fecha de cumplimiento:
+              </label>
 
-          <!-- responsible -->
-          <div class="flex gap-2">
-            <label
-              for="responsible"
-              class="flex w-6 align-items-center justify-content-end"
-              >Responsable:
-            </label>
+              <p-calendar
+                [iconDisplay]="'input'"
+                [showIcon]="true"
+                inputId="complianceDate"
+                dateFormat="dd/mm/yy"
+                appendTo="body"
+                formControlName="compilanceDate"
+                [touchUI]="true"
+                [readonlyInput]="true"
+              />
 
-            <p-dropdown
-              class="flex w-full"
-              [style]="{ width: '100%' }"
-              [panelStyle]="{ width: '100%' }"
-              id="responsible"
-              [options]="workers"
-              optionLabel="name"
-              optionValue="id"
-              formControlName="responsible"
-              placeholder="-- Seleccione --"
-            ></p-dropdown>
-          </div>
-
-          <div class="flex gap-2">
-            <div class="flex w-4"></div>
-
-            <small
-              id="responsible-help"
-              class="flex p-error mr-5"
-              *ngIf="validate('responsible')"
-              >{{ responsibleErrorMsg }}</small
-            >
-          </div>
-          <!-- fin responsible -->
-
-          <!-- checkbox -->
-          <div class="flex gap-1 mt-3" *ngIf="showCheck">
-            <div class="flex w-4"></div>
-            <div class="flex field-checkbox">
-              <p-checkbox
-                class="flex align-items-center"
-                inputId="completed"
-                [binary]="true"
-                formControlName="completed"
-              ></p-checkbox>
-              <label for="completed" class="flex align-items-center"
-                >Cumplido</label
+              <small
+                id="compilanceDate-help"
+                class="flex p-error"
+                *ngIf="validate('compilanceDate')"
+                >{{ compilanceDateErrorMsg }}</small
               >
             </div>
+            <!-- fin fecha de cumplimiento -->
           </div>
-          <!-- fin checkbox -->
+          <!-- fin izquierda -->
+
+          <!-- derecha -->
+          <div class="flex flex-column col">
+            <!-- creator -->
+            <!-- FIXME: sustituir x inputtext del usuario logeado -->
+            <!-- <div class="grid">
+                <div class="col-4"></div>
+    
+                <small
+                  id="createdBy-help"
+                  class="p-error col pt-0 ml-2"
+                  *ngIf="validate('createdBy')"
+                  >{{ createdByErrorMsg }}</small
+                >
+              </div> -->
+            <!-- fin creator -->
+
+            <!-- responsible -->
+            <div class="field">
+              <label for="responsible" class="">Responsable: </label>
+
+              <p-dropdown
+                id="responsible"
+                [options]="workers"
+                optionLabel="name"
+                optionValue="id"
+                formControlName="responsible"
+                placeholder="-- Seleccione --"
+                appendTo="body"
+              />
+
+              <small
+                id="responsible-help"
+                class="flex p-error mr-5"
+                *ngIf="validate('responsible')"
+                >{{ responsibleErrorMsg }}</small
+              >
+            </div>
+            <!-- fin responsible -->
+
+            <!-- checkbox -->
+            <!-- <div class="flex gap-1 mt-3" *ngIf="showCheck">
+                <div class="flex w-4"></div>
+                <div class="flex field-checkbox">
+                  <p-checkbox
+                    class="flex align-items-center"
+                    inputId="completed"
+                    [binary]="true"
+                    formControlName="completed"
+                  ></p-checkbox>
+                  <label for="completed" class="flex align-items-center"
+                    >Cumplido</label
+                  >
+                </div>
+              </div> -->
+            <!-- fin checkbox -->
+          </div>
+          <!-- fin derecha -->
         </div>
-        <!-- fin derecha -->
-      </div>
-      <!-- fin 2 columnas -->
+        <!-- fin 2 columnas -->
 
-      <!-- answer -->
-      <div class="flex gap-1 mt-2" *ngIf="showAnswer">
-        <label
-          for="answer"
-          class="flex w-2 align-items-center justify-content-end pr-1"
-          >Respuesta:
-        </label>
+        <!-- answer -->
+        <!-- <div class="flex gap-1 mt-2" *ngIf="showAnswer">
+            <label
+              for="answer"
+              class="flex w-2 align-items-center justify-content-end pr-1"
+              >Respuesta:
+            </label>
+    
+            <textarea
+              class="flex w-10 mr-1"
+              pInputTextarea
+              [autoResize]="true"
+              id="answer"
+              formControlName="answer"
+              placeholder="Respuesta..."
+            ></textarea>
+          </div> -->
+        <!-- fin answer -->
+      </form>
+    </div>
+  </ng-template>
 
-        <textarea
-          class="flex w-10 mr-1"
-          pInputTextarea
-          [autoResize]="true"
-          id="answer"
-          formControlName="answer"
-          placeholder="Respuesta..."
-        ></textarea>
-      </div>
-      <!-- fin answer -->
+  <ng-template pTemplate="footer">
+    <div class="flex pt-4 justify-content-evenly">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        [text]="true"
+        (onClick)="hideDialog()"
+      />
 
-      <!-- botones -->
-      <div class="gap-6 mt-5 flex align-items-center justify-content-center">
-        <p-toast></p-toast>
-
-        <p-button
-          label="Crear"
-          icon="pi pi-check"
-          severity="success"
-          class=""
-          type="submit"
-          *ngIf="!newAgreement.id; else update"
-          [disabled]="agreementForm.invalid"
-        ></p-button>
-
-        <ng-template #update>
-          <p-button
-            label="Actualizar"
-            icon="pi pi-check"
-            severity="success"
-            class="col-2 mx-2"
-            type="submit"
-            [disabled]="agreementForm.invalid || agreementForm.pristine"
-          ></p-button>
-        </ng-template>
-
-        <p-button
-          label="Cancelar"
-          icon="pi pi-times"
-          class=""
-          type="button"
-          [routerLink]="
-            !newAgreement.id
-              ? '/acuerdos'
-              : ['/acuerdos/detalles/', newAgreement.id]
-          "
-        ></p-button>
-      </div>
-      <!-- fin botones -->
-    </form>
-  </p-card>
-</div>
+      <p-button
+        label="Guardar"
+        icon="pi pi-check"
+        [text]="true"
+        (onClick)="save()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
 
 <pre>
   {{ agreementForm.value | json }}

@@ -15,8 +15,16 @@ export interface UserResponse {
 
 // FIXME cambiar el id a number
 export interface WorkerResponse {
+  ok: boolean;
+  msg: string;
+  arg: Worker | Worker[];
+}
+
+export interface Worker {
   id: string;
   name: string;
+  status?: string;
+  member?: boolean;
 }
 
 export interface UserLogged {

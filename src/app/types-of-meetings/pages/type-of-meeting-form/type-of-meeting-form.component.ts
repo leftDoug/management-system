@@ -1,173 +1,125 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Area } from 'src/app/areas/interfaces/area.interface';
-import {
-  Frequency,
-  TypeOfMeeting,
-} from '../../interfaces/type-of-meeting.interface';
-import { ActivatedRoute, Router } from '@angular/router';
+import { TypeOfMeeting } from '../../interfaces/type-of-meeting.interface';
 import { MessageService } from 'primeng/api';
-import { AreasService } from 'src/app/areas/services/areas.service';
-import { switchMap } from 'rxjs';
 import { TypesOfMeetingsService } from '../../services/types-of-meetings.service';
+import { StandardResponse } from 'src/app/shared/interfaces/standard.interface';
+import { getNotification } from 'src/app/shared/notifications';
+import { Organization } from 'src/app/organizations/interfaces/organization.interface';
 
 @Component({
   selector: 'app-type-of-meeting-form',
   templateUrl: './type-of-meeting-form.component.html',
   styleUrls: ['./type-of-meeting-form.component.css'],
-  providers: [MessageService],
 })
 export class TypeOfMeetingFormComponent implements OnInit {
-  typeOfMeetingForm: FormGroup = this.fb.group({
+  tomForm: FormGroup = this.fb.group({
+    id: [''],
     name: ['', [Validators.required, Validators.minLength(5)]],
-    area: ['', Validators.required],
-    frequency: ['', Validators.required],
   });
 
-  areas: Area[] = [];
-  newTypeOfMeeting: TypeOfMeeting = {
+  newToM: TypeOfMeeting = {
     id: '',
     name: '',
-    idArea: '',
-    frequency: Frequency.daily,
-    state: true,
+    idOrganization: '',
   };
-  frequencies: Frequency[] = [
-    Frequency.daily,
-    Frequency.weekly,
-    Frequency.fortnightly,
-    Frequency.monthly,
-    Frequency.yearly,
-  ];
+
+  submitted: boolean = false;
+  visible: boolean = true;
+
+  @Input() tom?: TypeOfMeeting;
+  @Input() organization!: Organization;
+
+  @Output() onHide = new EventEmitter<boolean>();
+  @Output() onSubmit = new EventEmitter<boolean>();
 
   constructor(
     private fb: FormBuilder,
-    private activatedRoute: ActivatedRoute,
-    private areasService: AreasService,
-    private messageService: MessageService,
-    private typesOfMeetingsService: TypesOfMeetingsService,
-    private router: Router
+    private tomsService: TypesOfMeetingsService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
-    if (this.router.url.includes('editar')) {
-      this.activatedRoute.params
-        .pipe(switchMap(({ id }) => this.typesOfMeetingsService.getById(id)))
-        .subscribe((resp) => {
-          this.newTypeOfMeeting = resp;
-          this.typeOfMeetingForm.reset({
-            name: this.newTypeOfMeeting.name,
-            area: this.newTypeOfMeeting.idArea,
-            frequency: this.newTypeOfMeeting.frequency,
-          });
-        });
-    }
+    if (this.tom) {
+      // this.tomsService.getById(this.idToM).subscribe((resp) => {
+      //   if (resp.ok) {
+      //     const tom: TypeOfMeeting = resp.arg as TypeOfMeeting;
 
-    this.areasService.getAll().subscribe((resp) => {
-      this.areas = resp;
-      this.areas.sort((a, b) => a.name.localeCompare(b.name));
-    });
+      this.tomForm.patchValue({
+        id: this.tom.id,
+        name: this.tom.name,
+      });
+      //   }
+      // });
+    }
   }
 
-  get areaErrorMsg(): string {
-    if (this.typeOfMeetingForm.get('area')?.errors!['required']) {
-      return 'El área es requerida';
-    }
-
-    return '';
+  get id() {
+    return this.tomForm.get('id')!;
   }
 
-  get frequencyErrorMsg(): string {
-    if (this.typeOfMeetingForm.get('frequency')?.errors!['required']) {
-      return 'La frecuencia es requerida';
-    }
-
-    return '';
+  get name() {
+    return this.tomForm.get('name')!;
   }
 
   get nameErrorMsg(): string {
-    if (this.typeOfMeetingForm.get('name')?.errors!['required']) {
-      return 'El tipo de reunión es requerido';
-    } else if (this.typeOfMeetingForm.get('name')?.errors!['minlength']) {
-      return 'El tipo de reunión debe tener al menos 5 caracteres';
+    this.name.markAsDirty();
+
+    if (this.name.errors!['required']) {
+      return 'El nombre es requerido';
+    } else if (this.name.errors!['minlength']) {
+      return 'El nombre debe tener al menos 5 caracteres';
     }
 
     return '';
   }
 
-  create(): void {
-    this.newTypeOfMeeting.idArea = this.typeOfMeetingForm.get('area')?.value;
-    this.newTypeOfMeeting.name = this.typeOfMeetingForm
-      .get('name')
-      ?.value.trim();
-    switch (this.typeOfMeetingForm.get('frequency')?.value) {
-      case 'Diaria':
-        this.newTypeOfMeeting.frequency = Frequency.daily;
-        break;
-      case 'Semanal':
-        this.newTypeOfMeeting.frequency = Frequency.weekly;
-        break;
-      case 'Quincenal':
-        this.newTypeOfMeeting.frequency = Frequency.fortnightly;
-        break;
-      case 'Mensual':
-        this.newTypeOfMeeting.frequency = Frequency.monthly;
-        break;
-      case 'Anual':
-        this.newTypeOfMeeting.frequency = Frequency.yearly;
-        break;
-      default:
-        break;
-    }
+  save(): void {
+    this.submitted = true;
 
-    if (!this.newTypeOfMeeting.id) {
-      this.newTypeOfMeeting.id = this.typeOfMeetingForm
-        .get('name')
-        ?.value.trim()
-        .slice(0, 2);
+    if (this.tomForm.valid) {
+      this.newToM = {
+        id: this.id.value,
+        name: this.name.value.trim(),
+        idOrganization: this.organization.id,
+      };
 
-      this.typesOfMeetingsService
-        .add(this.newTypeOfMeeting)
-        .subscribe(console.log);
+      if (!this.id.value) {
+        this.tomsService.add(this.newToM).subscribe((resp) => {
+          this.messageService.add(getNotification(resp.msg!, resp.ok));
 
-      this.newTypeOfMeeting.id = '';
+          if (resp.ok) {
+            this.onSubmit.emit(true);
 
-      this.typeOfMeetingForm.reset();
+            this.tomForm.reset({
+              id: '',
+              name: '',
+            });
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Tipo de Reunión Creado',
-        detail: 'El tipo de reunión ha sido creado.',
-      });
-    } else {
-      this.typesOfMeetingsService
-        .update(this.newTypeOfMeeting)
-        .subscribe(console.log);
+            this.hideDialog();
+          }
+        });
+      } else {
+        this.tomsService.update(this.newToM).subscribe((resp) => {
+          this.messageService.add(getNotification(resp.msg!, resp.ok));
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Tipo de Reunión Actualizado',
-        detail: 'El tipo de reunión ha sido actualizado.',
-      });
+          if (resp.ok) {
+            this.onSubmit.emit(true);
 
-      this.typeOfMeetingForm.reset(this.typeOfMeetingForm.value);
+            this.tomForm.reset({
+              id: '',
+              name: '',
+            });
+
+            this.hideDialog();
+          }
+        });
+      }
     }
   }
 
-  // FIXME: validate implementado varias veces
-  validate(control: string): boolean {
-    if (
-      control === 'name' &&
-      this.typeOfMeetingForm.get(control)?.pristine &&
-      this.typeOfMeetingForm.get(control)?.touched &&
-      this.typeOfMeetingForm.get(control)?.errors!['required']
-    ) {
-      this.typeOfMeetingForm.controls['name'].markAsDirty();
-    }
-
-    return (
-      this.typeOfMeetingForm.get(control)?.errors! &&
-      this.typeOfMeetingForm.controls[control].touched
-    );
+  hideDialog() {
+    this.visible = false;
+    this.onHide.emit(true);
   }
 }

@@ -1,70 +1,117 @@
 <div class="flex align-items-center justify-content-center">
-  <p-card class="p-5 w-full">
-    <p-toast></p-toast>
-    <div class="">
-      <h1 class="flex gap-3 mt-0 ml-5">
-        Acuerdo {{ agreement.number }}
-        <p-tag
-          [severity]="setSeverity(status)"
-          [value]="status"
-          class="flex align-self-center"
-        />
-      </h1>
+  <p-card class="p-3 w-full">
+    <p-toast />
 
-      <p-divider align="left" type="solid">
-        <strong>Contenido</strong>
-      </p-divider>
-      <p class="ml-5">{{ agreement.content }}</p>
+    <app-loading />
 
-      <div class="grid">
-        <div class="col">
-          <p-divider align="left" type="solid">
-            <strong>Reunión</strong>
-          </p-divider>
-          <p class="ml-5">{{ agreement.meeting }}</p>
+    <ng-template pTemplate="content">
+      <div class="" *ngIf="!loading">
+        <h1 class="flex gap-3 mt-0 ml-5">
+          Acuerdo
+          {{ agreement ? (agreement.number ? agreement.number : "") : "" }}
+          <p-tag
+            [severity]="setSeverity(status)"
+            [value]="status"
+            class="flex align-self-center"
+          />
+        </h1>
+
+        <p-divider align="left" type="solid">
+          <strong>Contenido</strong>
+        </p-divider>
+
+        <p class="ml-5">{{ agreement.content }}</p>
+
+        <div class="grid">
+          <div class="col">
+            <p-divider align="left" type="solid">
+              <strong>Reunión</strong>
+            </p-divider>
+            <p class="ml-5">
+              {{ agreement.meeting ? agreement.meeting.name : "" }}
+            </p>
+          </div>
         </div>
+
+        <div class="grid">
+          <div class="col">
+            <p-divider align="left" type="solid">
+              <strong>Fecha de cumplimiento</strong>
+            </p-divider>
+            <p class="ml-5">
+              {{
+                agreement
+                  ? (agreement.compilanceDate | date : "dd/MM/yyyy")
+                  : ""
+              }}
+            </p>
+          </div>
+
+          <div class="col">
+            <p-divider align="left" type="solid">
+              <strong>Responsable</strong>
+            </p-divider>
+            <p class="ml-5">
+              {{ agreement.responsible ? agreement.responsible.name : "" }}
+            </p>
+          </div>
+        </div>
+
+        <p-divider align="left" type="solid">
+          <strong>Respuestas</strong>
+        </p-divider>
+
+        <ul class="" *ngFor="let response of responses">
+          <li>
+            {{ response.content }}
+          </li>
+        </ul>
       </div>
-
-      <div class="grid">
-        <div class="col">
-          <p-divider align="left" type="solid">
-            <strong>Fecha de cumplimiento</strong>
-          </p-divider>
-          <p class="ml-5">
-            {{ agreement.compilanceDate | date : "MM/dd/yyyy" }}
-          </p>
-        </div>
-
-        <div class="col">
-          <p-divider align="left" type="solid">
-            <strong>Responsable</strong>
-          </p-divider>
-          <p class="ml-5">{{ agreement.responsible }}</p>
-        </div>
-      </div>
-
-      <p-divider align="left" type="solid">
-        <strong>Respuestas</strong>
-      </p-divider>
-      <p class="ml-5"></p>
-    </div>
+    </ng-template>
 
     <ng-template pTemplate="footer">
-      <div class="flex gap-3 justify-content-center">
+      <div class="flex gap-5 justify-content-center" *ngIf="!loading">
+        <p-button
+          icon="pi pi-arrow-left"
+          label="Atrás"
+          type="button"
+          [routerLink]="[
+            '/acuerdos/',
+            agreement ? (agreement.meeting ? agreement.meeting.id : '') : ''
+          ]"
+          [text]="true"
+        />
+
         <p-button
           icon="pi pi-pencil"
           label="Editar"
-          severity="success"
           type="button"
           *ngIf="!agreement.completed && agreement.state"
-          [routerLink]="['/acuerdos/editar/', agreement.id]"
-        ></p-button>
+          [text]="true"
+          (onClick)="showForm()"
+        />
+
         <p-button
-          icon="pi pi-times"
-          label="Cancelar"
+          icon="pi pi-file-edit"
+          label="Dar respuesta"
           type="button"
-          routerLink="/acuerdos"
-        ></p-button>
+          *ngIf="!agreement.completed && agreement.state"
+          [text]="true"
+          (onClick)="showResponseDialog()"
+        />
+
+        <p-button
+          icon="pi pi-check"
+          label="Marcar como cumplido"
+          type="button"
+          severity="success"
+          *ngIf="
+            !agreement.completed && agreement.state && responses.length > 0
+          "
+          [text]="true"
+          (onClick)="setCompleted()"
+        />
+
         <p-button
           icon="pi pi-ban"
           label="Anular"
@@ -72,9 +119,67 @@
           type="button"
           *ngIf="!agreement.completed && agreement.state"
           (onClick)="cancel()"
+          [text]="true"
         ></p-button>
       </div>
     </ng-template>
-    <p-confirmDialog></p-confirmDialog>
+
+    <p-confirmDialog />
   </p-card>
 </div>
+
+<app-agreement-form
+  *ngIf="formDialog"
+  [agreement]="agreement"
+  [meeting]="agreement.meeting!"
+  (onSubmit)="reloadInfo($event)"
+  (onHide)="hideForm($event)"
+/>
+
+<p-dialog
+  [(visible)]="responseDialog"
+  [style]="{ width: '50rem' }"
+  [header]="'Acuerdo No. ' + agreement.number"
+  [modal]="true"
+  [focusOnShow]="false"
+  styleClass="p-fluid"
+  [draggable]="false"
+  (onHide)="hideResponseDialog()"
+>
+  <ng-template pTemplate="content" class="pb-0">
+    <div class="flex flex-column">
+      <form class="form" [formGroup]="responseForm" autocomplete="off">
+        <div class="field">
+          <label for="content" class="">Respuesta: </label>
+
+          <textarea
+            class=""
+            pInputTextarea
+            [autoResize]="true"
+            id="content"
+            formControlName="content"
+            placeholder="Respuesta..."
+          ></textarea>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div class="flex pt-4 justify-content-evenly">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        [text]="true"
+        (onClick)="hideResponseDialog()"
+      />
+
+      <p-button
+        label="Guardar"
+        icon="pi pi-check"
+        [text]="true"
+        (onClick)="save()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

@@ -1,4 +1,8 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, map, of, tap } from 'rxjs';
 
@@ -32,10 +36,10 @@ export class AuthService {
       .pipe(map((res) => res.arg as unknown as UserResponse[]));
   }
 
-  getWorkers(): Observable<WorkerResponse[]> {
+  getWorkers(): Observable<WorkerResponse> {
     return this.http
-      .get<AuthResponse>(`${this._serverUrl}/workers`)
-      .pipe(map((res) => res.arg as unknown as WorkerResponse[]));
+      .get<WorkerResponse>(`${this._serverUrl}/workers`)
+      .pipe(catchError((err: HttpErrorResponse) => of(err.error)));
   }
 
   getRoles(): Observable<Role[]> {

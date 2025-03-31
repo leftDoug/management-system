@@ -1,7 +1,7 @@
-import { Agreement } from './agreement.interface';
+import { Agreement, Response } from './agreement.interface';
 
 export interface AgreementResponse {
-  ok: true;
-  arg?: Agreement[];
+  ok: boolean;
+  arg?: Agreement | Agreement[] | Response[];
   msg?: string;
 }

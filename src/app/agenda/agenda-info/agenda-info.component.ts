@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Agenda, MonthWithTopics } from '../interfaces/agenda.interface';
+import { Agenda } from '../interfaces/agenda.interface';
 import { ActivatedRoute } from '@angular/router';
 import { AgendasService } from '../services/agendas.service';
 import { TypesOfMeetingsService } from 'src/app/types-of-meetings/services/types-of-meetings.service';
@@ -21,7 +21,7 @@ export class AgendaInfoComponent implements OnInit {
     topics: [],
   };
   typeOfMeeting: string = '';
-  months: MonthWithTopics[] = [];
+  // months: MonthWithTopics[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -33,43 +33,37 @@ export class AgendaInfoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.activatedRoute.params
-      .pipe(
-        switchMap(({ id }) => this.agendasService.getById(id)),
-        switchMap((a) => {
-          this.agenda = a;
-
-          let tempMonths: MonthWithTopics[] = [];
-          let tempMonth: MonthWithTopics | undefined;
-
-          a.topics.forEach((t) => {
-            if (!tempMonths.find((tm) => tm.name === t.month.name)) {
-              tempMonth = {
-                name: t.month.name,
-                topics: [t.name],
-              };
-
-              tempMonths.push(tempMonth);
-            } else {
-              tempMonths
-                .find((tm) => tm.name === t.month.name)
-                ?.topics.push(t.name);
-            }
-          });
-
-          this.months = tempMonths;
-
-          return this.typesOfMeetingsService.getById(a.idTypeOfMeeting);
-        }),
-        switchMap((tom) => {
-          this.typeOfMeeting = tom.name;
-
-          return this.areasService.getById(tom.idArea!);
-        })
-      )
-      .subscribe(
-        (a) => (this.typeOfMeeting = this.typeOfMeeting + ' (' + a.name + ')')
-      );
+    // this.activatedRoute.params
+    //   .pipe(
+    //     switchMap(({ id }) => this.agendasService.getById(id)),
+    //     switchMap((a) => {
+    //       this.agenda = a;
+    //       let tempMonths: MonthWithTopics[] = [];
+    //       let tempMonth: MonthWithTopics | undefined;
+    //       a.topics.forEach((t) => {
+    //         if (!tempMonths.find((tm) => tm.name === t.month.name)) {
+    //           tempMonth = {
+    //             name: t.month.name,
+    //             topics: [t.name],
+    //           };
+    //           tempMonths.push(tempMonth);
+    //         } else {
+    //           tempMonths
+    //             .find((tm) => tm.name === t.month.name)
+    //             ?.topics.push(t.name);
+    //         }
+    //       });
+    //       this.months = tempMonths;
+    //       return this.typesOfMeetingsService.getById(a.idTypeOfMeeting);
+    //     }),
+    //     switchMap((tom) => {
+    //       this.typeOfMeeting = tom.name;
+    //       return this.areasService.getById(tom.idArea!);
+    //     })
+    //   )
+    //   .subscribe(
+    //     (a) => (this.typeOfMeeting = this.typeOfMeeting + ' (' + a.name + ')')
+    //   );
   }
 
   remove(event: Event): void {
@@ -87,7 +81,7 @@ export class AgendaInfoComponent implements OnInit {
           detail: 'La agenda ha sido eliminada',
           summary: 'Agenda Eliminada',
         });
-        this.agendasService.remove(this.agenda.id).subscribe(console.log);
+        this.agendasService.remove(this.agenda).subscribe(console.log);
       },
       reject: () => {},
     });

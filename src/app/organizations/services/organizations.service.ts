@@ -1,16 +1,11 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, map, of, throwError } from 'rxjs';
-import {
-  Organization,
-  OrganizationView,
-} from '../interfaces/organization.interface';
+import { Observable, catchError, map, of } from 'rxjs';
+import { Organization } from '../interfaces/organization.interface';
 import { environment } from 'src/environments/environment.development';
 import { OrganizationResponse } from '../interfaces/organization-response.interface';
-import { TypeOfMeeting } from 'src/app/types-of-meetings/interfaces/type-of-meeting.interface';
-import { Worker } from 'src/app/workers/interfaces/worker.interface';
-import { StandardResponse } from 'src/app/shared/interfaces/standard.interface';
-import { WorkerResponse } from 'src/app/auth/interfaces/user.interface';
+import { ToMResponse } from 'src/app/types-of-meetings/interfaces/type-of-meeting-response-interface';
+import { AuthResponse } from 'src/app/auth/interfaces/auth-response.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -21,20 +16,30 @@ export class OrganizationsService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<OrganizationView[]> {
-    return this.http
-      .get<OrganizationResponse>(this._serverUrl)
-      .pipe(map((resp) => resp.arg as unknown as OrganizationView[]));
+  getAll(): Observable<OrganizationResponse> {
+    return this.http.get<OrganizationResponse>(this._serverUrl).pipe(
+      catchError((err: HttpErrorResponse) => {
+        return of(err.error);
+      })
+    );
   }
 
   getById(id: string): Observable<OrganizationResponse> {
     return this.http.get<OrganizationResponse>(`${this._serverUrl}/${id}`).pipe(
-      map((res) => {
-        return res.ok
-          ? { ok: res.ok, arg: res.arg as unknown as Organization }
-          : { ok: res.ok, msg: res.msg };
+      catchError((err: HttpErrorResponse) => {
+        return of(err.error);
       })
     );
+  }
+
+  getInfo(id: string): Observable<OrganizationResponse> {
+    return this.http
+      .get<OrganizationResponse>(`${this._serverUrl}/info/${id}`)
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          return of(err.error);
+        })
+      );
   }
 
   add(organization: Organization): Observable<OrganizationResponse> {
@@ -48,9 +53,9 @@ export class OrganizationsService {
   }
 
   // XXX no lanza error
-  update(organization: Organization): Observable<StandardResponse> {
+  update(organization: Organization): Observable<OrganizationResponse> {
     return this.http
-      .patch<StandardResponse>(
+      .patch<OrganizationResponse>(
         `${this._serverUrl}/${organization.id}`,
         organization
       )
@@ -75,31 +80,45 @@ export class OrganizationsService {
   //     );
   // }
 
-  remove(organization: Organization): Observable<StandardResponse> {
-    return this.http.patch<StandardResponse>(
-      `${this._serverUrl}/remove/${organization.id}`,
-      organization
+  remove(organization: Organization): Observable<OrganizationResponse> {
+    return this.http
+      .patch<OrganizationResponse>(
+        `${this._serverUrl}/remove/${organization.id}`,
+        organization
+      )
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          return of(err.error);
+        })
+      );
+  }
+
+  // FIXME: quitar este
+  erase(id: number): Observable<OrganizationResponse> {
+    return this.http
+      .delete<OrganizationResponse>(`${this._serverUrl}/remove/${id}`)
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          return of(err.error);
+        })
+      );
+  }
+
+  getToMs(id: string): Observable<ToMResponse> {
+    return this.http.get<ToMResponse>(`${this._serverUrl}/${id}/toms`).pipe(
+      catchError((err: HttpErrorResponse) => {
+        return of(err.error);
+      })
     );
   }
 
-  erase(id: number): Observable<StandardResponse> {
-    return this.http.delete<StandardResponse>(
-      `${this._serverUrl}/remove/${id}`
-    );
-  }
-
-  getToM(id: string): Observable<TypeOfMeeting[]> {
+  getWorkers(id: string): Observable<AuthResponse> {
     return this.http
-      .get<OrganizationResponse>(`${this._serverUrl}/${id}/meetings`)
-      .pipe(map((res) => res.arg as unknown as TypeOfMeeting[]));
+      .get<AuthResponse>(`${this._serverUrl}/${id}/workers`)
+      .pipe(catchError((err: HttpErrorResponse) => of(err.error)));
   }
 
-  getWorkers(id: string): Observable<WorkerResponse[]> {
-    return this.http
-      .get<OrganizationResponse>(`${this._serverUrl}/${id}/workers`)
-      .pipe(map((res) => res.arg as unknown as WorkerResponse[]));
-  }
-
+  // FIXME: arreglar el create en el back y quitar este
   addWorkers(
     id: number,
     workersId: string[]
@@ -113,6 +132,7 @@ export class OrganizationsService {
       );
   }
 
+  // FIXME: arreglar el update en el back y quitar este
   updateWorkers(
     id: number,
     workersId: string[]

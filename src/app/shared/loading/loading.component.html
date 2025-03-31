@@ -1,0 +1,6 @@
+<div class="card flex justify-content-center" *ngIf="isLoading$ | async">
+  <div class="flex flex-column">
+    <p-progressSpinner strokeWidth="5" />
+    <div class="text-lg font-medium text-primary">Cargando...</div>
+  </div>
+</div>

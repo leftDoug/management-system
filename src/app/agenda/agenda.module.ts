@@ -21,5 +21,6 @@ import { PrimengModule } from '../primeng/primeng.module';
     FormsModule,
     PrimengModule,
   ],
+  exports: [AgendaFormComponent, AgendasTableComponent],
 })
 export class AgendaModule {}

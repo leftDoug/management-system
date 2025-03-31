@@ -1,42 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Meeting, Session } from '../../interfaces/meeting.interface';
-import { Worker } from '../../../workers/interfaces/worker.interface';
 import { ValidatorService } from 'src/app/validator/validator.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { MeetingsService } from '../../services/meetings.service';
 import { MessageService } from 'primeng/api';
-import { switchMap, tap } from 'rxjs';
-import { TypesOfMeetingsService } from 'src/app/types-of-meetings/services/types-of-meetings.service';
-import { WorkersService } from 'src/app/workers/services/workers.service';
 import { TypeOfMeeting } from 'src/app/types-of-meetings/interfaces/type-of-meeting.interface';
-import { AreasService } from 'src/app/areas/services/areas.service';
-import { WorkersAreasService } from 'src/app/shared/services/workers-areas.service';
+import { Worker } from 'src/app/auth/interfaces/user.interface';
+import { AuthService } from 'src/app/auth/services/auth.service';
+import { Organization } from 'src/app/organizations/interfaces/organization.interface';
+import { OrganizationsService } from 'src/app/organizations/services/organizations.service';
+import { getNotification } from 'src/app/shared/notifications';
 
 @Component({
   selector: 'app-meeting-form',
   templateUrl: './meeting-form.component.html',
   styleUrls: ['./meeting-form.component.css'],
-  providers: [MessageService],
 })
 export class MeetingFormComponent implements OnInit {
   meetingForm: FormGroup = this.fb.group(
     {
       name: ['', [Validators.required, Validators.minLength(5)]],
-      typeOfMeeting: ['', Validators.required],
-      date: [
-        new Date(),
-        [Validators.required, this.validatorService.meetingDate],
-      ],
-      endTime: [
-        new Date(),
-        [Validators.required, this.validatorService.timeLimits],
-      ],
-      startTime: [
-        new Date(),
-        [Validators.required, this.validatorService.timeLimits],
-      ],
-      responsible: [{ value: '', disabled: true }, Validators.required],
+      secretary: ['', Validators.required],
+      date: [new Date(), Validators.required],
+      startTime: [new Date(), Validators.required],
+      endTime: [new Date(), Validators.required],
       session: ['', Validators.required],
     },
     {
@@ -46,127 +33,144 @@ export class MeetingFormComponent implements OnInit {
     }
   );
 
-  newMeeting: Meeting = {
-    id: '',
-    idTypeOfMeeting: '',
-    idSecretary: '',
-    name: '',
-    date: new Date(),
-    endTime: new Date(),
-    startTime: new Date(),
-    session: Session.ordinary,
-    state: true,
-  };
+  newMeeting!: Meeting;
+
   sessions: Session[] = [Session.ordinary, Session.extraordinary];
-  today: Date = new Date();
-  workers: Worker[] = [];
-  typesOfMeetings: TypeOfMeeting[] = [];
-  area: string = '';
+
+  organizationMembers: Worker[] = [];
+  availableMembers: Worker[] = [];
+  availableWorkers: Worker[] = [];
+  members: Worker[] = [];
+  guests: Worker[] = [];
+
+  dataSubmitted: boolean = false;
+
+  @Input() typeOfMeeting!: TypeOfMeeting;
+  @Input() organization!: Organization;
+  @Input() meeting?: Meeting;
+
+  @Output() onSave = new EventEmitter<boolean>();
 
   constructor(
     private fb: FormBuilder,
     private validatorService: ValidatorService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
     private meetingsService: MeetingsService,
-    private typesOfMeetingsService: TypesOfMeetingsService,
-    private workersService: WorkersService,
-    private workersAreasService: WorkersAreasService,
-    private areasService: AreasService,
+    private authService: AuthService,
+    private organizationsService: OrganizationsService,
     private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
-    if (this.router.url.includes('editar')) {
-      this.activatedRoute.params
-        .pipe(switchMap(({ id }) => this.meetingsService.getById(id)))
-        .subscribe((resp) => {
-          this.newMeeting = resp;
-          this.meetingForm.reset({
-            name: this.newMeeting.name,
-            typeOfMeeting: this.newMeeting.idTypeOfMeeting,
-            date: new Date(this.newMeeting.date),
-            endTime: new Date(this.newMeeting.endTime),
-            startTime: new Date(this.newMeeting.startTime),
-            session: this.newMeeting.session,
+    this.organizationsService
+      .getWorkers(this.organization.id)
+      .subscribe((resp) => {
+        this.organizationMembers = resp.arg as Worker[];
+
+        if (this.meeting) {
+          this.members = (this.meeting.participants as Worker[]).filter(
+            (worker) => worker.member
+          );
+          this.guests = (this.meeting.participants as Worker[]).filter(
+            (worker) => !worker.member
+          );
+        }
+
+        this.organizationsService
+          .getById(this.organization.id)
+          .subscribe((resp2) => {
+            this.authService.getWorkers().subscribe((resp3) => {
+              this.availableWorkers = (resp3.arg as Worker[]).filter(
+                (worker) =>
+                  worker.id !== (resp2.arg as Organization).idLeader &&
+                  !this.organizationMembers.some(
+                    (worker2) => worker2.id === worker.id
+                  )
+              );
+            });
           });
-        });
-    }
-
-    this.typesOfMeetingsService
-      .getAll()
-      .subscribe((resp) => (this.typesOfMeetings = resp));
-
-    // FIXME: buscar la manere de resetear sin haacer request
-    this.meetingForm
-      .get('typeOfMeeting')
-      ?.valueChanges.pipe(
-        tap((value) => {
-          this.meetingForm.get('responsible')?.reset('');
-          this.meetingForm.get('responsible')?.enable();
-        }),
-        switchMap((id) => this.typesOfMeetingsService.getById(id)),
-        switchMap((typeOfMeeting) =>
-          this.workersAreasService.getByIdArea(typeOfMeeting.idArea!)
-        )
-      )
-      .subscribe((wa) => {
-        this.workersService.getAll().subscribe((w) => {
-          let responsibles: Worker[] = [];
-
-          wa.forEach((value) => {
-            responsibles.push(w.find((item) => item.id === value.idWorker)!);
-          });
-
-          this.workers = responsibles;
-        });
       });
 
-    // FIXME: buscar la manere de resetear sin haacer request
-    this.meetingForm
-      .get('typeOfMeeting')
-      ?.valueChanges.pipe(
-        switchMap((value) => this.typesOfMeetingsService.getById(value)),
-        switchMap((value) => this.areasService.getById(value.idArea!))
-      )
-      .subscribe((resp) => (this.area = resp.name));
-
-    // this.areasService.getById(this.workers[0].FK_idWorkArea).subscribe(resp=>this.area=resp.name)
+    if (this.meeting) {
+      this.meetingForm.patchValue({
+        name: this.meeting.name,
+        date: new Date(this.meeting.date),
+        endTime: new Date(this.meeting.endTime!),
+        startTime: new Date(this.meeting.startTime!),
+        session: this.meeting.session,
+        secretary: this.meeting.secretary!.id,
+      });
+    }
   }
 
-  get typeOfMeetingErrorMsg(): string {
-    if (this.meetingForm.get('typeOfMeeting')?.errors!['required']) {
-      return 'El tipo de reunión es requerido';
+  get name() {
+    return this.meetingForm.get('name')!;
+  }
+
+  get secretary() {
+    return this.meetingForm.get('secretary')!;
+  }
+
+  get date() {
+    return this.meetingForm.get('date')!;
+  }
+
+  get startTime() {
+    return this.meetingForm.get('startTime')!;
+  }
+
+  get endTime() {
+    return this.meetingForm.get('endTime')!;
+  }
+
+  get session() {
+    return this.meetingForm.get('session')!;
+  }
+
+  get nameErrorMsg(): string {
+    this.name.markAsDirty();
+
+    if (this.name.errors!['required']) {
+      return 'El nombre es requerido';
     }
 
     return '';
   }
 
-  get nameErrorMsg(): string {
-    if (this.meetingForm.get('name')?.errors!['required']) {
-      return 'El nombre de la reunión es requerido';
+  get secretaryErrorMsg(): string {
+    this.secretary.markAsDirty();
+
+    if (this.secretary.errors!['required']) {
+      return 'El secretario es requerido';
     }
 
     return '';
   }
 
   get dateErrorMsg(): string {
-    if (this.meetingForm.get('date')?.errors!['required']) {
+    this.date.markAsDirty();
+
+    if (this.date.errors!['required']) {
       return 'La fecha es requerida';
-    } else if (this.meetingForm.get('date')?.errors!['meetingDateError']) {
-      return 'La fecha no puede ser posterior a hoy';
+    }
+
+    return '';
+  }
+
+  get startTimeErrorMsg(): string {
+    this.startTime.markAsDirty();
+
+    if (this.startTime.errors!['required']) {
+      return 'La hora de inicio es requerida';
     }
 
     return '';
   }
 
   get endTimeErrorMsg(): string {
-    if (this.meetingForm.get('endTime')?.errors!['required']) {
+    this.endTime.markAsDirty();
+
+    if (this.endTime.errors!['required']) {
       return 'La hora de fin es requerida';
-    } else if (this.meetingForm.get('endTime')?.errors!['tooEarlyError']) {
-      return 'La hora de fin no puede ser anterior a las 07:00';
-    } else if (this.meetingForm.get('endTime')?.errors!['tooLateError']) {
-      return 'La hora de fin no puede ser posterior a las 17:00';
     } else if (this.meetingForm.get('endTime')?.errors!['endBeginningError']) {
       return 'La hora de fin no puede ser anterior a la hora de inicio';
     }
@@ -174,125 +178,108 @@ export class MeetingFormComponent implements OnInit {
     return '';
   }
 
-  get startTimeErrorMsg(): string {
-    if (this.meetingForm.get('startTime')?.errors!['required']) {
-      return 'La hora de inicio es requerida';
-    } else if (this.meetingForm.get('startTime')?.errors!['tooEarlyError']) {
-      return 'La hora de inicio no puede ser anterior a las 07:00';
-    } else if (this.meetingForm.get('startTime')?.errors!['tooLateError']) {
-      return 'La hora de inicio no puede ser posterior a las 17:00';
-    }
-
-    return '';
-  }
-
-  get responsibleErrorMsg(): string {
-    if (this.meetingForm.get('responsible')?.errors!['required']) {
-      return 'El responsable es requerido';
-    }
-
-    return '';
-  }
-
   get sessionErrorMsg(): string {
-    if (this.meetingForm.get('session')?.errors!['required']) {
+    this.session.markAsDirty();
+
+    if (this.session.errors!['required']) {
       return 'La sesión es requerida';
     }
 
     return '';
   }
 
-  create(): void {
-    this.newMeeting.idTypeOfMeeting =
-      this.meetingForm.get('typeOfMeeting')?.value;
-    switch (this.meetingForm.get('session')?.value) {
-      case 'Ordinaria':
-        this.newMeeting.session = Session.ordinary;
-        break;
-      case 'Extraordinaria':
-        this.newMeeting.session = Session.extraordinary;
-        break;
-      default:
-        break;
+  setAvailableGuests() {
+    if (this.meeting) {
+      this.availableWorkers = this.availableWorkers.filter(
+        (worker) => !this.guests.some((worker2) => worker2.id === worker.id)
+      );
     }
-    this.newMeeting.name = this.meetingForm.get('name')?.value;
-    this.newMeeting.date = new Date(this.meetingForm.get('date')?.value);
+  }
 
-    this.setTime();
+  submitData() {
+    this.dataSubmitted = true;
 
-    if (!this.newMeeting.id) {
-      this.newMeeting.id = this.meetingForm
-        .get('name')
-        ?.value.trim()
-        .slice(0, 2);
+    if (this.meetingForm.valid) {
+      this.setAvailableMembers();
+    }
+  }
 
-      this.meetingsService.add(this.newMeeting).subscribe(console.log);
+  setAvailableMembers() {
+    if (this.meeting) {
+      this.members = this.members.filter(
+        (worker) => worker.id !== this.secretary.value
+      );
 
-      this.newMeeting.id = '';
+      this.availableMembers = this.organizationMembers.filter(
+        (worker) =>
+          worker.id !== this.secretary.value &&
+          !this.members.some((worker2) => worker2.id === worker.id)
+      );
+    } else {
+      this.availableMembers = this.organizationMembers.filter(
+        (worker) => worker.id !== this.secretary.value
+      );
+    }
+  }
 
-      // FIXME: esta dando palo aqui xk no se vuelven a crear las fechas en el reset
-      this.meetingForm.reset({
-        date: new Date(this.newMeeting.date),
-        endTime: new Date(),
-        startTime: new Date(),
-        typeOfMeeting: this.newMeeting.idTypeOfMeeting,
-      });
+  checkParticipants() {
+    if (this.members.length === 0) {
+      this.messageService.add(
+        getNotification('Debe haber al menos un miembro convocado', false)
+      );
+    }
 
-      this.area = '';
+    return this.members.length !== 0;
+  }
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Reunión Creada',
-        detail: 'La reunión ha sido creada.',
+  save(): void {
+    this.newMeeting = {
+      id: this.meeting ? this.meeting.id : '',
+      name: this.name.value.trim(),
+      date: this.date.value,
+      startTime: this.startTime.value,
+      endTime: this.endTime.value,
+      session: this.session.value,
+      idTypeOfMeeting: this.typeOfMeeting.id,
+      idSecretary: this.secretary.value,
+      members: this.members.map((member) => member.id),
+      guests: this.guests.map((guest) => guest.id),
+    };
+
+    if (!this.meeting) {
+      this.meetingsService.add(this.newMeeting).subscribe((resp) => {
+        this.messageService.add(getNotification(resp.msg!, resp.ok));
+
+        if (resp.ok) {
+          this.meetingForm.reset({
+            id: '',
+            name: '',
+            date: new Date(),
+            startTime: new Date(),
+            endTime: new Date(),
+            session: '',
+          });
+
+          this.onSave.emit(true);
+        }
       });
     } else {
-      this.meetingsService.update(this.newMeeting).subscribe(console.log);
+      this.meetingsService.update(this.newMeeting).subscribe((resp) => {
+        this.messageService.add(getNotification(resp.msg!, resp.ok));
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Reunión Actualizada',
-        detail: 'La reunión ha sido actualizada.',
+        if (resp.ok) {
+          this.meetingForm.reset({
+            id: '',
+            name: '',
+            date: new Date(),
+            startTime: new Date(),
+            endTime: new Date(),
+            session: '',
+          });
+
+          this.onSave.emit(true);
+        }
       });
-
-      this.meetingForm.reset(this.meetingForm.value);
     }
-  }
-
-  setTime(): void {
-    let hours: number = this.meetingForm.get('startTime')?.value.getHours();
-    let minutes: number = this.meetingForm.get('startTime')?.value.getMinutes();
-
-    this.newMeeting.startTime = new Date(this.meetingForm.get('date')?.value);
-
-    this.newMeeting.startTime.setHours(hours);
-    this.newMeeting.startTime.setMinutes(minutes);
-
-    hours = this.meetingForm.get('endTime')?.value.getHours();
-    minutes = this.meetingForm.get('endTime')?.value.getMinutes();
-
-    this.newMeeting.endTime = new Date(this.meetingForm.get('date')?.value);
-
-    this.newMeeting.endTime.setHours(hours);
-    this.newMeeting.endTime.setMinutes(minutes);
-  }
-
-  validate(control: string): boolean {
-    if (
-      control === 'name' &&
-      this.meetingForm.get(control)?.pristine &&
-      this.meetingForm.get(control)?.touched &&
-      this.meetingForm.get(control)?.errors!['required']
-    ) {
-      this.meetingForm.controls[control].markAsDirty();
-    }
-
-    if (control === 'endTime') {
-      if (this.meetingForm.get(control)?.errors!) return true;
-    }
-
-    return (
-      this.meetingForm.get(control)?.errors! &&
-      this.meetingForm.controls[control].touched
-    );
   }
 }

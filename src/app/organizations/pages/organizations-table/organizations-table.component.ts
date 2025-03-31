@@ -1,14 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import {
-  Organization,
-  OrganizationView,
-} from '../../interfaces/organization.interface';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Organization } from '../../interfaces/organization.interface';
 import { OrganizationsService } from '../../services/organizations.service';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService, SortEvent } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { WorkerResponse } from 'src/app/auth/interfaces/user.interface';
+import { Worker } from 'src/app/auth/interfaces/user.interface';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { StandardResponse } from '../../../shared/interfaces/standard.interface';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-organizations-table',
@@ -17,7 +15,7 @@ import { StandardResponse } from '../../../shared/interfaces/standard.interface'
   providers: [ConfirmationService, MessageService],
 })
 export class OrganizationsTableComponent implements OnInit {
-  organizations!: OrganizationView[];
+  organizations!: Organization[];
   organizationDialog: boolean = false;
   organizationForm: FormGroup = this.fb.group({
     id: [''],
@@ -25,14 +23,13 @@ export class OrganizationsTableComponent implements OnInit {
     idLeader: ['', Validators.required],
   });
   submitted: boolean = false;
-  workers: WorkerResponse[] = [];
-  workersSource: WorkerResponse[] = [];
-  workersSelected: WorkerResponse[] = [];
+  workers: Worker[] = [];
+  workersSource: Worker[] = [];
+  workersSelected: Worker[] = [];
   newOrganization: Organization = {
     id: '',
     name: '',
     idLeader: '',
-    state: true,
   };
 
   constructor(
@@ -44,11 +41,15 @@ export class OrganizationsTableComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.organizationsService
-      .getAll()
-      .subscribe((resp) => (this.organizations = resp));
+    this.organizationsService.getAll().subscribe((resp) => {
+      this.organizations = resp.arg as Organization[];
+
+      // XXX para quitar el ordenamiento
+      this.initialValue = [...(resp.arg as Organization[])];
+      // fin
+    });
     this.authService.getWorkers().subscribe((resp) => {
-      this.workers = resp;
+      this.workers = resp.arg as Worker[];
       // this.workersSource = [...resp];
     });
   }
@@ -108,12 +109,14 @@ export class OrganizationsTableComponent implements OnInit {
 
   openNew(id: string | null) {
     if (id) {
-      this.findOrganization(id!).then((organization) => {
-        this.submitted = false;
-        this.organizationDialog = true;
+      this.findOrganization(id!)
+        .then((organization) => {
+          this.submitted = false;
+          this.organizationDialog = true;
 
-        this.organizationForm.patchValue(organization);
-      });
+          this.organizationForm.patchValue(organization);
+        })
+        .catch((error) => (error ? console.error(error) : null));
     } else {
       this.submitted = false;
       this.organizationDialog = true;
@@ -143,8 +146,8 @@ export class OrganizationsTableComponent implements OnInit {
   setWorkersList() {
     if (this.id.value) {
       this.organizationsService.getWorkers(this.id.value).subscribe((resp) => {
-        this.workersSelected = resp.filter(
-          (worker) => worker.id.toString() !== this.leader.value
+        this.workersSelected = (resp.arg as Worker[]).filter(
+          (worker) => worker.id !== this.leader.value
         );
         this.workersSource = this.workers.filter(
           (worker) =>
@@ -178,7 +181,6 @@ export class OrganizationsTableComponent implements OnInit {
         id: this.id.value,
         name: this.name.value.trim(),
         idLeader: this.leader.value,
-        state: true,
       };
 
       // FIXME: se llama a messageService 2 veces con la misma estructura
@@ -251,7 +253,10 @@ export class OrganizationsTableComponent implements OnInit {
 
                     this.organizationsService
                       .getAll()
-                      .subscribe((resp) => (this.organizations = resp));
+                      .subscribe(
+                        (resp) =>
+                          (this.organizations = resp.arg as Organization[])
+                      );
 
                     this.organizationForm.reset({
                       id: '',
@@ -296,7 +301,7 @@ export class OrganizationsTableComponent implements OnInit {
                 life: 3000,
               });
             } else {
-              const id: number = resp.id!;
+              const id: number = parseInt((resp.arg as Organization).id);
               const msg: string = resp.msg!;
               const workersId: string[] = this.workersSelected.map(
                 (worker) => worker.id
@@ -317,7 +322,10 @@ export class OrganizationsTableComponent implements OnInit {
 
                     this.organizationsService
                       .getAll()
-                      .subscribe((resp) => (this.organizations = resp));
+                      .subscribe(
+                        (resp) =>
+                          (this.organizations = resp.arg as Organization[])
+                      );
 
                     this.organizationForm.reset({
                       id: '',
@@ -503,7 +511,7 @@ export class OrganizationsTableComponent implements OnInit {
     this.findOrganization(id).then((organization) => {
       this.confirmationService.confirm({
         target: event.target as EventTarget,
-        message: 'Está seguro de que desea eliminar esta organización?',
+        message: 'Está seguro de que desea eliminar esta Organización?',
         header: 'Eliminar Organización',
         icon: 'pi pi-exclamation-triangle',
         acceptButtonStyleClass: 'p-button-danger p-button-text',
@@ -528,4 +536,40 @@ export class OrganizationsTableComponent implements OnInit {
       });
     });
   }
+
+  // XXX esto es para quitar el ordenamiento
+  @ViewChild('tOrganizations') tOrganizations: Table | undefined;
+  isSorted: boolean | undefined | null;
+  initialValue: Organization[] | undefined;
+
+  customSort(event: SortEvent) {
+    if (this.isSorted == null || this.isSorted === undefined) {
+      this.isSorted = true;
+      this.sortTableData(event);
+    } else if (this.isSorted == true) {
+      this.isSorted = false;
+      this.sortTableData(event);
+    } else if (this.isSorted == false) {
+      this.isSorted = null;
+      this.organizations = [...this.initialValue!];
+      this.tOrganizations!.reset();
+    }
+  }
+
+  sortTableData(event: SortEvent) {
+    event.data!.sort((data1, data2) => {
+      let value1 = data1[event.field!];
+      let value2 = data2[event.field!];
+      let result = null;
+      if (value1 == null && value2 != null) result = -1;
+      else if (value1 != null && value2 == null) result = 1;
+      else if (value1 == null && value2 == null) result = 0;
+      else if (typeof value1 === 'string' && typeof value2 === 'string')
+        result = value1.localeCompare(value2);
+      else result = value1 < value2 ? -1 : value1 > value2 ? 1 : 0;
+
+      return event.order! * result;
+    });
+  }
+  // fin
 }

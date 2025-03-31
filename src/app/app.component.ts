@@ -15,5 +15,41 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
+    this.primengConfig.setTranslation({
+      clear: 'Limpiar',
+      apply: 'Aplicar',
+      addRule: 'Agregar Regla',
+      accept: 'Sí',
+      emptyFilterMessage: 'Ne se ha encontrado ningún resultado',
+      emptySelectionMessage: 'Ne se ha encontrado ningún resultado',
+      monthNames: [
+        'Enero',
+        'Febrero',
+        'Marzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre',
+      ],
+      monthNamesShort: [
+        'Ene',
+        'Feb',
+        'Mar',
+        'Abr',
+        'May',
+        'Jun',
+        'Jul',
+        'Ago',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dic',
+      ],
+    });
   }
 }

@@ -24,5 +24,6 @@ import { MeetingInfoComponent } from './pages/meeting-info/meeting-info.componen
     ReactiveFormsModule,
     FormsModule,
   ],
+  exports: [MeetingsTableComponent],
 })
 export class MeetingsModule {}

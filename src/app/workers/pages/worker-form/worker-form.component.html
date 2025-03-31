@@ -1,4 +1,4 @@
-<div class="flex align-items-center justify-content-center">
+<!-- <div class="flex align-items-center justify-content-center">
   <p-card
     class="p-5 w-full"
     [header]="newWorker.id ? 'Actualizar Trabajador' : 'Crear Trabajador'"
@@ -10,9 +10,9 @@
       (ngSubmit)="create()"
       [formGroup]="workerForm"
       autocomplete="off"
-    >
-      <!-- nombre -->
-      <div class="grid">
+    > -->
+<!-- nombre -->
+<!-- <div class="grid">
         <label
           for="name"
           class="col-2 flex align-items-center justify-content-end"
@@ -39,15 +39,15 @@
           *ngIf="validate('name')"
           >{{ nameErrorMsg }}</small
         >
-      </div>
-      <!-- fin name -->
+      </div> -->
+<!-- fin name -->
 
-      <!-- 2 columnas -->
-      <div class="grid mt-1">
-        <!-- izquierda -->
-        <div class="col">
-          <!-- occupation -->
-          <div class="grid">
+<!-- 2 columnas -->
+<!-- <div class="grid mt-1"> -->
+<!-- izquierda -->
+<!-- <div class="col"> -->
+<!-- occupation -->
+<!-- <div class="grid">
             <label
               for="occupation"
               class="col-4 flex align-items-center justify-content-end"
@@ -74,11 +74,11 @@
               *ngIf="validate('occupation')"
               >{{ occupationErrorMsg }}</small
             >
-          </div>
-          <!-- fin occupation -->
+          </div> -->
+<!-- fin occupation -->
 
-          <!-- areas -->
-          <div class="grid">
+<!-- areas -->
+<!-- <div class="grid">
             <label
               for="areas"
               class="col-4 flex align-items-center justify-content-end"
@@ -104,15 +104,15 @@
               *ngIf="validate('areas')"
               >{{ areasErrorMsg }}</small
             >
-          </div>
-          <!-- fin areas -->
-        </div>
-        <!-- fin izquierda -->
+          </div> -->
+<!-- fin areas -->
+<!-- </div> -->
+<!-- fin izquierda -->
 
-        <!-- derecha -->
-        <div class="col">
-          <!-- email -->
-          <div class="grid">
+<!-- derecha -->
+<!-- <div class="col"> -->
+<!-- email -->
+<!-- <div class="grid">
             <label
               for="email"
               class="col-4 flex align-items-center justify-content-end"
@@ -138,11 +138,11 @@
               *ngIf="validate('email')"
               >{{ emailErrorMsg }}</small
             >
-          </div>
-          <!-- fin occupation -->
+          </div> -->
+<!-- fin occupation -->
 
-          <!-- checkbox -->
-          <!-- <div class="grid mt-2">
+<!-- checkbox -->
+<!-- <div class="grid mt-2">
             <div class="col-4"></div>
             <div class="col field-checkbox">
               <p-checkbox
@@ -154,14 +154,14 @@
               <label for="secretary" class="">Secretario/a de actas</label>
             </div>
           </div> -->
-          <!-- fin checkbox -->
-        </div>
-        <!-- fin derecha -->
-      </div>
-      <!-- fin 2 columnas -->
+<!-- fin checkbox -->
+<!-- </div> -->
+<!-- fin derecha -->
+<!-- </div> -->
+<!-- fin 2 columnas -->
 
-      <!-- botones -->
-      <div class="gap-6 mt-5 flex align-items-center justify-content-center">
+<!-- botones -->
+<!-- <div class="gap-6 mt-5 flex align-items-center justify-content-center">
         <p-button
           label="Crear"
           icon="pi pi-check"
@@ -194,20 +194,20 @@
               : ['/trabajadores/detalles/', newWorker.id]
           "
         ></p-button>
-      </div>
-      <!-- fin botones -->
-    </form>
+      </div> -->
+<!-- fin botones -->
+<!-- </form>
   </p-card>
-</div>
+</div> -->
 
-<div class="grid">
+<!-- <div class="grid">
   <div class="col">
     <pre>
     {{ workerForm.value | json }}
   </pre
     >
-  </div>
-  <!-- <div class="col">
+  </div> -->
+<!-- <div class="col">
     <pre>
     {{ workerAreas | json }}
   </pre
@@ -219,4 +219,4 @@
   </pre
     >
   </div> -->
-</div>
+<!-- </div> -->

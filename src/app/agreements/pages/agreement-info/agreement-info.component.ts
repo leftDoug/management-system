@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Agreement, Status } from '../../interfaces/agreement.interface';
+import {
+  Agreement,
+  Response,
+  Status,
+} from '../../interfaces/agreement.interface';
 import { ActivatedRoute } from '@angular/router';
 import { AgreementsService } from '../../services/agreements.service';
 import { switchMap, tap } from 'rxjs';
@@ -8,6 +12,8 @@ import { AreasService } from 'src/app/areas/services/areas.service';
 import { WorkersService } from 'src/app/workers/services/workers.service';
 import { MeetingsService } from 'src/app/meetings/services/meetings.service';
 import { getSeverity, getStatus } from 'src/app/shared/severity-status';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { getNotification } from 'src/app/shared/notifications';
 
 @Component({
   selector: 'app-agreement',
@@ -16,23 +22,30 @@ import { getSeverity, getStatus } from 'src/app/shared/severity-status';
   providers: [ConfirmationService, MessageService],
 })
 export class AgreementInfoComponent implements OnInit {
+  responseForm: FormGroup = this.fb.group({
+    content: ['', Validators.required],
+  });
+
+  responses: Response[] = [];
+
   agreement: Agreement = {
     id: '',
-    meeting: '',
-    responsible: '',
-    state: false,
-    compilanceDate: new Date(),
-    completed: false,
     content: '',
-    number: 0,
+    compilanceDate: new Date(),
+    state: true,
   };
   createdBy: string = '';
   meeting: string = '';
   responsible: string = '';
 
+  formDialog: boolean = false;
+  responseDialog: boolean = false;
+  loading: boolean = true;
+
   // TODO: poner un delay para k no se vea el estado inicial al abrir la pagina
 
   constructor(
+    private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private agreementsService: AgreementsService,
     private confirmationService: ConfirmationService,
@@ -43,8 +56,30 @@ export class AgreementInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.params
-      .pipe(switchMap(({ id }) => this.agreementsService.getInfo(id)))
-      .subscribe((resp) => (this.agreement = resp));
+      .pipe(
+        tap(({ id }) => {
+          this.agreementsService
+            .getResponses(id)
+            .subscribe((resp) => (this.responses = resp.arg as Response[]));
+        }),
+        switchMap(({ id }) => this.agreementsService.getInfo(id))
+      )
+      .subscribe({
+        next: (resp2) => {
+          this.agreement = resp2.arg as Agreement;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.messageService.add(getNotification(err.msg, false));
+        },
+        complete: () => {
+          this.loading = false;
+        },
+      });
+  }
+
+  get content() {
+    return this.responseForm.get('content')!;
   }
 
   get severity(): string {
@@ -57,6 +92,67 @@ export class AgreementInfoComponent implements OnInit {
 
   get status(): Status {
     return getStatus(this.agreement);
+  }
+
+  showForm() {
+    this.formDialog = true;
+  }
+
+  hideForm(event: boolean) {
+    if (event) {
+      this.formDialog = false;
+    }
+  }
+
+  showResponseDialog() {
+    this.responseDialog = true;
+  }
+
+  hideResponseDialog() {
+    this.responseDialog = false;
+  }
+
+  reloadInfo(event: boolean) {
+    if (event) {
+      this.activatedRoute.params
+        .pipe(
+          tap(({ id }) => {
+            this.agreementsService
+              .getResponses(id)
+              .subscribe((resp) => (this.responses = resp.arg as Response[]));
+          }),
+          switchMap(({ id }) => this.agreementsService.getInfo(id))
+        )
+        .subscribe((resp) => (this.agreement = resp.arg as Agreement));
+    }
+  }
+
+  save() {
+    if (this.responseForm.valid) {
+      this.agreementsService
+        .addResponse({
+          idAgreement: this.agreement.id,
+          content: this.content.value,
+        })
+        .subscribe((resp) => {
+          this.messageService.add(getNotification(resp.msg!, resp.ok));
+
+          if (resp.ok) {
+            this.reloadInfo(true);
+            this.hideResponseDialog();
+          }
+        });
+    }
+  }
+
+  setCompleted() {
+    this.agreementsService.setCompleted(this.agreement.id).subscribe((resp) => {
+      this.messageService.add(getNotification(resp.msg!, resp.ok));
+
+      if (resp.ok) {
+        this.reloadInfo(true);
+      }
+    });
   }
 
   cancel(): void {

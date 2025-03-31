@@ -19,11 +19,13 @@ export class AreasTableComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.areasService.getAll().subscribe((resp) => (this.areas = resp));
-    this.areasService.getAll().subscribe((resp) => (this.areas = resp));
+    this.areasService
+      .getAll()
+      .subscribe((resp) => (this.areas = resp.arg as Area[]));
+    // this.areasService.getAll().subscribe((resp) => (this.areas = resp));
   }
 
-  remove(event: Event, id: string): void {
+  remove(event: Event, area: Area): void {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: 'Está seguro de que desea eliminar esta área?',
@@ -38,8 +40,8 @@ export class AreasTableComponent implements OnInit {
           detail: 'El área ha sido eliminada',
           summary: 'Área Eliminada',
         });
-        this.areasService.remove(id).subscribe(console.log);
-        this.areas = this.areas.filter((area) => area.id !== id);
+        this.areasService.remove(area).subscribe(console.log);
+        this.areas = this.areas.filter((area) => area.id !== area.id);
       },
       reject: () => {},
     });

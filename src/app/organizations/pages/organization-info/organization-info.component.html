@@ -1,0 +1,101 @@
+<div class="flex flex-wrap align-items-center justify-content-center">
+  <div class="p-3 w-full">
+    <p-card class="min-w-700" [header]="organization ? organization.name : ''">
+      <ng-template pTemplate="content">
+        <div class="">
+          <p-divider align="left" type="solid">
+            <strong>Líder</strong>
+          </p-divider>
+
+          <p class="ml-6">
+            {{
+              organization
+                ? organization.leader
+                  ? organization.leader.name
+                  : ""
+                : ""
+            }}
+          </p>
+
+          <p-divider align="left" type="solid">
+            <strong>Integrantes</strong>
+          </p-divider>
+
+          <ul
+            class="ml-1"
+            [ngStyle]="{ 'list-style': 'none' }"
+            *ngFor="let worker of workers"
+          >
+            <li>{{ worker.name }}</li>
+          </ul>
+        </div>
+        <!-- <p-toast /> -->
+        <!-- <p-confirmDialog /> -->
+
+        <p-divider />
+
+        <app-types-of-meetings-table
+          *ngIf="showToMTable"
+          [organization]="organization"
+        />
+
+        <div class="flex justify-content-center mt-3">
+          <p-button
+            label="Atrás"
+            [text]="true"
+            icon="pi pi-arrow-left"
+            routerLink="/organizaciones"
+          />
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+  <!-- <p-dialog
+    [(visible)]="tomDialog"
+    [style]="{ width: '50rem' }"
+    header="Agregar Tipo de Reunión"
+    [modal]="true"
+    styleClass="p-fluid"
+    (onHide)="hideDialog()"
+  >
+    <ng-template pTemplate="content">
+      <div class="flex flex-column">
+        <form [formGroup]="tomForm" class="form">
+          <div class="field">
+            <label for="name">Nombre:</label>
+
+            <input
+              type="text"
+              pInputText
+              id="name"
+              formControlName="name"
+              autofocus
+            />
+
+            <small class="p-error" *ngIf="submitted && name.errors">
+              {{ nameErrorMsg }}
+            </small>
+          </div>
+        </form>
+      </div>
+
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <div class="flex pt-4 justify-content-between">
+        <p-button
+          label="Cancelar"
+          [text]="true"
+          icon="pi pi-arrow-times"
+          (onClick)="hideDialog()"
+        />
+
+        <p-button
+          label="Guardar"
+          icon="pi pi-check"
+          [text]="true"
+          (onClick)="save()"
+        />
+      </div>
+    </ng-template>
+  </p-dialog> -->
+</div>

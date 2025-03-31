@@ -1,315 +1,365 @@
-<div class="flex align-items-center justify-content-center">
-  <p-card
-    class="p-5 w-full"
-    [header]="newMeeting.id ? 'Actualizar Reunión' : 'Crear Reunión'"
-  >
-    <form
-      class="form"
-      action="POST"
-      (ngSubmit)="create()"
-      [formGroup]="meetingForm"
-      autocomplete="off"
+<p-stepper [linear]="true">
+  <p-stepperPanel header="Datos de la Reunión">
+    <ng-template
+      pTemplate="content"
+      let-nextCallback="nextCallback"
+      let-index="index"
     >
-      <!-- contenido -->
-      <div class="grid">
-        <label
-          for="name"
-          class="col-2 flex align-items-center justify-content-end"
-          >Reunión:
-        </label>
+      <div class="flex flex-column">
+        <form class="form" [formGroup]="meetingForm" autocomplete="off">
+          <!-- name -->
+          <div class="flex flex-row align-items-center">
+            <div class="flex flex-column col px-0">
+              <div class="flex flex-row align-items-center">
+                <div class="flex flex-column col-2 py-0">
+                  <label for="name" class="flex justify-content-end"
+                    >Reunión:</label
+                  >
+                </div>
 
-        <input
-          class="col ml-2 mr-3"
-          type="text"
-          pInputText
-          id="name"
-          formControlName="name"
-          placeholder="Reunión..."
+                <div class="flex flex-column col py-0">
+                  <input
+                    class=""
+                    id="name"
+                    type="text"
+                    pInputText
+                    formControlName="name"
+                    placeholder="Reunión..."
+                  />
+                </div>
+              </div>
+
+              <div class="flex flex-row align-items-center">
+                <div class="flex flex-column col-2 py-0"></div>
+
+                <div class="flex flex-column col py-0">
+                  <small
+                    id="name-help"
+                    class="p-error"
+                    *ngIf="dataSubmitted && name.errors"
+                  >
+                    {{ nameErrorMsg }}
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end name -->
+
+          <!-- secretary -->
+          <div class="flex flex-row align-items-center">
+            <div class="flex flex-column col px-0">
+              <div class="flex flex-row align-items-center">
+                <div class="flex flex-column col-2 py-0">
+                  <label for="secretary" class="flex justify-content-end"
+                    >Secretario:</label
+                  >
+                </div>
+
+                <div class="flex flex-column col py-0">
+                  <p-dropdown
+                    class=""
+                    id="secretary"
+                    formControlName="secretary"
+                    [options]="organizationMembers"
+                    optionLabel="name"
+                    optionValue="id"
+                    placeholder="-- Seleccione --"
+                  />
+                </div>
+              </div>
+
+              <div class="flex flex-row align-items-center">
+                <div class="flex flex-column col-2 py-0"></div>
+
+                <div class="flex flex-column col py-0">
+                  <small
+                    id="secretary-help"
+                    class="p-error"
+                    *ngIf="dataSubmitted && secretary.errors"
+                  >
+                    {{ secretaryErrorMsg }}
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end secretary -->
+
+          <!-- date and session -->
+          <div class="flex flex-row align-items-center">
+            <!-- date -->
+            <div class="flex flex-column col px-0">
+              <div class="flex flex-row align-items-center p-0">
+                <div class="flex flex-column col-4 py-0">
+                  <label for="date" class="flex justify-content-end"
+                    >Fecha:</label
+                  >
+                </div>
+
+                <div class="flex flex-column col py-0">
+                  <p-calendar
+                    class=""
+                    inputId="date"
+                    formControlName="date"
+                    dateFormat="dd/mm/yy"
+                    appendTo="body"
+                    [iconDisplay]="'input'"
+                    [showIcon]="true"
+                    [readonlyInput]="true"
+                    [touchUI]="true"
+                  />
+                </div>
+              </div>
+
+              <div class="flex flex-row align-items-center p-0">
+                <div class="flex flex-column col-4 py-0"></div>
+
+                <div class="flex flex-column col mt-0 py-0">
+                  <small
+                    id="date-help"
+                    class="p-error"
+                    *ngIf="dataSubmitted && date.errors"
+                  >
+                    {{ dateErrorMsg }}
+                  </small>
+                </div>
+              </div>
+            </div>
+            <!-- end date -->
+
+            <!-- session -->
+            <div class="flex flex-column col px-0">
+              <div class="flex flex-row align-items-center p-0">
+                <div class="flex flex-column col-4 py-0">
+                  <label for="session" class="flex justify-content-end"
+                    >Sesión:</label
+                  >
+                </div>
+
+                <div class="flex flex-column col py-0">
+                  <p-dropdown
+                    id="session"
+                    inputId="session"
+                    formControlName="session"
+                    [options]="sessions"
+                    placeholder="-- Seleccione --"
+                  />
+                </div>
+              </div>
+
+              <div class="flex flex-row align-items-center p-0">
+                <div class="flex flex-column col-4 py-0"></div>
+
+                <div class="flex flex-column col mt-0 py-0">
+                  <small
+                    id="session-help"
+                    class="p-error"
+                    *ngIf="dataSubmitted && session.errors"
+                  >
+                    {{ sessionErrorMsg }}
+                  </small>
+                </div>
+              </div>
+            </div>
+            <!-- end session -->
+          </div>
+          <!-- end date and session -->
+
+          <!-- times -->
+          <div class="flex flex-row align-items-center">
+            <!-- start time -->
+            <div class="flex flex-column col px-0">
+              <div class="flex flex-row align-items-center p-0">
+                <div class="flex flex-column col-4 py-0">
+                  <label for="startTime" class="flex justify-content-end"
+                    >Inicio:
+                  </label>
+                </div>
+
+                <div class="flex flex-column col py-0">
+                  <p-calendar
+                    class=""
+                    inputId="startTime"
+                    formControlName="startTime"
+                    appendTo="body"
+                    [iconDisplay]="'input'"
+                    [showIcon]="true"
+                    [timeOnly]="true"
+                    [readonlyInput]="true"
+                  >
+                    <ng-template pTemplate="inputicon">
+                      <i
+                        class="pi pi-clock pointer-events-none pointer-events-none"
+                      ></i> </ng-template
+                  ></p-calendar>
+                </div>
+              </div>
+
+              <div class="flex flex-row align-items-center p-0">
+                <div class="flex flex-column col-4 py-0"></div>
+
+                <div class="flex flex-column col mt-0 py-0">
+                  <small
+                    id="startTime-help"
+                    class="p-error"
+                    *ngIf="dataSubmitted && startTime.errors"
+                  >
+                    {{ startTimeErrorMsg }}
+                  </small>
+                </div>
+              </div>
+            </div>
+            <!-- end start time -->
+
+            <!-- end time -->
+            <div class="flex flex-column col px-0">
+              <div class="flex flex-row align-items-center p-0">
+                <div class="flex flex-column col-4 py-0">
+                  <label for="endTime" class="flex justify-content-end"
+                    >Fin:
+                  </label>
+                </div>
+
+                <div class="flex flex-column col py-0">
+                  <p-calendar
+                    class=""
+                    inputId="endTime"
+                    formControlName="endTime"
+                    appendTo="body"
+                    [iconDisplay]="'input'"
+                    [showIcon]="true"
+                    [timeOnly]="true"
+                    [readonlyInput]="true"
+                  >
+                    <ng-template pTemplate="inputicon">
+                      <i
+                        class="pi pi-clock pointer-events-none pointer-events-none"
+                      ></i> </ng-template
+                  ></p-calendar>
+                </div>
+              </div>
+
+              <div class="flex flex-row align-items-center p-0">
+                <div class="flex flex-column col-4 py-0"></div>
+
+                <div class="flex flex-column col mt-0 py-0">
+                  <small
+                    id="endTime-help"
+                    class="p-error"
+                    *ngIf="dataSubmitted && endTime.errors"
+                  >
+                    {{ endTimeErrorMsg }}
+                  </small>
+                </div>
+              </div>
+            </div>
+            <!-- end end time -->
+          </div>
+          <!-- end times -->
+        </form>
+      </div>
+
+      <div class="flex pt-4 justify-content-end">
+        <p-button
+          label="Siguiente"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          [text]="true"
+          (onClick)="submitData()"
+          (onClick)="meetingForm.valid && nextCallback.emit()"
         />
       </div>
+    </ng-template>
+  </p-stepperPanel>
 
-      <div class="grid">
-        <div class="col-2"></div>
-
-        <small
-          id="name-help"
-          class="p-error col ml-2"
-          *ngIf="validate('name')"
-          >{{ nameErrorMsg }}</small
+  <p-stepperPanel header="Miembros Convocados">
+    <ng-template
+      pTemplate="content"
+      let-prevCallback="prevCallback"
+      let-nextCallback="nextCallback"
+      let-index="index"
+    >
+      <div class="flex flex-column">
+        <p-pickList
+          sourceHeader="Miembros disponibles"
+          targetHeader="Miembros convocados"
+          [source]="availableMembers"
+          [target]="members"
+          [responsive]="true"
+          [showSourceControls]="false"
+          [showTargetControls]="false"
+          [sourceStyle]="{ height: '10rem' }"
         >
+          <ng-template let-worker pTemplate="item">
+            <div class="">
+              <span class="font-bold">{{ worker.name }}</span>
+            </div>
+          </ng-template>
+        </p-pickList>
       </div>
-      <!-- fin contenido -->
 
-      <!-- 2 columnas -->
-      <div class="grid mt-1">
-        <!-- izquierda -->
-        <div class="col">
-          <!-- tipo de reunion -->
-          <!-- FIXME: sustituir x inputtext del usuario logeado -->
-          <div class="grid">
-            <label
-              for="typeOfMeeting"
-              class="col-4 flex align-items-center justify-content-end"
-              >Tipo de Reunión:
-            </label>
-
-            <p-dropdown
-              class="col"
-              id="typeOfMeeting"
-              optionLabel="name"
-              optionValue="id"
-              [options]="typesOfMeetings"
-              formControlName="typeOfMeeting"
-              placeholder="-- Seleccione --"
-            ></p-dropdown>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="typpeOfMeeting-help"
-              class="p-error col pt-0 ml-2"
-              *ngIf="validate('typeOfMeeting')"
-              >{{ typeOfMeetingErrorMsg }}</small
-            >
-          </div>
-          <!-- fin tipo de reunion -->
-
-          <!-- area -->
-          <div class="grid mt-1 mb-3">
-            <label
-              for="area"
-              class="col-4 flex align-items-center justify-content-end"
-              >Área:
-            </label>
-
-            <input
-              class="flex col-6 ml-2"
-              type="text"
-              pInputText
-              id="area"
-              [(ngModel)]="area"
-              [ngModelOptions]="{ standalone: true }"
-              [disabled]="true"
-            />
-          </div>
-          <!-- fin area -->
-
-          <!-- responsible -->
-          <div class="grid">
-            <label
-              for="responsible"
-              class="col-4 flex align-items-center justify-content-end"
-              >Responsable:
-            </label>
-
-            <p-dropdown
-              class="col"
-              id="responsible"
-              [options]="workers"
-              optionLabel="name"
-              optionValue="id"
-              formControlName="responsible"
-              placeholder="-- Seleccione --"
-            ></p-dropdown>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="responsible-help"
-              class="p-error col pt-0 ml-2"
-              *ngIf="validate('responsible')"
-              >{{ responsibleErrorMsg }}</small
-            >
-          </div>
-          <!-- fin responsible -->
-
-          <!-- session -->
-          <div class="grid">
-            <label
-              for="session"
-              class="col-4 flex align-items-center justify-content-end"
-              >Sesión:
-            </label>
-
-            <p-dropdown
-              class="col mr-3"
-              id="session"
-              [options]="sessions"
-              formControlName="session"
-              placeholder="-- Seleccione --"
-            ></p-dropdown>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="session-help"
-              class="p-error col pt-0 ml-2 mr-3"
-              *ngIf="validate('session')"
-              >{{ sessionErrorMsg }}</small
-            >
-          </div>
-          <!-- fin session -->
-        </div>
-        <!-- fin izquierda -->
-
-        <!-- derecha -->
-        <div class="col">
-          <!-- date -->
-          <div class="grid">
-            <label
-              for="date"
-              class="col-4 flex align-items-center justify-content-end"
-              >Fecha:
-            </label>
-
-            <p-calendar
-              class="col"
-              [iconDisplay]="'input'"
-              [showIcon]="true"
-              inputId="date"
-              dateFormat="mm/dd/yy"
-              formControlName="date"
-            ></p-calendar>
-            <div class="col-4"></div>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="date-help"
-              class="p-error col pt-0 ml-2 mr-3"
-              *ngIf="validate('date')"
-              >{{ dateErrorMsg }}</small
-            >
-          </div>
-          <!-- fin date -->
-
-          <!-- start -->
-          <div class="grid">
-            <label
-              for="startTime"
-              class="col-4 flex align-items-center justify-content-end"
-              >Hora de inicio:
-            </label>
-
-            <p-calendar
-              class="col flex align-items-center align-self-center"
-              inputId="startTime"
-              [iconDisplay]="'input'"
-              [showIcon]="true"
-              [timeOnly]="true"
-              formControlName="startTime"
-            >
-              <ng-template pTemplate="inputicon">
-                <i
-                  class="pi pi-clock pointer-events-none pointer-events-none"
-                ></i> </ng-template
-            ></p-calendar>
-            <div class="col-4"></div>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="startTime-help"
-              class="p-error col pt-0 ml-2"
-              *ngIf="validate('startTime')"
-              >{{ startTimeErrorMsg }}</small
-            >
-          </div>
-          <!-- fin start -->
-
-          <!-- end -->
-          <div class="grid">
-            <label
-              for="endTime"
-              class="col-4 flex align-items-center justify-content-end"
-              >Hora de fin:
-            </label>
-
-            <p-calendar
-              class="col flex align-items-center align-self-center"
-              inputId="endTime"
-              [iconDisplay]="'input'"
-              [showIcon]="true"
-              [timeOnly]="true"
-              formControlName="endTime"
-            >
-              <ng-template pTemplate="inputicon">
-                <i
-                  class="pi pi-clock pointer-events-none pointer-events-none"
-                ></i>
-              </ng-template>
-            </p-calendar>
-            <div class="col-4"></div>
-          </div>
-
-          <div class="grid">
-            <div class="col-4"></div>
-
-            <small
-              id="endTime-help"
-              class="p-error col pt-0 ml-2"
-              *ngIf="validate('endTime')"
-              >{{ endTimeErrorMsg }}</small
-            >
-          </div>
-          <!-- fin end -->
-        </div>
-        <!-- fin derecha -->
-      </div>
-      <!-- fin 2 columnas -->
-
-      <!-- botones -->
-      <div class="gap-6 mt-5 flex align-items-center justify-content-center">
-        <p-toast></p-toast>
+      <div class="flex pt-4 justify-content-between">
+        <p-button
+          label="Anterior"
+          icon="pi pi-arrow-left"
+          [text]="true"
+          (onClick)="prevCallback.emit()"
+        />
 
         <p-button
-          label="Crear"
+          label="Siguiente"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          [text]="true"
+          (onClick)="setAvailableGuests()"
+          (onClick)="checkParticipants() && nextCallback.emit()"
+        />
+      </div>
+    </ng-template>
+  </p-stepperPanel>
+
+  <p-stepperPanel header="Invitados">
+    <ng-template
+      pTemplate="content"
+      let-prevCallback="prevCallback"
+      let-nextCallback="nextCallback"
+      let-index="index"
+    >
+      <div class="flex flex-column">
+        <p-pickList
+          sourceHeader="Trabajadores disponibles"
+          targetHeader="Trabajadores invitados"
+          [source]="availableWorkers"
+          [target]="guests"
+          [responsive]="true"
+          [showSourceControls]="false"
+          [showTargetControls]="false"
+          [sourceStyle]="{ height: '10rem' }"
+        >
+          <ng-template let-worker pTemplate="item">
+            <div class="">
+              <span class="font-bold">{{ worker.name }}</span>
+            </div>
+          </ng-template>
+        </p-pickList>
+      </div>
+
+      <div class="flex pt-4 justify-content-between">
+        <p-button
+          label="Anterior"
+          icon="pi pi-arrow-left"
+          [text]="true"
+          (onClick)="prevCallback.emit()"
+        />
+
+        <p-button
+          label="Guardar"
           icon="pi pi-check"
-          severity="success"
-          class=""
-          type="submit"
-          *ngIf="!newMeeting.id; else update"
-          [disabled]="meetingForm.invalid"
-        ></p-button>
-
-        <ng-template #update>
-          <p-button
-            label="Actualizar"
-            icon="pi pi-check"
-            severity="success"
-            class="col-2 mx-2"
-            type="submit"
-            [disabled]="meetingForm.invalid || meetingForm.pristine"
-          ></p-button>
-        </ng-template>
-
-        <p-button
-          label="Cancelar"
-          icon="pi pi-times"
-          class=""
-          type="button"
-          [routerLink]="
-            !newMeeting.id
-              ? '/reuniones'
-              : ['/reuniones/detalles/', newMeeting.id]
-          "
-        ></p-button>
+          [text]="true"
+          (onClick)="save()"
+        />
       </div>
-      <!-- fin botones -->
-    </form>
-  </p-card>
-</div>
-
-<pre>
-  {{ area | json }}
-</pre>
+    </ng-template>
+  </p-stepperPanel>
+</p-stepper>

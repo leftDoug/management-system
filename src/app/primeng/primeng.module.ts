@@ -6,10 +6,13 @@ import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 import { DropdownModule } from 'primeng/dropdown';
 import { FieldsetModule } from 'primeng/fieldset';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
@@ -20,6 +23,7 @@ import { MessagesModule } from 'primeng/messages';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { PasswordModule } from 'primeng/password';
 import { PickListModule } from 'primeng/picklist';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RippleModule } from 'primeng/ripple';
 import { StepperModule } from 'primeng/stepper';
@@ -37,10 +41,13 @@ import { ToolbarModule } from 'primeng/toolbar';
     CardModule,
     CheckboxModule,
     ConfirmDialogModule,
+    DataViewModule,
     DialogModule,
     DividerModule,
     DropdownModule,
     FieldsetModule,
+    IconFieldModule,
+    InputIconModule,
     InputNumberModule,
     InputTextModule,
     InputTextareaModule,
@@ -51,6 +58,7 @@ import { ToolbarModule } from 'primeng/toolbar';
     MultiSelectModule,
     PasswordModule,
     PickListModule,
+    ProgressSpinnerModule,
     RippleModule,
     StepperModule,
     TableModule,

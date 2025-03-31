@@ -1,100 +1,110 @@
-<div class="flex flex-wrap align-items-center justify-content-center">
-  <div class="p-5 w-full">
-    <p-card class="min-w-700" header="Listado de Agendas">
-      <!-- <p-toast /> -->
+<p-dialog
+  [(visible)]="visible"
+  [style]="{ width: '50rem' }"
+  [header]="tom!.name"
+  [modal]="true"
+  styleClass="p-fluid"
+  (onHide)="hideDialog()"
+  [maximizable]="true"
+  [closable]="false"
+  [focusOnShow]="false"
+>
+  <!-- <h3>
+    <span class="p-text-secondary block mb-5">{{ tom!.name }}</span>
+  </h3> -->
 
-      <p-table
-        #tAgendas
-        [paginator]="true"
-        [rows]="10"
-        [rowHover]="true"
-        [value]="agendas"
-        [tableStyle]="{ 'min-width': '60rem' }"
-        [globalFilterFields]="['FK_idTypeOfMeeting', 'year']"
-      >
-        <ng-template pTemplate="caption">
-          <div class="flex justify-content-between">
+  <ng-template pTemplate="content">
+    <div class="" *ngIf="!createVisible">
+      <div class="mb-3">
+        <p-toolbar>
+          <ng-template pTemplate="start">
+            <p-button
+              label="Crear Agenda"
+              severity="success"
+              icon="pi pi-plus"
+              [text]="true"
+              (onClick)="createAgenda()"
+            />
+          </ng-template>
+
+          <ng-template pTemplate="end">
             <p-button
               [text]="true"
-              label="Crear Agenda"
-              icon="pi pi-plus"
-              severity="success"
-              routerLink="/agendas/agregar"
+              label="Atrás"
+              icon="pi pi-arrow-left"
+              (onClick)="hideDialog()"
             />
+          </ng-template>
+        </p-toolbar>
+      </div>
 
-            <span class="p-input-icon-left ml-5">
-              <i class="pi pi-search"></i>
-              <input
-                pInputText
-                type="text"
-                placeholder="Buscar..."
-                ngClass="search"
-                (input)="
-                  tAgendas.filterGlobal($any($event.target).value, 'contains')
-                "
-              />
-            </span>
-          </div>
-        </ng-template>
-
+      <p-dataView
+        #dvAgendas
+        [value]="agendas"
+        [sortField]="sortField"
+        [sortOrder]="sortOrder"
+      >
         <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="FK_idTypeOfMeeting">
-              Tipo de Reunión
-              <p-sortIcon field="FK_idTypeOfMeeting"></p-sortIcon>
-            </th>
+          <div class="flex flex-column md:flex-row md:justify-content-between">
+            <div class=""></div>
 
-            <th pSortableColumn="year">
-              Año <p-sortIcon field="year"></p-sortIcon>
-            </th>
-
-            <th style="width: 5%"></th>
-          </tr>
-        </ng-template>
-
-        <ng-template pTemplate="body" let-agenda>
-          <tr>
-            <td>{{ agenda.FK_idTypeOfMeeting }}</td>
-
-            <td>{{ agenda.year }}</td>
-
-            <td class="flex align-items-center justify-content-center">
-              <p-button
-                [text]="true"
-                [rounded]="true"
-                icon="pi pi-info-circle"
-                [routerLink]="['/agendas/detalles/', agenda.id]"
-              />
-
-              <!-- <p-button
-                icon="pi pi-trash"
-                severity="danger"
-                label="Eliminar"
-                [text]="true"
-                (onClick)="remove($event, typeOfMeeting.id)"
-              ></p-button> -->
-            </td>
-          </tr>
-        </ng-template>
-
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="5" class="text-danger">
-              No se encontró ninguna agenda.
-            </td>
-          </tr>
-        </ng-template>
-
-        <!-- <ng-template pTemplate="summary">
-          <div class="row">
-            <span class="col text-center"
-              >Tipos de Reunión:
-              {{ typesOfMeetings ? typesOfMeetings.length : 0 }}</span
-            >
+            <p-dropdown
+              [options]="sortOptions"
+              [(ngModel)]="sortKey"
+              placeholder="Ordenar por Año"
+              (onChange)="onSortChange($event)"
+              styleClass="mb-2 md:mb-0"
+            />
           </div>
-        </ng-template> -->
-      </p-table>
-      <!-- <p-confirmDialog></p-confirmDialog> -->
-    </p-card>
-  </div>
-</div>
+        </ng-template>
+
+        <ng-template pTemplate="list" let-agendas>
+          <div class="" *ngFor="let agenda of agendas; let first = first">
+            <div
+              class="flex flex-row justify-content-between align-items-center p-3"
+              [ngClass]="{ 'border-top-1 surface-border': !first }"
+            >
+              <div class="flex flex-column">
+                <span class="text-lg font-medium">{{ agenda.year }}</span>
+              </div>
+
+              <div class="flex flex-column">
+                <div class="flex flex-row">
+                  <p-button
+                    icon="pi pi-info-circle"
+                    [rounded]="true"
+                    [text]="true"
+                    (onClick)="showInfo(agenda)"
+                  />
+
+                  <p-button
+                    icon="pi pi-pencil"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="success"
+                  />
+
+                  <p-button
+                    icon="pi pi-trash"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="danger"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </div>
+
+    <app-agenda-form
+      *ngIf="createVisible"
+      [agenda]="agenda"
+      [(info)]="infoMode"
+      [idToM]="tom.id"
+      (onSubmit)="reloadTable($event)"
+      (onCancel)="changeView($event)"
+    />
+  </ng-template>
+</p-dialog>

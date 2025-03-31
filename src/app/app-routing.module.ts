@@ -22,6 +22,7 @@ import { authGuard } from './auth/guards/auth.guard';
 import { AdminTableComponent } from './auth/pages/admin-table/admin-table.component';
 import { OrganizationsTableComponent } from './organizations/pages/organizations-table/organizations-table.component';
 import { OrganizationFormComponent } from './organizations/pages/organization-form/organization-form.component';
+import { OrganizationInfoComponent } from './organizations/pages/organization-info/organization-info.component';
 
 const routes: Routes = [
   // {
@@ -49,7 +50,7 @@ const routes: Routes = [
     component: AdminTableComponent,
   },
   {
-    path: 'acuerdos',
+    path: 'acuerdos/:id',
     // canActivate: [authGuard],
     component: AgreementsTableComponent,
   },
@@ -89,6 +90,11 @@ const routes: Routes = [
     component: OrganizationsTableComponent,
   },
   {
+    path: 'organizaciones/info/:id',
+    //  canActivate: [authGuard],
+    component: OrganizationInfoComponent,
+  },
+  {
     path: 'organizaciones/agregar',
     // canActivate: [authGuard],
     component: OrganizationFormComponent,
@@ -99,7 +105,7 @@ const routes: Routes = [
     component: OrganizationFormComponent,
   },
   {
-    path: 'reuniones',
+    path: 'tipos-de-reuniones/reuniones/:id',
     // canActivate: [authGuard],
     component: MeetingsTableComponent,
   },

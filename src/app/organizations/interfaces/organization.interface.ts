@@ -1,18 +1,8 @@
+import { Worker } from 'src/app/auth/interfaces/user.interface';
+
 export interface Organization {
   id: string;
-  idLeader: string;
   name: string;
-  state: boolean;
+  leader?: Worker;
+  idLeader?: string;
 }
-
-export interface OrganizationView {
-  id: string;
-  name: string;
-  leader: string;
-}
-
-// export interface testArea {
-//   id: number;
-//   name: string;
-//   state: boolean;
-// }

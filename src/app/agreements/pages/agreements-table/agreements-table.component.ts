@@ -1,14 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  Agreement,
-  AgreementWithStatus,
-  Status,
-} from '../../interfaces/agreement.interface';
+import { Agreement, Status } from '../../interfaces/agreement.interface';
 import { AgreementsService } from '../../services/agreements.service';
 import { AreasService } from 'src/app/areas/services/areas.service';
 import { MeetingsService } from 'src/app/meetings/services/meetings.service';
 import { WorkersService } from 'src/app/workers/services/workers.service';
-import { Area } from 'src/app/areas/interfaces/area.interface';
 import { Meeting } from 'src/app/meetings/interfaces/meeting.interface';
 import { Worker } from 'src/app/workers/interfaces/worker.interface';
 import { getSeverity } from 'src/app/shared/severity-status';
@@ -16,14 +11,18 @@ import { MessageService } from 'primeng/api';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { UserLogged } from 'src/app/auth/interfaces/user.interface';
 import { TypesOfMeetingsService } from 'src/app/types-of-meetings/services/types-of-meetings.service';
+import { ActivatedRoute } from '@angular/router';
+import { switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-agreements-table',
   templateUrl: './agreements-table.component.html',
   styleUrls: ['./agreements-table.component.css'],
+  providers: [MessageService],
 })
 export class AgreementsTableComponent implements OnInit {
   agreements: Agreement[] = [];
+  meeting!: Meeting;
   meetings: Meeting[] = [];
   status: Status[] = [
     Status.canceled,
@@ -44,14 +43,16 @@ export class AgreementsTableComponent implements OnInit {
   directorArea: boolean = false;
   // worker!: testWorker;
 
-  agreementsWS: AgreementWithStatus[] = [];
+  idAgreement: string = '';
+  formDialog: boolean = false;
+  loading: boolean = true;
 
   constructor(
     private agreementsService: AgreementsService,
+    private activatedRoute: ActivatedRoute,
     private workersService: WorkersService,
     private meetingsService: MeetingsService,
     private authService: AuthService,
-    private areasService: AreasService,
     private typesOfMeetingsService: TypesOfMeetingsService
   ) {}
 
@@ -179,32 +180,65 @@ export class AgreementsTableComponent implements OnInit {
 
     // let tempAg: Agreement[] = [];
 
-    this.agreementsService
-      .getAll()
-      .subscribe((resp) => (this.agreements = resp));
+    this.activatedRoute.params
+      .pipe(
+        tap(({ id }) =>
+          this.meetingsService
+            .getInfo(id)
+            .subscribe((resp) => (this.meeting = resp.arg as Meeting))
+        ),
+        switchMap(({ id }) => this.meetingsService.getAgreements(id))
+      )
+      .subscribe({
+        next: (resp) => {
+          const tempAgreements = resp.arg as Agreement[];
 
-    this.workersService.getAll().subscribe((resp) => (this.workers = resp));
-    this.meetingsService.getAll().subscribe((resp) => (this.meetings = resp));
+          this.agreements = tempAgreements.map((agreement) => {
+            return {
+              id: agreement.id,
+              number: agreement.number,
+              content: agreement.content,
+              compilanceDate: agreement.compilanceDate,
+              responsible: agreement.responsible,
+              meeting: agreement.meeting,
+              state: agreement.state,
+              status: this.getStatus(agreement),
+            };
+          });
 
-    this.agreementsService.getAll().subscribe((resp) => {
-      let a: AgreementWithStatus[] = [];
-      console.log(resp);
-
-      resp.forEach((value) => {
-        const agreement: AgreementWithStatus = {
-          id: value.id,
-          number: value.number,
-          content: value.content,
-          responsible: value.responsible!,
-          meeting: value.meeting!,
-          status: this.getStatus(value),
-        };
-
-        a.push(agreement);
+          this.loading = false;
+        },
       });
 
-      this.agreementsWS = a;
-    });
+    // this.meetingsService
+    //   .getAgreements()
+    //   .subscribe((resp) => (this.agreements = resp.arg as Agreement[]));
+
+    // this.workersService.getAll().subscribe((resp) => (this.workers = resp));
+    // this.meetingsService
+    //   .getAll()
+    //   .subscribe((resp) => (this.meetings = resp.arg as Meeting[]));
+
+    // FIXME: aqui esta la llamada al metodo para sacar el status
+    // this.agreementsService.getAll().subscribe((resp) => {
+    //   let a: AgreementWithStatus[] = [];
+    //   console.log(resp);
+
+    //   resp.forEach((value) => {
+    //     const agreement: AgreementWithStatus = {
+    //       id: value.id,
+    //       number: value.number,
+    //       content: value.content,
+    //       responsible: value.responsible!,
+    //       meeting: value.meeting!,
+    //       status: this.getStatus(value),
+    //     };
+
+    //     a.push(agreement);
+    //   });
+
+    //   this.agreementsWS = a;
+    // });
   }
 
   // get user() {
@@ -290,6 +324,37 @@ export class AgreementsTableComponent implements OnInit {
         return 'danger';
       default:
         return 'warning';
+    }
+  }
+
+  showForm() {
+    this.formDialog = true;
+  }
+
+  reloadTable(event: boolean) {
+    if (event) {
+      this.meetingsService.getAgreements(this.meeting.id).subscribe((resp) => {
+        const tempAgreements = resp.arg as Agreement[];
+
+        this.agreements = tempAgreements.map((agreement) => {
+          return {
+            id: agreement.id,
+            number: agreement.number,
+            content: agreement.content,
+            compilanceDate: agreement.compilanceDate,
+            responsible: agreement.responsible,
+            meeting: agreement.meeting,
+            state: agreement.state,
+            status: this.getStatus(agreement),
+          };
+        });
+      });
+    }
+  }
+
+  hideForm(event: boolean) {
+    if (event) {
+      this.formDialog = false;
     }
   }
 }

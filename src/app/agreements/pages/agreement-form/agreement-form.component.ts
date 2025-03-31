@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Agreement } from '../../interfaces/agreement.interface';
 import { AgreementsService } from '../../services/agreements.service';
 import { MessageService, PrimeNGConfig } from 'primeng/api';
@@ -12,7 +12,6 @@ import {
 } from '@angular/forms';
 import { ValidatorService } from 'src/app/validator/validator.service';
 import { Area } from 'src/app/areas/interfaces/area.interface';
-import { Worker } from 'src/app/workers/interfaces/worker.interface';
 import { AreasService } from 'src/app/areas/services/areas.service';
 import { WorkersService } from 'src/app/workers/services/workers.service';
 import { Meeting } from 'src/app/meetings/interfaces/meeting.interface';
@@ -21,22 +20,23 @@ import { WorkersAreasService } from 'src/app/shared/services/workers-areas.servi
 import { TypesOfMeetingsService } from 'src/app/types-of-meetings/services/types-of-meetings.service';
 import { WorkerArea } from 'src/app/shared/navbar/worker-area.interface';
 import { TypeOfMeeting } from 'src/app/types-of-meetings/interfaces/type-of-meeting.interface';
+import { OrganizationsService } from 'src/app/organizations/services/organizations.service';
+import { Organization } from 'src/app/organizations/interfaces/organization.interface';
+import { Worker } from 'src/app/auth/interfaces/user.interface';
+import { getNotification } from 'src/app/shared/notifications';
 
 @Component({
   selector: 'app-agreement-form',
   templateUrl: './agreement-form.component.html',
   styleUrls: ['./agreement-form.component.css'],
-  providers: [MessageService],
+  // providers: [MessageService],
 })
 export class AgreementFormComponent implements OnInit {
   agreementForm: FormGroup = this.fb.group(
     {
-      answer: [''],
-      completed: [false],
       content: ['', [Validators.required, Validators.minLength(10)]],
-      meeting: ['', Validators.required],
-      compilanceDate: [{ value: '', disabled: true }, Validators.required],
-      responsible: [{ value: '', disabled: true }, Validators.required],
+      compilanceDate: ['', Validators.required],
+      responsible: ['', Validators.required],
     },
     {
       validators: [
@@ -48,23 +48,20 @@ export class AgreementFormComponent implements OnInit {
     }
   );
 
-  meetings: Meeting[] = [];
-  newAgreement: Agreement = {
-    id: '',
-    idMeeting: '',
-    state: false,
-    compilanceDate: new Date(),
-    completed: false,
-    content: '',
-    number: 0,
-    idResponsible: '',
-  };
+  newAgreement!: Agreement;
+
   workers: Worker[] = [];
-  secretaries: Worker[] = [];
-  workersArea: WorkerArea[] = [];
-  typeOfMeeting: TypeOfMeeting | undefined;
   showAnswer: boolean = false;
   showCheck: boolean = false;
+
+  submitted: boolean = false;
+  visible: boolean = true;
+
+  @Input() meeting!: Meeting;
+  @Input() agreement: Agreement | undefined;
+
+  @Output() onHide = new EventEmitter<boolean>();
+  @Output() onSubmit = new EventEmitter<boolean>();
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -78,109 +75,141 @@ export class AgreementFormComponent implements OnInit {
     private workersService: WorkersService,
     private workersAreasService: WorkersAreasService,
     private typesOfMeetingsService: TypesOfMeetingsService,
-    private areasService: AreasService
+    private organizationsService: OrganizationsService
   ) {}
 
   ngOnInit(): void {
-    this.meetingsService.getAll().subscribe((resp) => (this.meetings = resp));
+    this.meetingsService
+      .getInfo(this.meeting.id)
+      .pipe(
+        switchMap((resp) => {
+          this.meeting = resp.arg as Meeting;
 
-    if (!this.router.url.includes('editar')) {
-      this.agreementsService
-        .getAll()
-        .subscribe((resp) =>
-          resp.length > 0
-            ? (this.newAgreement.number = resp.at(-1)?.number! + 1)
-            : (this.newAgreement.number = 1)
-        );
+          return this.organizationsService.getInfo(
+            (resp.arg as Meeting).organization!.id
+          );
+        })
+      )
+      .subscribe((resp2) => {
+        this.workers = [
+          (resp2.arg as Organization).leader!,
+          this.meeting.secretary!,
+          ...(this.meeting.participants as Worker[]),
+        ];
+      });
 
-      this.agreementForm
-        .get('meeting')
-        ?.valueChanges.pipe(
-          tap(() => {
-            this.agreementForm.get('createdBy')?.reset('');
-            this.agreementForm.get('createdBy')?.enable();
+    if (this.agreement) {
+      this.agreementForm.patchValue({
+        content: this.agreement.content,
+        compilanceDate: new Date(this.agreement.compilanceDate),
+        responsible: this.agreement.responsible!.id,
+      });
 
-            this.agreementForm.get('compilanceDate')?.reset('');
-            this.agreementForm.get('compilanceDate')?.enable();
-
-            this.agreementForm.get('responsible')?.reset('');
-            this.agreementForm.get('responsible')?.enable();
-          }),
-          switchMap((im) => {
-            const m = this.meetings.find((m) => im === m.id)!;
-            console.log(m);
-            console.log(m.idTypeOfMeeting);
-            const date = new Date(m.date);
-
-            date.setDate(date.getDate() + 7);
-
-            this.agreementForm.get('meetingDate')?.setValue(new Date(m.date));
-            this.agreementForm.get('compilanceDate')?.setValue(new Date(date));
-
-            return this.typesOfMeetingsService.getById(m.idTypeOfMeeting);
-          })
-        )
-        .subscribe((t) => {
-          this.typeOfMeeting = t;
-
-          console.log(this.typeOfMeeting);
-
-          // this.workersAreasService
-          //   .getByIdArea(this.typeOfMeeting.idArea)
-          //   .subscribe((wa) => (this.workersArea = wa));
-
-          this.areasService
-            .getWorkers(t.idArea!)
-            .subscribe((resp) => (this.workers = resp));
-
-          console.log(this.workers);
-
-          // this.workersService.getAll().subscribe((w) => {
-          //   const responsibles: Worker[] = [];
-          //   const s: Worker[] = [];
-
-          //   w.forEach((worker) => {
-          //     if (this.workersArea.find((wa) => worker.id === wa.FK_idWorker)) {
-          //       responsibles.push(worker);
-          //       s.push(worker);
-          //     }
-          //   });
-
-          //   this.workers = responsibles;
-          //   this.secretaries = s;
-          // });
-        });
-    } else {
-      this.showAnswer = true;
-      this.showCheck = true;
-      this.agreementForm.get('compilanceDate')?.enable();
-      this.agreementForm.get('meeting')?.disable();
-      // this.agreementForm.get('responsible')?.disable();
-      this.agreementForm.get('content')?.disable();
-      // this.responsible.enable();
-      this.activatedRoute.params
-        .pipe(switchMap(({ id }) => this.agreementsService.getById(id)))
-        .subscribe((resp) => {
-          this.newAgreement = resp;
-          this.agreementForm.patchValue({
-            responsible: this.newAgreement.idResponsible,
-            completed: this.newAgreement.completed,
-            content: this.newAgreement.content,
-            meeting: this.newAgreement.idMeeting,
-            compilanceDate: new Date(this.newAgreement.compilanceDate),
-          });
-          this.workersService
-            .getById(resp.idResponsible!)
-            .subscribe((worker) => {
-              console.log(worker);
-              this.workers = [worker];
-            });
-        });
+      this.content.disable();
+      this.responsible.disable();
     }
+
+    // if (!this.router.url.includes('editar')) {
+    //   this.agreementsService
+    //     .getAll()
+    //     .subscribe((resp) =>
+    //       resp.length > 0
+    //         ? (this.newAgreement.number = resp.at(-1)?.number! + 1)
+    //         : (this.newAgreement.number = 1)
+    //     );
+
+    //   // this.agreementForm
+    //   //   .get('meeting')
+    //   //   ?.valueChanges.pipe(
+    //   //     tap(() => {
+    //   //       this.agreementForm.get('createdBy')?.reset('');
+    //   //       this.agreementForm.get('createdBy')?.enable();
+
+    //   //       this.agreementForm.get('compilanceDate')?.reset('');
+    //   //       this.agreementForm.get('compilanceDate')?.enable();
+
+    //   //       this.agreementForm.get('responsible')?.reset('');
+    //   //       this.agreementForm.get('responsible')?.enable();
+    //   //     }),
+    //   //     switchMap((im) => {
+    //   //       const m = this.meetings.find((m) => im === m.id)!;
+    //   //       console.log(m);
+    //   //       console.log(m.idTypeOfMeeting);
+    //   //       const date = new Date(m.date);
+
+    //   //       date.setDate(date.getDate() + 7);
+
+    //   //       this.agreementForm.get('meetingDate')?.setValue(new Date(m.date));
+    //   //       this.agreementForm.get('compilanceDate')?.setValue(new Date(date));
+
+    //   //       return this.typesOfMeetingsService.getById(m.idTypeOfMeeting);
+    //   //     })
+    //   //   )
+    //   //   .subscribe((t) => {
+    //   //     this.typeOfMeeting = t;
+
+    //   //     console.log(this.typeOfMeeting);
+
+    //   //     // this.workersAreasService
+    //   //     //   .getByIdArea(this.typeOfMeeting.idArea)
+    //   //     //   .subscribe((wa) => (this.workersArea = wa));
+
+    //   //     console.log(this.workers);
+
+    //   //     // this.workersService.getAll().subscribe((w) => {
+    //   //     //   const responsibles: Worker[] = [];
+    //   //     //   const s: Worker[] = [];
+
+    //   //     //   w.forEach((worker) => {
+    //   //     //     if (this.workersArea.find((wa) => worker.id === wa.FK_idWorker)) {
+    //   //     //       responsibles.push(worker);
+    //   //     //       s.push(worker);
+    //   //     //     }
+    //   //     //   });
+
+    //   //     //   this.workers = responsibles;
+    //   //     //   this.secretaries = s;
+    //   //     // });
+    //   //   });
+    // } else {
+    //   this.showAnswer = true;
+    //   this.showCheck = true;
+    //   this.agreementForm.get('compilanceDate')?.enable();
+    //   this.agreementForm.get('meeting')?.disable();
+    //   // this.agreementForm.get('responsible')?.disable();
+    //   this.agreementForm.get('content')?.disable();
+    //   // this.responsible.enable();
+    //   this.activatedRoute.params
+    //     .pipe(switchMap(({ id }) => this.agreementsService.getById(id)))
+    //     .subscribe((resp) => {
+    //       this.newAgreement = resp;
+    //       this.agreementForm.patchValue({
+    //         responsible: this.newAgreement.idResponsible,
+    //         completed: this.newAgreement.completed,
+    //         content: this.newAgreement.content,
+    //         meeting: this.newAgreement.idMeeting,
+    //         compilanceDate: new Date(this.newAgreement.compilanceDate),
+    //       });
+    //       this.workersService
+    //         .getById(resp.idResponsible!)
+    //         .subscribe((worker) => {
+    //           console.log(worker);
+    //           this.workers = [worker];
+    //         });
+    //     });
+    // }
   }
 
   get responsible(): AbstractControl {
     return this.agreementForm.get('responsible')!;
+  }
+
+  get content(): AbstractControl {
+    return this.agreementForm.get('content')!;
+  }
+
+  get compilanceDate(): AbstractControl {
+    return this.agreementForm.get('compilanceDate')!;
   }
 
   get compilanceDateErrorMsg(): string {
@@ -243,56 +272,56 @@ export class AgreementFormComponent implements OnInit {
     return '';
   }
 
-  create(): void {
-    this.newAgreement.idMeeting = this.agreementForm.get('meeting')?.value;
-    this.newAgreement.idResponsible =
-      this.agreementForm.get('responsible')?.value;
-    this.newAgreement.completed = this.agreementForm.get('completed')?.value;
-    this.newAgreement.content = this.agreementForm.get('content')?.value;
-    this.newAgreement.compilanceDate =
-      this.agreementForm.get('compilanceDate')?.value;
+  // create(): void {
+  //   this.newAgreement.idMeeting = this.agreementForm.get('meeting')?.value;
+  //   this.newAgreement.idResponsible =
+  //     this.agreementForm.get('responsible')?.value;
+  //   this.newAgreement.completed = this.agreementForm.get('completed')?.value;
+  //   this.newAgreement.content = this.agreementForm.get('content')?.value;
+  //   this.newAgreement.compilanceDate =
+  //     this.agreementForm.get('compilanceDate')?.value;
 
-    if (!this.newAgreement.id) {
-      this.generateId();
+  //   if (!this.newAgreement.id) {
+  //     this.generateId();
 
-      this.agreementsService.add(this.newAgreement).subscribe(console.log);
+  //     this.agreementsService.add(this.newAgreement).subscribe(console.log);
 
-      this.newAgreement.id = '';
-      this.newAgreement.number = this.newAgreement.number + 1;
+  //     this.newAgreement.id = '';
+  //     this.newAgreement.number = this.newAgreement.number + 1;
 
-      // FIXME: esta dando palo aqui xk no se vuelven a crear las fechas en el reset
-      this.agreementForm.reset({
-        answer: '',
-        completed: false,
-        content: '',
-        compilanceDate: this.newAgreement.compilanceDate,
-        meeting: this.newAgreement.idMeeting,
-        // meetingDate: this.agreementForm.get('meetingDate')?.value,
-        responsible: this.newAgreement.idResponsible,
-      });
+  //     // FIXME: esta dando palo aqui xk no se vuelven a crear las fechas en el reset
+  //     this.agreementForm.reset({
+  //       answer: '',
+  //       completed: false,
+  //       content: '',
+  //       compilanceDate: this.newAgreement.compilanceDate,
+  //       meeting: this.newAgreement.idMeeting,
+  //       // meetingDate: this.agreementForm.get('meetingDate')?.value,
+  //       responsible: this.newAgreement.idResponsible,
+  //     });
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Acuerdo Creado',
-        detail: 'El acuerdo ha sido creado.',
-      });
-    } else {
-      this.agreementsService.update(this.newAgreement).subscribe(console.log);
+  //     this.messageService.add({
+  //       severity: 'success',
+  //       summary: 'Acuerdo Creado',
+  //       detail: 'El acuerdo ha sido creado.',
+  //     });
+  //   } else {
+  //     this.agreementsService.update(this.newAgreement).subscribe(console.log);
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Acuerdo Actualizado',
-        detail: 'El acuerdo ha sido actualizado.',
-      });
+  //     this.messageService.add({
+  //       severity: 'success',
+  //       summary: 'Acuerdo Actualizado',
+  //       detail: 'El acuerdo ha sido actualizado.',
+  //     });
 
-      this.agreementForm.reset(this.agreementForm.value);
-    }
-  }
+  //     this.agreementForm.reset(this.agreementForm.value);
+  //   }
+  // }
 
-  generateId(): void {
-    this.newAgreement.id =
-      this.newAgreement.idMeeting! + this.newAgreement.number;
-  }
+  // generateId(): void {
+  //   this.newAgreement.id =
+  //     this.newAgreement.idMeeting! + this.newAgreement.number;
+  // }
 
   validate(control: string): boolean {
     if (
@@ -308,5 +337,50 @@ export class AgreementFormComponent implements OnInit {
       this.agreementForm.get(control)?.errors! &&
       this.agreementForm.controls[control].touched
     );
+  }
+
+  save(): void {
+    this.submitted = true;
+
+    if (this.agreementForm.valid) {
+      this.newAgreement = {
+        id: this.agreement ? this.agreement.id : '',
+        content: this.content.value.trim(),
+        idMeeting: this.meeting.id,
+        idResponsible: this.responsible.value,
+        compilanceDate: this.compilanceDate.value,
+      };
+
+      if (!this.agreement) {
+        this.agreementsService.add(this.newAgreement).subscribe((resp) => {
+          this.messageService.add(getNotification(resp.msg!, resp.ok));
+
+          if (resp.ok) {
+            this.onSubmit.emit(true);
+
+            this.agreementForm.reset();
+
+            this.hideDialog();
+          }
+        });
+      } else {
+        this.agreementsService.update(this.newAgreement).subscribe((resp) => {
+          this.messageService.add(getNotification(resp.msg!, resp.ok));
+
+          if (resp.ok) {
+            this.onSubmit.emit(true);
+
+            this.agreementForm.reset();
+
+            this.hideDialog();
+          }
+        });
+      }
+    }
+  }
+
+  hideDialog() {
+    this.visible = false;
+    this.onHide.emit(true);
   }
 }

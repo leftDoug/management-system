@@ -1,37 +1,39 @@
 export interface Agenda {
   id: string;
-  idTypeOfMeeting: string;
   year: number;
-  topics: Topic[];
+  typeOfMeeting?: string;
+  idTypeOfMeeting?: string;
+  topics?: Topic[];
 }
 
 export interface Topic {
   id: string;
   name: string;
-  month: MonthWithId;
+  month: Date;
+  monthNumber?: number;
 }
 
-export interface MonthWithId {
-  id: number;
-  name: MonthName;
-}
+// export interface MonthWithId {
+//   id: number;
+//   name: MonthName;
+// }
 
-export interface MonthWithTopics {
-  name: MonthName;
-  topics: string[];
-}
+// export interface MonthWithTopics {
+//   name: MonthName;
+//   topics: string[];
+// }
 
-export enum MonthName {
-  january = 'Enero',
-  february = 'Febrero',
-  march = 'Marzo',
-  april = 'Abril',
-  may = 'Mayo',
-  june = 'Junio',
-  july = 'Julio',
-  august = 'Agosto',
-  september = 'Septiembre',
-  october = 'Octubre',
-  november = 'Noviembre',
-  december = 'Diciembre',
-}
+// export enum MonthName {
+//   january = 'Enero',
+//   february = 'Febrero',
+//   march = 'Marzo',
+//   april = 'Abril',
+//   may = 'Mayo',
+//   june = 'Junio',
+//   july = 'Julio',
+//   august = 'Agosto',
+//   september = 'Septiembre',
+//   october = 'Octubre',
+//   november = 'Noviembre',
+//   december = 'Diciembre',
+// }

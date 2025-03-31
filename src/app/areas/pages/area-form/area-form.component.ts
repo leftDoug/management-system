@@ -29,7 +29,6 @@ export class AreaFormComponent implements OnInit {
     this.newArea = {
       id: '',
       name: '',
-      state: true,
     };
   }
 
@@ -38,7 +37,7 @@ export class AreaFormComponent implements OnInit {
       this.activatedRoute.params
         .pipe(switchMap(({ id }) => this.areasService.getById(id)))
         .subscribe((resp) => {
-          this.newArea = resp;
+          this.newArea = resp.arg as Area;
           this.areaForm.reset({
             name: this.newArea.name,
           });
